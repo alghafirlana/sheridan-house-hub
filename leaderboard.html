@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#092c5a" />
+    <title>Live Leaderboard | Sheridan Game Hub</title>
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/leaderboard.css" />
+    <script type="module" src="js/leaderboard.js"></script>
+  </head>
+  <body class="leaderboard-page">
+    <div class="leaderboard-orb leaderboard-orb-one"></div>
+    <div class="leaderboard-orb leaderboard-orb-two"></div>
+    <div id="modeNotice" class="demo-notice" hidden></div>
+    <div class="leaderboard-shell">
+      <header class="board-top">
+        <a class="brand" href="index.html" aria-label="Game Hub home"
+          ><span class="brand-spark" aria-hidden="true">✳</span
+          ><span class="brand-text"
+            ><strong>SHERIDAN</strong
+            ><span
+              >GAME HUB <span class="brand-dot">•</span> OPEN HOUSE</span
+            ></span
+          ></a
+        >
+        <div class="board-controls">
+          <div class="live-label">
+            <span class="status-pulse"></span> LIVE SCORES
+          </div>
+          <button
+            id="fullscreenButton"
+            class="icon-button"
+            type="button"
+            aria-label="Toggle full screen"
+          >
+            ⛶
+          </button>
+        </div>
+      </header>
+      <main class="board-main">
+        <div class="board-title-row">
+          <div>
+            <div class="board-kicker">THE CHALLENGE IS ON</div>
+            <h1>Leaderboard<span>.</span></h1>
+            <p id="eventCaption">Sheridan Fall Open House</p>
+          </div>
+          <div class="board-trophy" aria-hidden="true">✦</div>
+        </div>
+        <div class="board-summary">
+          <div>
+            <span class="summary-label">PARTICIPANTS</span
+            ><strong id="statPlayers">0</strong>
+          </div>
+          <div>
+            <span class="summary-label">GAMES COMPLETED</span
+            ><strong id="statCompletions">0</strong>
+          </div>
+          <div>
+            <span class="summary-label">TOTAL POINTS EARNED</span
+            ><strong id="statTotal">0</strong>
+          </div>
+        </div>
+        <div class="ranking-card">
+          <div class="ranking-card-header">
+            <span>RANK</span><span>PLAYER</span><span>GAMES</span
+            ><span>SHERIDAN POINTS</span>
+          </div>
+          <div id="rankingRows" class="ranking-rows">
+            <p class="board-empty">Waiting for players to join…</p>
+          </div>
+        </div>
+      </main>
+      <footer class="board-footer">
+        <span>DISCOVER <b>✳</b> PLAY <b>✳</b> EXPLORE</span
+        ><span>Scores update automatically as games are completed.</span>
+      </footer>
+    </div>
+    <div
+      id="toastRoot"
+      class="toast-root"
+      role="status"
+      aria-live="polite"
+    ></div>
+  </body>
+</html>

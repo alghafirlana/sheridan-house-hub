@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#092c5a" />
+    <title>Tech Sprint | Sheridan Game Hub</title>
+    <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../css/main.css" />
+    <link rel="stylesheet" href="../../css/game.css" />
+    <script type="module" src="../../js/tech-sprint.js"></script>
+  </head>
+  <body class="game-page">
+    <div class="demo-notice" id="modeNotice" hidden></div>
+    <header class="site-header">
+      <div class="shell header-inner">
+        <a class="brand" href="../../index.html"
+          ><span class="brand-spark" aria-hidden="true">✳</span
+          ><span class="brand-text"
+            ><strong>SHERIDAN</strong
+            ><span
+              >GAME HUB <span class="brand-dot">•</span> OPEN HOUSE</span
+            ></span
+          ></a
+        >
+        <div class="header-actions">
+          <a class="header-link" href="../../index.html">← All games</a>
+          <div id="playerWidget" class="player-widget"></div>
+        </div>
+      </div>
+    </header>
+    <main class="game-main shell">
+      <div class="game-crumb">GAME HUB <span> / </span> TECH SPRINT</div>
+      <div class="game-shell">
+        <aside class="game-side">
+          <div class="game-side-mark">⚡</div>
+          <div class="section-kicker light">THE QUICK CHALLENGE</div>
+          <h1>Tech<br />Sprint<span>.</span></h1>
+          <p>
+            Think you know your tech? Five quick questions, one shot at a
+            perfect score.
+          </p>
+          <div class="game-side-info">
+            <div><span>QUESTIONS</span><strong>05</strong></div>
+            <div><span>MAX POINTS</span><strong>100</strong></div>
+          </div>
+          <div class="game-side-pattern" aria-hidden="true">✳</div>
+        </aside>
+        <section id="gameContent" class="game-content" aria-live="polite">
+          <div class="game-loading">
+            <span class="spinner"></span> Loading your challenge…
+          </div>
+        </section>
+      </div>
+    </main>
+    <div id="modalRoot"></div>
+    <div
+      id="toastRoot"
+      class="toast-root"
+      role="status"
+      aria-live="polite"
+    ></div>
+  </body>
+</html>

@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#092c5a" />
+    <meta
+      name="description"
+      content="Discover. Play. Explore. Interactive technology challenges for Sheridan Open House visitors."
+    />
+    <title>Sheridan Game Hub | Discover. Play. Explore.</title>
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/main.css" />
+    <script type="module" src="js/portal.js"></script>
+  </head>
+  <body>
+    <div class="demo-notice" id="modeNotice" hidden></div>
+    <header class="site-header">
+      <div class="shell header-inner">
+        <a
+          class="brand"
+          href="./index.html"
+          aria-label="Sheridan Game Hub home"
+        >
+          <span class="brand-spark" aria-hidden="true">✳</span>
+          <span class="brand-text"
+            ><strong>SHERIDAN</strong
+            ><span
+              >GAME HUB <span class="brand-dot">•</span> OPEN HOUSE</span
+            ></span
+          >
+        </a>
+        <div class="header-actions">
+          <a class="header-link" href="#games">Explore games</a>
+          <div id="playerWidget" class="player-widget">
+            <span class="player-placeholder">Getting ready…</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero-section">
+        <div class="shell hero-layout">
+          <div class="hero-copy">
+            <div class="eyebrow">
+              <span class="status-pulse"></span> SHERIDAN FALL OPEN HOUSE
+              <span class="eyebrow-divider"></span> 2026
+            </div>
+            <h1>Curiosity looks<br /><em>good on you.</em></h1>
+            <p class="hero-lead">
+              Discover new skills. Take on a challenge. See where technology
+              could take you.
+            </p>
+            <div class="hero-buttons">
+              <a class="button button-primary button-lg" href="#games"
+                >Explore the games <span aria-hidden="true">↗</span></a
+              >
+              <button
+                class="button button-outline button-lg"
+                id="heroJoin"
+                type="button"
+              >
+                Join the challenge
+              </button>
+            </div>
+            <div class="hero-bottom">
+              <span class="tiny-avatar-group" aria-hidden="true"
+                ><b>A</b><b>S</b><b>R</b></span
+              ><span
+                >One event. Multiple challenges. Your score follows you.</span
+              >
+            </div>
+          </div>
+          <div class="hero-art" aria-hidden="true">
+            <div class="hero-gridlines"></div>
+            <div class="art-orbit art-orbit-one"></div>
+            <div class="art-orbit art-orbit-two"></div>
+            <div class="art-halo"></div>
+            <div class="art-center">
+              <div class="art-center-icon">S<span>✦</span></div>
+              <span>EXPLORE WHAT'S POSSIBLE</span>
+            </div>
+            <div class="art-floating art-floating-left">
+              <span>⚡</span><strong>PLAY</strong
+              ><small>Try something new</small>
+            </div>
+            <div class="art-floating art-floating-right">
+              <span>✧</span><strong>DISCOVER</strong
+              ><small>Follow your curiosity</small>
+            </div>
+            <div class="art-floating art-floating-bottom">
+              <span>◆</span><strong>LEVEL UP</strong
+              ><small>Earn Sheridan Points</small>
+            </div>
+            <div class="art-dot art-dot-a"></div>
+            <div class="art-dot art-dot-b"></div>
+            <div class="art-dot art-dot-c"></div>
+          </div>
+        </div>
+        <div class="hero-ribbon">
+          <div class="shell ribbon-inner">
+            <span>YOUR CAMPUS. YOUR CHALLENGE.</span
+            ><span aria-hidden="true">✳</span><span>LEARN BY PLAYING</span
+            ><span aria-hidden="true">✳</span><span>FIND YOUR SPARK</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="games" class="games-section shell">
+        <div class="section-heading">
+          <div>
+            <div class="section-kicker">THE GAME COLLECTION</div>
+            <h2>Choose your challenge<span class="heading-period">.</span></h2>
+            <p>
+              Pick a game, enter your name or player code, and start exploring.
+            </p>
+          </div>
+          <span class="collection-count" id="gameCount">Loading games…</span>
+        </div>
+        <div class="games-grid" id="gamesGrid" aria-live="polite"></div>
+      </section>
+
+      <section class="how-section">
+        <div class="shell how-layout">
+          <div class="how-copy">
+            <span class="section-kicker">HOW IT WORKS</span>
+            <h2>Play here.<br />Pick up <em>anywhere.</em></h2>
+            <p>
+              Every computer gives you access to the same challenges. Keep your
+              four-digit code to continue on another station.
+            </p>
+          </div>
+          <div class="steps-grid">
+            <div class="step">
+              <span class="step-number">01</span>
+              <div class="step-icon">✳</div>
+              <h3>Join in seconds</h3>
+              <p>Enter a nickname. No email, no password.</p>
+            </div>
+            <div class="step">
+              <span class="step-number">02</span>
+              <div class="step-icon">⌗</div>
+              <h3>Save your code</h3>
+              <p>Remember four digits to return from any station.</p>
+            </div>
+            <div class="step">
+              <span class="step-number">03</span>
+              <div class="step-icon">↗</div>
+              <h3>Collect points</h3>
+              <p>Your best score from each game counts toward your total.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer class="site-footer">
+      <div class="shell footer-inner">
+        <span
+          ><strong>SHERIDAN</strong>
+          <span class="footer-muted">/ STUDENT-BUILT GAME HUB</span></span
+        ><span
+          >Made for exploration at Open House · Unofficial student
+          activity</span
+        >
+      </div>
+    </footer>
+    <div id="modalRoot"></div>
+    <div
+      id="toastRoot"
+      class="toast-root"
+      role="status"
+      aria-live="polite"
+    ></div>
+  </body>
+</html>

@@ -1,0 +1,381 @@
+.game-page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #edf5fb, #f7f9fc);
+}
+.game-main {
+  padding-top: 38px;
+  padding-bottom: 85px;
+}
+.game-crumb {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: #80a0bc;
+  margin-bottom: 22px;
+}
+.game-crumb span {
+  margin: 0 10px;
+  color: #c4d3e4;
+}
+.game-shell {
+  display: grid;
+  grid-template-columns: 0.77fr 1.23fr;
+  border-radius: 23px;
+  overflow: hidden;
+  background: white;
+  box-shadow: 0 20px 60px rgba(8, 45, 94, 0.095);
+  min-height: 570px;
+  border: 1px solid #dfebf6;
+}
+.game-side {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(150deg, #0b4e88, #092a58 78%);
+  padding: 52px 45px;
+  color: white;
+}
+.game-side-mark {
+  display: grid;
+  place-items: center;
+  width: 70px;
+  height: 70px;
+  border-radius: 19px;
+  background: rgba(255, 255, 255, 0.12);
+  font-size: 35px;
+  margin-bottom: 38px;
+}
+.section-kicker.light {
+  color: #6ae1dd;
+}
+.game-side h1 {
+  font:
+    700 clamp(48px, 4.6vw, 65px)/0.98 Outfit,
+    sans-serif;
+  letter-spacing: -0.06em;
+  margin-bottom: 22px;
+}
+.game-side h1 span {
+  color: #70e7db;
+}
+.game-side > p {
+  font-size: 15px;
+  line-height: 1.8;
+  color: #b9d5ec;
+  max-width: 275px;
+}
+.game-side-info {
+  display: flex;
+  gap: 42px;
+  margin-top: 55px;
+}
+.game-side-info > div {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.game-side-info span {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: #92bcdc;
+}
+.game-side-info strong {
+  font: 700 28px Outfit;
+}
+.game-side-pattern {
+  position: absolute;
+  font-size: 400px;
+  color: rgba(108, 205, 232, 0.045);
+  right: -145px;
+  bottom: -155px;
+  line-height: 1;
+}
+.game-content {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 44px 55px;
+}
+.game-panel {
+  width: 100%;
+}
+.mini-eyebrow {
+  color: #1686b8;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  margin-bottom: 15px;
+}
+.game-panel h2 {
+  font:
+    700 clamp(36px, 4vw, 51px)/1.1 Outfit,
+    sans-serif;
+  letter-spacing: -0.055em;
+  margin-bottom: 18px;
+}
+.game-panel > p {
+  color: #6c8198;
+  font-size: 15px;
+  line-height: 1.8;
+  max-width: 425px;
+}
+.game-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  margin: 30px 0;
+}
+.game-checklist span {
+  display: flex;
+  gap: 11px;
+  align-items: center;
+  color: #3b627d;
+  font-size: 13px;
+  font-weight: 700;
+}
+.game-checklist svg {
+  color: #159b91;
+}
+.game-loading {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  color: #6c8298;
+}
+.question-panel {
+  width: 100%;
+  max-width: 580px;
+}
+.question-top {
+  display: flex;
+  justify-content: space-between;
+  color: #68879e;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  font-weight: 800;
+  margin-bottom: 16px;
+}
+.question-top strong {
+  color: #0e5685;
+}
+.progress-track {
+  height: 6px;
+  border-radius: 20px;
+  background: #e8eff6;
+  overflow: hidden;
+  margin-bottom: 33px;
+}
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #2f98d1, #53dac8);
+  transition: width 0.2s;
+  border-radius: 20px;
+}
+.question-panel h2 {
+  font:
+    650 clamp(27px, 3vw, 35px)/1.19 Outfit,
+    sans-serif;
+  letter-spacing: -0.04em;
+  margin-bottom: 10px;
+}
+.question-prompt {
+  color: #8798ac;
+  font-size: 13px;
+  margin-bottom: 27px;
+}
+.options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.option {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  border: 1px solid #dce7f0;
+  background: white;
+  text-align: left;
+  color: #31506b;
+  border-radius: 13px;
+  padding: 13px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  min-height: 56px;
+  transition:
+    border-color 0.16s,
+    background 0.16s;
+}
+.option:not(:disabled):hover {
+  border-color: #62b2db;
+  background: #f4faff;
+}
+.option-letter {
+  width: 29px;
+  height: 29px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: #eff5fa;
+  font-size: 11px;
+  font-weight: 800;
+  color: #577995;
+  flex: none;
+}
+.option-indicator {
+  margin-left: auto;
+  color: #c4d4e1;
+}
+.option.correct {
+  background: #e9fbf4;
+  border-color: #42b998;
+  color: #126749;
+}
+.option.correct .option-letter {
+  background: #b2f2d8;
+  color: #0b6951;
+}
+.option.incorrect {
+  background: #fff1f2;
+  border-color: #ee9eab;
+  color: #ab4257;
+}
+.option.incorrect .option-letter {
+  background: #ffdce2;
+  color: #ab4257;
+}
+.feedback-zone {
+  min-height: 20px;
+}
+.answer-feedback {
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  background: #ecf9f5;
+  color: #167257;
+  font-size: 12px;
+}
+.answer-feedback span {
+  color: #4d816f;
+}
+.answer-wrong {
+  background: #fff2f3;
+  color: #b24653;
+}
+.answer-wrong span {
+  color: #946b73;
+}
+.next-button {
+  width: 100%;
+  margin-top: 17px;
+}
+.next-button:disabled {
+  background: #e2eaf1;
+  color: #94aabd;
+  box-shadow: none;
+}
+.result-icon {
+  width: 68px;
+  height: 68px;
+  border-radius: 18px;
+  background: #e3f9f4;
+  display: grid;
+  place-items: center;
+  color: #1da68b;
+  margin-bottom: 24px;
+}
+.result-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 28px 0;
+}
+.result-stats > div {
+  background: #f1f7fb;
+  border: 1px solid #e1edf4;
+  border-radius: 13px;
+  padding: 17px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  align-items: center;
+  text-align: center;
+}
+.result-stats span {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  color: #6c859f;
+}
+.result-stats strong {
+  font:
+    700 33px Outfit,
+    sans-serif;
+  color: #0d5b9b;
+}
+.result-stats small {
+  font-size: 14px;
+  color: #83a3b8;
+}
+.result-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.visible-error {
+  display: block !important;
+  margin-bottom: 15px;
+}
+@media (max-width: 900px) {
+  .game-shell {
+    grid-template-columns: 1fr;
+  }
+  .game-side {
+    padding: 27px 32px;
+  }
+  .game-side-mark {
+    display: none;
+  }
+  .game-side h1 {
+    font-size: 47px;
+  }
+  .game-side-info {
+    margin-top: 18px;
+  }
+  .game-content {
+    min-height: 410px;
+  }
+  .game-side > p {
+    max-width: none;
+  }
+}
+@media (max-width: 550px) {
+  .game-main {
+    padding-top: 22px;
+  }
+  .game-side {
+    padding: 28px 23px;
+  }
+  .game-content {
+    padding: 37px 21px;
+  }
+  .game-side h1 {
+    font-size: 44px;
+  }
+  .result-stats strong {
+    font-size: 24px;
+  }
+  .result-stats span {
+    font-size: 8px;
+  }
+  .result-stats > div {
+    padding: 12px 5px;
+  }
+  .result-actions .button {
+    width: 100%;
+  }
+}
