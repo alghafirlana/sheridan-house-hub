@@ -183,6 +183,17 @@
   overflow-wrap: anywhere;
 }
 
+.program-explorer .recommended-program-card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  padding: 18px;
+  border: 1px solid #c9e2f4;
+  border-radius: 16px;
+  background: #eaf6fe;
+}
+
 .program-explorer .result-card .learn-more-button,
 .program-explorer .result-card .compare-recommendations-button {
   position: static;
