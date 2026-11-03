@@ -435,6 +435,7 @@ export const HARDWARE_LEVELS = [
     description:
       "Discover how a wireless network adapter connects and receives signals.",
     image: "assets/hc1.png",
+    thumbnail: "assets/hc1-thumbnail.jpg",
     width: IMAGE_WIDTH,
     height: IMAGE_HEIGHT,
     displayRotation: 0,

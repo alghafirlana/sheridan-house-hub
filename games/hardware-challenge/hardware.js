@@ -136,7 +136,7 @@ function showLibrary() {
       .map((level) => {
         const eligible = scored().has(level.id);
         const best = scores()[level.id];
-        return `<article class="hc-level-card"><div class="hc-level-image"><img src="${escape(level.image)}" alt="${escape(level.subtitle)}" loading="lazy"/><span class="hc-level-number">LEVEL ${level.id}</span></div><div class="hc-level-body"><div class="hc-level-tags"><span>${eligible ? "SCORED LEVEL" : "PREVIEW ONLY"}</span><span>${typeof best === "number" ? "✓ COMPLETED" : "NOT PLAYED"}</span></div><h3>${escape(level.title)}</h3><p>${escape(level.description)}</p><div class="hc-level-foot"><div><small>BEST SCORE</small><strong>${typeof best === "number" ? `${best} / 100` : "—"}</strong></div><button data-level="${level.id}" class="hc-btn hc-btn-dark" type="button" ${eligible ? "" : 'disabled title="This level joins scoring at a future event"'}>${!eligible ? "Next event" : typeof best === "number" ? "Play again" : "Play level"} →</button></div></div></article>`;
+        return `<article class="hc-level-card"><div class="hc-level-image"><img src="${escape(level.thumbnail || level.image)}" alt="${escape(level.subtitle)}" loading="lazy"/><span class="hc-level-number">LEVEL ${level.id}</span></div><div class="hc-level-body"><div class="hc-level-tags"><span>${eligible ? "SCORED LEVEL" : "PREVIEW ONLY"}</span><span>${typeof best === "number" ? "✓ COMPLETED" : "NOT PLAYED"}</span></div><h3>${escape(level.title)}</h3><p>${escape(level.description)}</p><div class="hc-level-foot"><div><small>BEST SCORE</small><strong>${typeof best === "number" ? `${best} / 100` : "—"}</strong></div><button data-level="${level.id}" class="hc-btn hc-btn-dark" type="button" ${eligible ? "" : 'disabled title="This level joins scoring at a future event"'}>${!eligible ? "Next event" : typeof best === "number" ? "Play again" : "Play level"} →</button></div></div></article>`;
       })
       .join(
         "",
@@ -202,6 +202,9 @@ function questionSvg(level, activeQuestion, reveal) {
   return `<svg class="hc-overlay ${debug ? "hc-debug" : ""}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${level.width} ${level.height}" preserveAspectRatio="xMidYMid meet" role="group" aria-label="Tap a hardware region, or use Tab and Enter to select a region">${polygons}</svg>`;
 }
 function showQuestion() {
+  // Remember if the player opened the expanded viewer.
+  const wasExpanded =
+    app.querySelector("#photoCard")?.classList.contains("is-expanded") ?? false;
   leaveQuestionView();
   app.dataset.view = "play";
   const { level, mode, questions, step, tries, feedback } = round;
@@ -391,6 +394,12 @@ function showQuestion() {
     showLibrary();
   });
   refreshView();
+  // Keep the viewer expanded after answering or moving to the next question.
+  if (wasExpanded) {
+    toggleExpand();
+  } else {
+    refreshView();
+  }
 }
 function answer(clicked) {
   if (!round || round.feedback?.finished || busy) return;

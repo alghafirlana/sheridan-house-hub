@@ -1231,3 +1231,109 @@
     padding: 3px 0 15px;
   }
 }
+
+/* Compact Hardware Challenge level gallery */
+.hc-main[data-view="library"] {
+  padding-top: 22px;
+  padding-bottom: 40px;
+}
+
+.hc-main[data-view="library"] .hc-page-head {
+  margin-bottom: 15px;
+}
+
+.hc-main[data-view="library"] .hc-page-head h1 {
+  font-size: clamp(30px, 3.5vw, 41px);
+}
+
+.hc-main[data-view="library"] .hc-library-head {
+  margin: 8px 0 13px;
+}
+
+.hc-main[data-view="library"] .hc-level-grid {
+  gap: 15px;
+}
+
+/* Compact level cards */
+.hc-main[data-view="library"] .hc-level-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: 17px;
+}
+
+.hc-main[data-view="library"] .hc-level-image {
+  height: 154px;
+  flex-shrink: 0;
+  background: #e8edef;
+}
+
+.hc-main[data-view="library"] .hc-level-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Wi-Fi adapter thumbnail alignment */
+.hc-main[data-view="library"] .hc-level-card:nth-child(4) .hc-level-image img {
+  object-position: 50% 52%;
+}
+
+.hc-main[data-view="library"] .hc-level-number {
+  top: 12px;
+  left: 12px;
+  padding: 6px 10px;
+  font-size: 10px;
+}
+
+.hc-main[data-view="library"] .hc-level-body {
+  padding: 15px 16px 16px;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.hc-main[data-view="library"] .hc-level-card h3 {
+  margin: 10px 0 5px;
+  font-size: 19px;
+  line-height: 1.2;
+}
+
+.hc-main[data-view="library"] .hc-level-card p {
+  min-height: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  margin: 0 0 13px;
+}
+
+.hc-main[data-view="library"] .hc-level-foot {
+  margin-top: auto;
+  padding-top: 11px;
+  gap: 8px;
+}
+
+.hc-main[data-view="library"] .hc-level-foot .hc-btn {
+  min-height: 38px;
+  padding: 8px 11px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+/* Four cards on wider laptops */
+@media (min-width: 1280px) {
+  .hc-main[data-view="library"] .hc-level-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* Single column on phones */
+@media (max-width: 700px) {
+  .hc-main[data-view="library"] .hc-level-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hc-main[data-view="library"] .hc-level-image {
+    height: 180px;
+  }
+}
