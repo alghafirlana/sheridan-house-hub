@@ -273,6 +273,19 @@
   gap: 12px;
 }
 
+.program-explorer .compare-panel {
+  min-height: 0;
+}
+
+.program-explorer .comparison-results {
+  flex: 1 1 0;
+  min-height: 0;
+  margin-top: 14px;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
 .program-explorer .program-checklist {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -298,10 +311,14 @@
 
 .program-explorer .comparison-table-wrap {
   max-width: 100%;
-  max-height: 340px;
-  overflow: auto;
-  border: 1px solid var(--line);
-  border-radius: 12px;
+  overflow: visible;
+}
+
+.program-explorer .comparison-export {
+  display: flex;
+  justify-content: flex-end;
+  flex: none;
+  margin-top: 14px;
 }
 
 .program-explorer .comparison-table {
@@ -337,6 +354,48 @@
 .program-explorer .comparison-table td {
   min-width: 230px;
   color: #31506b;
+}
+
+.program-explorer .comparison-mobile-cards {
+  display: none;
+}
+
+.program-explorer .comparison-mobile-card {
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.program-explorer .comparison-mobile-card h3 {
+  margin: 0 0 14px;
+  color: var(--navy);
+  font: 700 20px/1.2 Outfit, sans-serif;
+}
+
+.program-explorer .comparison-mobile-values {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.program-explorer .comparison-mobile-value + .comparison-mobile-value {
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.program-explorer .comparison-mobile-value h4 {
+  margin: 0 0 5px;
+  color: #52708a;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.program-explorer .comparison-mobile-card .comparison-bullets {
+  padding-left: 18px;
+  color: #31506b;
+  font-size: 13px;
+  line-height: 1.55;
 }
 
 .program-explorer .comparison-bullets {
@@ -431,5 +490,146 @@
     flex-basis: auto;
     width: 100%;
     min-width: 0;
+  }
+}
+
+@media (max-width: 700px) {
+  .program-explorer .game-shell {
+    grid-template-rows: auto auto;
+    min-height: 0;
+    overflow: visible;
+  }
+
+  .program-explorer .game-content {
+    min-height: 0;
+    align-items: stretch;
+    justify-content: flex-start;
+    overflow: visible;
+  }
+
+  .program-explorer .program-explorer-content {
+    overflow: visible;
+  }
+
+  .program-explorer .compare-panel {
+    flex: none;
+  }
+
+  .program-explorer .comparison-table-wrap {
+    display: none;
+  }
+
+  .program-explorer .comparison-results {
+    flex: none;
+    max-height: none;
+    overflow: visible;
+    border: 0;
+  }
+
+  .program-explorer .comparison-mobile-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .program-explorer .compare-toolbar > div {
+    flex-wrap: wrap;
+  }
+}
+
+@media print {
+  @page {
+    size: landscape;
+    margin: 12mm;
+  }
+
+  body.program-explorer {
+    background: #fff;
+  }
+
+  body.program-explorer * {
+    visibility: hidden;
+  }
+
+  body.program-explorer .game-main,
+  body.program-explorer .game-shell,
+  body.program-explorer .program-explorer-content,
+  body.program-explorer .compare-panel,
+  body.program-explorer .compare-panel * {
+    visibility: visible;
+  }
+
+  body.program-explorer .game-main {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  body.program-explorer .game-crumb,
+  body.program-explorer .game-side,
+  body.program-explorer .mode-tabs,
+  body.program-explorer .compare-panel > :not(.comparison-results),
+  body.program-explorer footer {
+    display: none !important;
+  }
+
+  body.program-explorer .game-shell {
+    display: block;
+    min-height: 0;
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  body.program-explorer .program-explorer-content,
+  body.program-explorer .compare-panel {
+    display: block !important;
+    padding: 0;
+    overflow: visible;
+  }
+
+  body.program-explorer .compare-panel::before {
+    display: block;
+    margin: 0 0 16px;
+    color: #0b315e;
+    content: "Program comparison";
+    font: 700 22px Outfit, sans-serif;
+  }
+
+  body.program-explorer .comparison-table-wrap {
+    display: block !important;
+    height: auto;
+    max-height: none;
+    overflow: visible;
+    border: 0;
+  }
+
+  body.program-explorer .comparison-results {
+    flex: none;
+    min-height: 0;
+    margin-top: 0;
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+  }
+
+  body.program-explorer .comparison-table {
+    width: 100% !important;
+    min-width: 0;
+    table-layout: fixed;
+    font-size: 9pt;
+  }
+
+  body.program-explorer .comparison-table th,
+  body.program-explorer .comparison-table td {
+    position: static;
+    min-width: 0;
+    padding: 6px;
+    overflow-wrap: anywhere;
+  }
+
+  body.program-explorer .comparison-mobile-cards {
+    display: none !important;
   }
 }

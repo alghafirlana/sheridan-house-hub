@@ -11,6 +11,7 @@ const quizContent = document.querySelector('#quizContent');
 const programChecklist = document.querySelector('#programChecklist');
 const comparisonResults = document.querySelector('#comparisonResults');
 const compareSelectedButton = document.querySelector('#compareSelectedButton');
+const exportComparisonButton = document.querySelector('#exportComparisonButton');
 const compareSelectionCount = document.querySelector('#compareSelectionCount');
 const MAX_COMPARE_PROGRAMS = 3;
 const COMPARISON_LABEL_COLUMN_WIDTH = 160;
@@ -137,6 +138,7 @@ function updateCompareSelection() {
       ? `${count} programs selected · Maximum reached.`
       : `${count} programs selected.`;
   compareSelectedButton.disabled = count < 2;
+  exportComparisonButton.disabled = count < 2;
 }
 
 function selectProgramsForComparison(names) {
@@ -204,7 +206,43 @@ function renderComparisonTable() {
   }
   table.append(head, body);
   wrapper.append(table);
-  comparisonResults.replaceChildren(wrapper);
+  comparisonResults.replaceChildren(wrapper, createMobileComparison(selected, fields));
+}
+
+function createMobileComparison(selected, fields) {
+  const cards = document.createElement('div');
+  cards.className = 'comparison-mobile-cards';
+  for (const [label, field] of fields) {
+    const card = document.createElement('article');
+    card.className = 'comparison-mobile-card';
+    const heading = document.createElement('h3');
+    heading.textContent = label;
+    card.append(heading);
+    const comparisons = document.createElement('div');
+    comparisons.className = 'comparison-mobile-values';
+    for (const program of selected) {
+      const comparison = document.createElement('div');
+      comparison.className = 'comparison-mobile-value';
+      const programName = document.createElement('h4');
+      programName.textContent = program.name;
+      const description = document.createElement('div');
+      const items = formatComparisonItems(program[field], field);
+      if (!items.length) items.push('Not listed in the program guide.');
+      const list = document.createElement('ul');
+      list.className = 'comparison-bullets';
+      for (const item of items) {
+        const bullet = document.createElement('li');
+        bullet.textContent = item;
+        list.append(bullet);
+      }
+      description.append(list);
+      comparison.append(programName, description);
+      comparisons.append(comparison);
+    }
+    card.append(comparisons);
+    cards.append(card);
+  }
+  return cards;
 }
 
 function formatComparisonItems(value, field) {
@@ -246,6 +284,11 @@ messages.addEventListener('click', event => {
 });
 document.querySelector('#resetChatButton').addEventListener('click', resetChat);
 compareSelectedButton.addEventListener('click', renderComparisonTable);
+exportComparisonButton.addEventListener('click', () => {
+  switchMode('compare');
+  renderComparisonTable();
+  window.print();
+});
 document.querySelector('#clearCompareButton').addEventListener('click', () => {
   selectedProgramNames.clear();
   renderProgramChecklist();
