@@ -17,6 +17,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/qr.css" />
     <script type="module" src="js/portal.js"></script>
   </head>
   <body>
@@ -70,12 +71,16 @@
                 Join the challenge
               </button>
             </div>
-            <div class="hero-bottom">
-              <span class="tiny-avatar-group" aria-hidden="true"
-                ><b>A</b><b>S</b><b>R</b></span
-              ><span
-                >One event. Multiple challenges. Your score follows you.</span
-              >
+            <div class="hero-qr" id="heroQr" aria-label="Play on your phone">
+              <div class="hero-qr-image" id="heroQrCode" aria-label="QR code linking to this game hub">
+                <span class="qr-placeholder" aria-hidden="true">⌗</span>
+              </div>
+              <div class="hero-qr-content">
+                <span class="hero-qr-kicker">PLAY ON YOUR PHONE</span>
+                <h2>Scan. Play. Explore.</h2>
+                <p>All stations busy? Scan to join the games on your own device.</p>
+                <button type="button" id="expandQr" class="hero-qr-expand">Enlarge QR code <span aria-hidden="true">↗</span></button>
+              </div>
             </div>
           </div>
           <div class="hero-art" aria-hidden="true">
@@ -171,6 +176,16 @@
         >
       </div>
     </footer>
+    <dialog id="qrDialog" class="qr-dialog" aria-labelledby="qrDialogTitle">
+      <div class="qr-dialog-content">
+        <button type="button" class="qr-close" id="closeQr" aria-label="Close enlarged QR code">×</button>
+        <span class="qr-dialog-kicker">SHERIDAN GAME HUB</span>
+        <h2 id="qrDialogTitle">Play on your phone</h2>
+        <p>Open your camera and scan this code to join the challenges.</p>
+        <div id="largeQrCode" class="qr-dialog-image" aria-label="Large QR code linking to this game hub"></div>
+        <p class="qr-dialog-footnote" id="qrDialogHint">Same games. Same Sheridan Points.</p>
+      </div>
+    </dialog>
     <div id="modalRoot"></div>
     <div
       id="toastRoot"

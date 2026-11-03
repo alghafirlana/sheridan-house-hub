@@ -1,0 +1,22 @@
+/* Additional responsive QR-card styles. Keep separate from main.css. */
+/* Open House QR card: desktop / event screens. Keep phones focused on games. */
+.hero-qr{display:grid;grid-template-columns:126px minmax(0,1fr);gap:16px;align-items:center;max-width:510px;margin-top:29px;padding:15px;background:#fff;color:#113e6d;border:1px solid rgba(165,216,245,.65);border-radius:19px;box-shadow:0 18px 48px rgba(1,17,44,.22)}
+.hero-qr-image{width:126px;aspect-ratio:1;display:grid;place-items:center;background:#fff;border-radius:10px;overflow:hidden}
+.hero-qr-image svg,.qr-dialog-image svg{display:block;width:100%;height:auto;max-width:100%;shape-rendering:crispEdges}
+.qr-placeholder{display:grid;place-items:center;width:100%;height:100%;font-size:52px;color:#0c4d86;background:#f1f7fa}
+.hero-qr-content{min-width:0}.hero-qr-kicker{display:block;color:#087cab;font-size:10px;font-weight:800;letter-spacing:.12em;margin-bottom:5px}
+.hero-qr-content h2{font-family:Outfit,sans-serif;font-size:22px;line-height:1.18;letter-spacing:-.03em;margin:0 0 6px}
+.hero-qr-content p{font-size:12px;line-height:1.5;color:#54748e;margin:0 0 9px}
+.hero-qr-expand{background:transparent;border:0;padding:6px 0;color:#076ba2;font-size:12px;font-weight:800;text-decoration:underline;text-underline-offset:3px}
+.hero-qr-expand:hover{color:#034a79}
+.qr-dialog{border:0;max-width:min(94vw,440px);width:100%;border-radius:24px;padding:0;color:#133e65;box-shadow:0 40px 100px rgba(0,14,39,.45)}
+.qr-dialog::backdrop{background:rgba(1,17,42,.78);backdrop-filter:blur(7px)}
+.qr-dialog-content{position:relative;display:flex;align-items:center;flex-direction:column;gap:11px;padding:34px 34px 28px;text-align:center}
+.qr-dialog-kicker{font-size:10px;color:#117da5;font-weight:800;letter-spacing:.16em}
+.qr-dialog h2{margin:0;font:750 30px/1.12 Outfit,sans-serif;letter-spacing:-.035em}
+.qr-dialog p{color:#5c7690;font-size:13px;line-height:1.6;margin:0}
+.qr-dialog-image{width:min(78vw,305px);aspect-ratio:1;padding:8px;background:#fff;border-radius:15px;display:grid;place-items:center}
+.qr-dialog-footnote{font-weight:700}.qr-close{position:absolute;right:12px;top:10px;display:grid;place-items:center;background:#eef4fa;border:0;border-radius:10px;color:#315a7d;width:38px;height:38px;font-size:27px}
+@media(max-width:1050px){.hero-qr{grid-template-columns:105px minmax(0,1fr);padding:12px;gap:12px}.hero-qr-image{width:105px}.hero-qr-content h2{font-size:19px}.hero-qr-content p{font-size:11px}}
+@media(max-width:720px){.hero-qr{display:none}.games-grid{grid-template-columns:1fr}.game-card{max-width:560px;width:100%;margin-inline:auto}.card-top{padding:18px 20px 0}.card-icon{width:42px;height:42px}.card-art{height:162px;margin:14px 16px 2px}.card-art>span:not(.card-spark-one):not(.card-spark-two){width:106px;height:106px}.card-art>span svg{width:65px;height:65px}.card-info{padding:19px 20px 20px}.card-info h3{font-size:22px}.card-info p{font-size:13px;min-height:0;margin-bottom:17px}.card-play{font-size:13px}.soon-label{font-size:11px}.card-bottom>span:first-child{font-size:11px}}
+@media(max-width:390px){.hero-buttons .button{width:100%}.card-art{height:150px}.card-info h3{font-size:21px}.hero-copy{padding-top:48px}.hero-copy h1{font-size:clamp(41px,12vw,50px)}.qr-dialog-content{padding:32px 18px 22px}}
