@@ -70,9 +70,10 @@ export const GAMES = [
     description: "Explore the programs and pathways that spark your interest.",
     icon: "graduation",
     accent: "coral",
-    status: "soon",
+    status: "playable",
     competitive: false,
-    duration: "Coming soon",
+    href: "games/program-explorer/index.html",
+    duration: "5–10 min",
   },
   {
     id: "kahoot",
