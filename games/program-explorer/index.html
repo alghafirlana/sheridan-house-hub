@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sheridan Open House | Program Explorer</title>
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/main.css">
+  <link rel="stylesheet" href="../../css/game.css">
+  <link rel="stylesheet" href="styling.css">
+  <script src="chat-config.js"></script>
+  <script src="app.js" defer></script>
+</head>
+<body class="game-page program-explorer">
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="brand" href="../../index.html">
+        <span class="brand-spark" aria-hidden="true">✳</span>
+        <span class="brand-text"><strong>SHERIDAN</strong><span>GAME HUB <span class="brand-dot">•</span> OPEN HOUSE</span></span>
+      </a>
+      <div class="header-actions">
+        <a class="header-link" href="../../index.html">← All games</a>
+        <div id="playerWidget" class="player-widget"></div>
+      </div>
+    </div>
+  </header>
+  <main class="game-main shell">
+    <div class="game-crumb">GAME HUB <span> / </span> PROGRAM EXPLORER</div>
+    <div class="game-shell">
+      <aside class="game-side">
+        <div class="game-side-mark" aria-hidden="true">⌕</div>
+        <h1>Program<br>Explorer<span>.</span></h1>
+        <div class="game-side-copy">
+          <div class="section-kicker light">FIND YOUR PROGRAM</div>
+          <p>Discover Sheridan programs that match your interests, compare your options, and get answers about what you’ll learn.</p>
+        </div>
+        <div class="game-side-pattern" aria-hidden="true">✳</div>
+      </aside>
+      <section class="game-content program-explorer-content">
+      <nav class="mode-tabs" aria-label="Choose how to explore">
+      <button class="mode-tab is-active" id="quizTab" type="button" aria-selected="true" aria-controls="quizPanel">Quick Quiz</button>
+      <button class="mode-tab" id="compareTab" type="button" aria-selected="false" aria-controls="comparePanel">Compare programs</button>
+      <button class="mode-tab" id="chatTab" type="button" aria-selected="false" aria-controls="chatPanel">Ask about programs</button>
+    </nav>
+
+    <section class="panel chat-panel" id="chatPanel" aria-labelledby="chatTab" hidden>
+      <div class="panel-intro"><div><h2>Explore a program</h2><p>Ask about courses, career paths, credentials, or Open House details.</p></div></div>
+      <div class="chat-messages" id="chatMessages" aria-live="polite">
+        <div class="message bot">Welcome to Sheridan Open House! 🎓<br>I can help you explore our programs, understand what you’ll learn, and find a path that fits your interests and goals.<br><br>Is there a program you’re interested in? If you’re still exploring, try the <a class="quiz-inline-link" id="quizInlineLink" href="#quizPanel">Quick Quiz</a> and I’ll help you narrow down a recommendation.</div>
+      </div>
+      <form class="chat-input-area" id="chatForm">
+        <input type="text" id="userInput" aria-label="Message" placeholder="Type your question…" autocomplete="off">
+        <button class="primary-button" type="submit" aria-label="Send question">Send <span aria-hidden="true">↑</span></button>
+      </form>
+      <div class="data-note chat-footer-actions"><span id="knowledgeStatus" aria-live="polite"></span><button class="text-button reset-chat-button" id="resetChatButton" type="button">Reset chat</button></div>
+    </section>
+
+    <section class="panel quiz-panel" id="quizPanel" aria-labelledby="quizTab">
+      <div class="panel-intro">
+        <div><h2>Quick Quiz</h2><p>Answer 4–7 questions to find programs that match your interests.</p></div>
+        <div class="quiz-progress-wrap">
+          <div class="question-top"><strong id="quizCount">Question 1</strong></div>
+          <div class="progress-track" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
+        </div>
+      </div>
+      <div id="quizContent"></div>
+      <div class="quiz-actions"><button class="text-button" id="backButton" type="button" hidden>← Back</button><button class="text-button" id="restartButton" type="button" hidden>Start over ↻</button></div>
+    </section>
+
+    <section class="panel compare-panel" id="comparePanel" aria-labelledby="compareTab" hidden>
+      <div class="panel-intro"><div><h2>Compare programs</h2><p>Choose up to three programs to compare their credentials, focus, curriculum, highlights, and career paths.</p></div></div>
+      <div class="compare-toolbar"><p class="compare-selection-count" id="compareSelectionCount">Select at least two programs.</p><div><button class="text-button" id="clearCompareButton" type="button">Clear selection</button><button class="primary-button" id="compareSelectedButton" type="button" disabled>Compare selected</button></div></div>
+      <div class="program-checklist" id="programChecklist" aria-label="FAST programs to compare"></div>
+      <div class="comparison-results" id="comparisonResults" aria-live="polite"></div>
+    </section>
+      <footer>Use your interests to explore. Visit the Open House to learn more from faculty and students.</footer>
+      </section>
+    </div>
+  </main>
+</body>
+</html>
