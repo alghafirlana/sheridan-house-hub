@@ -229,6 +229,12 @@ function escapeHtml(value) {
   })[character]);
 }
 
+function renderIntro() {
+  state.status = 'IDLE';
+  state.game = createGame();
+  render();
+}
+
 function render() {
   if (!state.game) {
     app.innerHTML = `<div class="top-bar"><h1>Find the Undercover</h1></div><p class="loading-msg">Loading game...</p>`;
@@ -256,6 +262,15 @@ function render() {
         ${finalResult || state.status === 'SAVING' ? `<div class="final-score"><span>FINAL SCORE</span><strong>${state.score}<small>PTS</small></strong></div>${state.status === 'SAVING' ? '<p class="leaderboard-message">Sending your score to the leaderboard…</p>' : state.scoreResult ? `<p class="leaderboard-message">Your best: ${state.scoreResult.best}</p><div class="score-actions"><button class="primary-button" data-action="play-again">Play Again</button></div>` : `<p class="error-msg">${escapeHtml(state.scoreError)} Your score has not been saved yet.</p><div class="score-actions"><button class="primary-button" data-action="play-again">Play Again</button></div>`}` : '<div class="score-actions"><button class="primary-button" data-action="next-round">Continue</button></div>'}
       </section>
     </div>` : '';
+  const intro = state.status === 'IDLE' ? `
+    <div class="game-intro-backdrop">
+      <section class="game-intro-dialog" role="dialog" aria-modal="true" aria-labelledby="introTitle">
+        <div class="section-kicker light">FIND THE UNDERCOVER</div>
+        <h1 id="introTitle">How to play</h1>
+        <p class="game-intro-copy">One person has a different word from the others. Read their clues and figure out who the undercover is.</p>
+        <button class="primary-button" type="button" data-action="start-game">Start Game</button>
+      </section>
+    </div>` : '';
 
   app.innerHTML = `
     <div class="top-bar"><h1>Find the Undercover</h1></div>
@@ -273,11 +288,13 @@ function render() {
       </div>
       ${state.cluesRevealed === CLUE_LIMIT && state.timeLeft !== null ? `<p class="countdown" role="timer">All clues revealed! Find the undercover in ${state.timeLeft}s</p>` : ''}
     ` : ''}
-    ${result}`;
+    ${result}
+    ${intro}`;
 }
 
 app.addEventListener('click', event => {
   const action = event.target.closest('[data-action]')?.dataset.action;
+  if (action === 'start-game') startGame();
   if (action === 'vote') submitVote();
   if (action === 'more-clues') revealMoreClues();
   if (action === 'next-round') nextRound();
@@ -306,7 +323,7 @@ async function initialize() {
     if (!response.ok) throw new Error(`Word bank request failed (${response.status})`);
     state.words = await response.json();
     if (!Array.isArray(state.words) || state.words.length === 0) throw new Error('Word bank is empty.');
-    await startGame();
+    renderIntro();
   } catch (error) {
     console.error(error);
     if (!store) {
