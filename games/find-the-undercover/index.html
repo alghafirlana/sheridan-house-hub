@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b315e" />
+    <meta name="description" content="Find the undercover in this word clue game." />
+    <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../css/main.css" />
+    <link rel="stylesheet" href="../../css/game.css" />
+    <link rel="stylesheet" href="./src/index.css" />
+    <link rel="stylesheet" href="./src/App.css" />
+    <title>Find the Undercover</title>
+  </head>
+  <body class="game-page undercover-page">
+    <header class="site-header">
+      <div class="shell header-inner">
+        <a class="brand" href="../../index.html">
+          <span class="brand-spark" aria-hidden="true">✳</span>
+          <span class="brand-text">
+            <strong>SHERIDAN</strong>
+            <span>GAME HUB <span class="brand-dot">•</span> OPEN HOUSE</span>
+          </span>
+        </a>
+        <div class="header-actions">
+          <a class="header-link" href="../../index.html">← All games</a>
+          <div id="playerWidget" class="player-widget"></div>
+        </div>
+      </div>
+    </header>
+    <main id="app" class="app-container" aria-live="polite"></main>
+    <div id="modalRoot"></div>
+    <div id="toastRoot" class="toast-root" role="status" aria-live="polite"></div>
+    <audio id="CorrectAnswer" src="./public/audio/CorrectAnswer.wav" preload="auto"></audio>
+    <audio id="FailedGame" src="./public/audio/FailedGame.mp3" preload="auto"></audio>
+    <audio id="ClockTicking" src="./public/audio/ClockTicking.mp3" preload="auto"></audio>
+    <audio id="WrongAnswer" src="./public/audio/WrongAnswer.mp3" preload="auto"></audio>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
