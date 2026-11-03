@@ -1,0 +1,191 @@
+/* =========================================================
+   LEVEL PERFORMANCE — SCORE / TIMER / CHANCES
+========================================================= */
+
+.performance-panel {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.performance-panel.hidden,
+.performance-stat.hidden,
+.popup-stats.hidden,
+.popup-stat.hidden {
+  display: none;
+}
+
+.performance-stat {
+  min-width: 0;
+  padding: 8px 7px;
+  text-align: center;
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.performance-stat > span {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--muted);
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.performance-stat strong {
+  display: block;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.performance-stat strong small {
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+/* Warning when timer is low. */
+#timerStat.warning strong,
+#chancesStat.low strong {
+  color: var(--amber-dark);
+}
+
+/* Red when timer/chances reach zero. */
+#timerStat.expired strong,
+#chancesStat.empty strong {
+  color: #b91c1c;
+}
+
+/* =========================================================
+   FINAL HELP — HIGHLIGHT CORRECT OBJECT
+========================================================= */
+
+.hotspot.help-highlight {
+  fill: rgba(49, 168, 213, 0.22);
+
+  stroke: #006f9e;
+
+  stroke-width: 8px;
+
+  pointer-events: all;
+
+  animation: hotspot-help-pulse 0.9s ease-in-out infinite alternate;
+}
+
+@keyframes hotspot-help-pulse {
+  from {
+    fill-opacity: 0.45;
+    stroke-opacity: 0.65;
+  }
+
+  to {
+    fill-opacity: 0.9;
+    stroke-opacity: 1;
+  }
+}
+
+/* =========================================================
+   COMPLETION POPUP STATS
+========================================================= */
+
+.popup-stats {
+  width: min(290px, 100%);
+
+  margin: 0 auto 18px;
+
+  display: grid;
+
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 8px;
+}
+
+.popup-stat {
+  padding: 10px;
+
+  background: #f8fafc;
+
+  border: 1px solid var(--border);
+
+  border-radius: 10px;
+}
+
+.popup-stat span {
+  display: block;
+
+  margin-bottom: 3px;
+
+  color: var(--muted);
+
+  font-size: 8px;
+
+  font-weight: 800;
+
+  letter-spacing: 1px;
+}
+
+.popup-stat strong {
+  color: var(--ink);
+
+  font-size: 15px;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1024px) {
+  .performance-panel {
+    padding: 6px 0;
+  }
+
+  .performance-stat {
+    padding: 6px 5px;
+  }
+
+  .performance-stat strong {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 640px) {
+  .performance-panel {
+    gap: 4px;
+  }
+
+  .performance-stat {
+    padding: 5px 3px;
+  }
+
+  .performance-stat > span {
+    font-size: 6px;
+  }
+
+  .performance-stat strong {
+    font-size: 11px;
+  }
+
+  .performance-stat strong small {
+    font-size: 7px;
+  }
+
+  .popup-stats {
+    gap: 6px;
+  }
+}
+
+.popup-stats:has(#popupRankStat:not(.hidden)) {
+  width: min(410px, 100%);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 520px) {
+  .popup-stats:has(#popupRankStat:not(.hidden)) {
+    grid-template-columns: 1fr;
+  }
+}

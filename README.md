@@ -133,3 +133,56 @@ The browser automatically gets a temporary **Firebase Anonymous Authentication**
 - [Firebase anonymous authentication](https://firebase.google.com/docs/auth/web/anonymous-auth)
 - [Firestore Security Rules](https://firebase.google.com/docs/firestore/security/get-started)
 - [Firestore transactions](https://firebase.google.com/docs/firestore/manage-data/transactions)
+
+
+## Sheridan Campus Quest integration (November 2026)
+
+Campus Quest is now available as a competitive game inside the same GitHub Pages website:
+
+- Hub card: `games/campus-quest/home.html`
+- Level 1: `games/campus-quest/game/game.html?level=1`
+- Level 2: `games/campus-quest/game/game.html?level=2`
+
+The game uses the **existing Game Hub 4-digit player code** and Firebase project.
+Do **not** enable the standalone Campus Quest email/password login or publish its old `firestore.rules`;
+those are deliberately not included in the integrated game.
+
+### Required: publish the new Game Hub Firestore rules
+
+Open Firebase Console → your **Game Hub project** → Firestore Database → Rules.
+Replace the deployed rules with the updated root `firestore.rules` in this project and click **Publish**.
+The two additional allowed score IDs are `campus-quest-level-1` and `campus-quest-level-2`.
+Committing this file to GitHub alone **does not deploy Firestore rules**.
+
+### Fair points across games
+
+Campus Quest contains two playable levels. Each level's best score is stored as
+its own 0–100 document, but they count together as **one** competitive game:
+
+`Campus Quest points = round((Level 1 best + Level 2 best) / 2)`
+
+Example: 100 on Level 1 plus 80 on Level 2 → 90 Campus Quest points, not 180.
+A completed Level 1 (even a score of zero) unlocks Level 2 on other stations using the same player code.
+Tech Sprint remains independently worth up to 100 points.
+
+If more Campus Quest levels become playable **during a future event**, update all of:
+`levels/manifest.js`, `js/scoring-core.js` (`CAMPUS_QUEST_LEVEL_IDS`),
+`firestore.rules`, and the relevant level files. Do not change the number of scoring
+levels mid-event, because that would change the normalized points for existing players.
+
+### Shared files and protections
+
+- Original level backgrounds, hotspot coordinates, clues, and timing rules are retained.
+- `games/campus-quest/js/hub-integration.js` bridges the existing player and scoring store.
+- No second database, no new web API keys, and no independent Campus Quest leaderboard.
+- `games/campus-quest/css/hub-integration.css` adds the shared player/points header.
+- Quest gameplay does not time out while actively in progress; the idle timer resumes after completion.
+- As with other static-client games, browser-reported results are **not cheat-proof**.
+
+### Tests
+
+Run `node --test tests/*.mjs` to validate scoring, unlocks, returning-player behavior,
+and best-attempt updates. The test suite uses isolated demo storage and does not
+write to live Firebase. Also test the actual deployed portal on a phone and on two
+separate computers before Open House. QR codes should point to the published site,
+not to localhost.

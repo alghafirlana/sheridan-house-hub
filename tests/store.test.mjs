@@ -7,7 +7,7 @@ globalThis.sessionStorage=new Storage();
 globalThis.window={addEventListener(){}};
 test('registration, best attempts, switching and returning by four digits',async()=>{
  localStorage.clear();sessionStorage.clear();
- const store=await initStore();
+ const store=await initStore({forceDemo:true});
  assert.equal(store.mode,'demo');
  const player=await store.createPlayer('Alex');
  assert.match(player.pin,/^[0-9]{4}$/);
@@ -26,9 +26,9 @@ test('registration, best attempts, switching and returning by four digits',async
  assert.rejects(()=>store.submitScore('unregistered-game',80),/not available/);
 });
 test('player code survives page restore in demo mode',async()=>{
- const store=await initStore();
+ const store=await initStore({forceDemo:true});
  const player=await store.createPlayer('Sofia');
- const nextPage=await initStore();
+ const nextPage=await initStore({forceDemo:true});
  assert.equal(nextPage.player.pin,player.pin);
  assert.equal(nextPage.player.displayName,'Sofia');
 });

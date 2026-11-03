@@ -5,6 +5,7 @@ import {
   nextPin,
   normalizeScore,
   scoreSummary,
+  isCampusQuestLevelGame,
 } from "./scoring-core.js";
 const localKey = `sheridan-hub:${CONFIG.eventId}`;
 const activeKey = `${localKey}:session`;
@@ -46,6 +47,10 @@ class BaseStore {
     this.board = board;
     for (const cb of this.boardListeners) cb(this.board);
   }
+  async waitForScores() {} // Demo mode already has synchronous local data.
+  questLevelScores() {
+    return this.board.find((p) => p.id === this.player?.id)?.questLevels || {};
+  }
   currentTotal() {
     return this.board.find((p) => p.id === this.player?.id)?.total ?? 0;
   }
@@ -65,6 +70,7 @@ class BaseStore {
 
   validateGame(gameId) {
     const game = getGame(gameId);
+    if (isCampusQuestLevelGame(gameId)) return;
     if (!game || !game.competitive || game.status !== "playable")
       throw Error("This game is not available for scoring yet.");
   }
@@ -144,7 +150,7 @@ class DemoStore extends BaseStore {
       (s) => s.playerId === this.player.id && s.gameId === gameId,
     );
     const previous = record?.points ?? 0;
-    if (points > previous) {
+    if (!record || points > previous) {
       if (record) record.points = points;
       else data.scores.push({ playerId: this.player.id, gameId, points });
       writeData(data);
@@ -175,6 +181,15 @@ class FirestoreStore extends BaseStore {
     });
 
     this.profilesError = null;
+    this.scoresReady = new Promise((resolve) => {
+      this.resolveScoresReady = resolve;
+    });
+    this.scoresError = null;
+  }
+
+  async waitForScores() {
+    await this.scoresReady;
+    if (this.scoresError) throw new Error("Could not load game progress.");
   }
 
   async hasExistingName(rawName) {
@@ -255,8 +270,13 @@ class FirestoreStore extends BaseStore {
       (snapshot) => {
         this.scores = snapshot.docs.map((s) => s.data());
         this.refresh();
+        this.resolveScoresReady();
       },
-      (error) => this.reportConnectionError(error),
+      (error) => {
+        this.scoresError = error;
+        this.resolveScoresReady();
+        this.reportConnectionError(error);
+      },
     );
     return this;
   }
@@ -394,8 +414,8 @@ class FirestoreStore extends BaseStore {
   }
 }
 
-export async function initStore() {
-  const store = firebaseIsConfigured() ? new FirestoreStore() : new DemoStore();
+export async function initStore({ forceDemo = false } = {}) {
+  const store = !forceDemo && firebaseIsConfigured() ? new FirestoreStore() : new DemoStore();
   await store.init();
   return store;
 }

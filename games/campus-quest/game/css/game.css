@@ -1,0 +1,981 @@
+:root {
+  --ink: #142a3a;
+  --border: #d8e4eb;
+  --white: #ffffff;
+  --muted: #647989;
+  --amber-dark: #003865;
+  --amber: #006f9e;
+  --teal-dark: #003865;
+  --teal: #31a8d5;
+  --cream: #f3f8fb;
+
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+
+  --shadow-soft: 0 4px 16px rgba(30, 41, 59, 0.08);
+  --shadow-room: 0 10px 30px rgba(30, 41, 59, 0.14);
+}
+
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+body {
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Arial,
+    sans-serif;
+  color: var(--ink);
+  background: var(--cream);
+}
+
+.game-app {
+  width: min(1900px, 100%);
+  margin: 0 auto;
+  padding: clamp(8px, 0.9vw, 16px);
+}
+
+@media (min-width: 1025px) {
+  body {
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  .game-app {
+    height: 100vh;
+    height: 100dvh;
+    display: grid;
+    grid-template-rows: auto auto minmax(0, 1fr);
+    gap: clamp(7px, 0.7vw, 11px);
+  }
+}
+
+/* Header */
+.game-header {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.game-title-group {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.level-badge {
+  flex-shrink: 0;
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: var(--teal-dark);
+  color: var(--white);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.game-title-copy {
+  min-width: 0;
+}
+
+.room-name {
+  display: block;
+  margin-bottom: 1px;
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+}
+
+.game-title-copy h1 {
+  margin: 0;
+  font-size: clamp(23px, 2vw, 36px);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.mission-summary {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.mission-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--amber);
+}
+
+/* Clue panel */
+.clue-panel {
+  min-height: 67px;
+  padding: 8px 15px;
+  display: grid;
+  grid-template-columns: auto minmax(125px, 160px) 1px minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-soft);
+}
+
+.clue-icon {
+  width: 37px;
+  height: 37px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: rgba(49, 168, 213, 0.13);
+  font-size: 19px;
+}
+
+.clue-progress {
+  display: block;
+  margin-bottom: 1px;
+  color: var(--muted);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 1.3px;
+}
+
+#cluePrompt {
+  margin: 0;
+  font-size: clamp(24px, 2vw, 31px);
+  line-height: 1.05;
+}
+
+.clue-divider {
+  align-self: stretch;
+  width: 1px;
+  background: var(--border);
+}
+
+.clue-hint {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.hint-label {
+  margin-bottom: 2px;
+  color: var(--muted);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+}
+
+#clueHint {
+  font-size: clamp(13px, 1vw, 16px);
+  line-height: 1.25;
+}
+
+#feedback {
+  min-height: 15px;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* Main layout */
+.play-layout {
+  min-height: 0;
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(250px, 18vw, 290px);
+  gap: clamp(10px, 1vw, 17px);
+}
+
+.room-stage {
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.room-panel {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: transparent;
+  box-shadow: var(--shadow-room);
+}
+
+#roomMap {
+  display: block;
+  width: 100%;
+  height: 100%;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+/* Hotspots */
+.hotspot {
+  fill: transparent;
+  stroke: transparent;
+  pointer-events: all;
+  cursor: default;
+}
+
+.hotspot.correct {
+  fill: rgba(45, 212, 191, 0.18);
+  stroke: var(--teal);
+  stroke-width: 7px;
+}
+
+.hotspot.wrong {
+  fill: rgba(217, 119, 6, 0.12);
+  stroke: rgba(217, 119, 6, 0.32);
+  stroke-width: 5px;
+}
+
+.hotspot:focus-visible {
+  outline: none;
+  fill: rgba(45, 212, 191, 0.1);
+  stroke: var(--teal);
+  stroke-width: 4px;
+}
+
+body.debug-hotspots .hotspot {
+  fill: rgba(217, 119, 6, 0.22);
+  stroke: var(--amber);
+  stroke-width: 3px;
+}
+
+/* Progress */
+.progress-panel {
+  min-height: 0;
+  height: 100%;
+  padding: clamp(13px, 1.2vw, 18px);
+  display: flex;
+  flex-direction: column;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+}
+
+.progress-header {
+  padding-bottom: 13px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.progress-header > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.progress-eyebrow {
+  margin-bottom: 2px;
+  color: var(--muted);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+}
+
+.progress-header strong {
+  font-size: 14px;
+}
+
+.progress-count {
+  flex-shrink: 0;
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: rgba(49, 168, 213, 0.13);
+  color: var(--teal-dark);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.progress {
+  flex: 1;
+  min-height: 0;
+  margin: 12px 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  gap: 4px;
+}
+
+.step {
+  position: relative;
+  min-height: 57px;
+  padding: 7px 9px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 12px;
+}
+
+.step:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  left: 22px;
+  top: calc(100% - 4px);
+  width: 2px;
+  height: 17px;
+  background: var(--border);
+}
+
+.step-number {
+  position: relative;
+  z-index: 2;
+  flex: 0 0 31px;
+  width: 31px;
+  height: 31px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--border);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.step-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.step-title {
+  font-size: 14px;
+  line-height: 1.15;
+}
+
+.step-status {
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.step.active {
+  background: rgba(45, 212, 191, 0.11);
+}
+.step.active .step-number {
+  background: var(--teal-dark);
+  color: var(--white);
+}
+.step.active .step-title,
+.step.active .step-status {
+  color: var(--teal-dark);
+}
+
+.step.complete {
+  opacity: 0.8;
+}
+.step.complete .step-number {
+  background: var(--teal);
+  color: var(--ink);
+  font-size: 0;
+}
+.step.complete .step-number::after {
+  content: "✓";
+  font-size: 12px;
+  font-weight: 900;
+}
+.step.complete .step-status {
+  color: var(--teal-dark);
+}
+.step.locked {
+  opacity: 0.43;
+}
+
+.game-tip {
+  padding: 10px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: var(--cream);
+  border-radius: var(--radius-sm);
+}
+
+.tip-symbol {
+  flex-shrink: 0;
+  font-size: 14px;
+}
+.game-tip strong {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 10px;
+}
+.game-tip p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 9px;
+  line-height: 1.35;
+}
+
+/* Popup */
+.popup {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(30, 41, 59, 0.72);
+  backdrop-filter: blur(4px);
+}
+
+.popup.hidden {
+  display: none;
+}
+
+.popup-card {
+  width: min(430px, 100%);
+  padding: 26px;
+  text-align: center;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 22px 60px rgba(30, 41, 59, 0.3);
+}
+
+.popup-symbol {
+  margin-bottom: 5px;
+  font-size: 33px;
+}
+.popup-eyebrow {
+  display: block;
+  color: var(--teal-dark);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.3px;
+}
+.popup-card h2 {
+  margin: 6px 0 7px;
+  font-size: 22px;
+}
+.popup-card p {
+  margin: 0 0 18px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.popup-card button {
+  min-width: 115px;
+  padding: 10px 21px;
+  border: none;
+  border-radius: 9px;
+  background: var(--amber);
+  color: var(--white);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.load-error {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: grid;
+  place-items: center;
+  padding: 30px;
+  text-align: center;
+  background: var(--cream);
+}
+.load-error.hidden {
+  display: none;
+}
+
+.audio-clue-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  margin-top: 10px;
+  padding: 10px 18px;
+
+  border: 0;
+  border-radius: 999px;
+
+  background: #0f3158;
+  color: #ffffff;
+
+  font: inherit;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.audio-clue-button:hover {
+  transform: translateY(-1px);
+}
+
+.audio-clue-button:active {
+  transform: translateY(0);
+}
+
+.audio-clue-button.hidden {
+  display: none;
+}
+
+/* =========================================================
+   AUDIO CLUE
+   ========================================================= */
+
+.audio-clue-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.audio-clue-row #clueHint {
+  flex: 1;
+  margin: 0;
+}
+
+.audio-clue-icon {
+  width: 38px;
+  height: 38px;
+
+  flex: 0 0 38px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: 1px solid rgba(15, 49, 88, 0.14);
+  border-radius: 50%;
+
+  background: #ffffff;
+  color: #0f3158;
+
+  box-shadow: 0 2px 8px rgba(15, 49, 88, 0.08);
+
+  cursor: pointer;
+
+  transition:
+    background 0.18s ease,
+    color 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.18s ease;
+}
+
+.audio-clue-icon:hover {
+  background: #0f3158;
+  color: #ffffff;
+
+  border-color: #0f3158;
+
+  box-shadow: 0 5px 14px rgba(15, 49, 88, 0.16);
+
+  transform: translateY(-1px);
+}
+
+.audio-clue-icon:active {
+  transform: translateY(0) scale(0.96);
+}
+
+.audio-clue-icon:focus-visible {
+  outline: 3px solid rgba(45, 212, 191, 0.35);
+  outline-offset: 3px;
+}
+
+.audio-clue-icon svg {
+  display: block;
+  pointer-events: none;
+}
+
+.audio-clue-icon.hidden {
+  display: none;
+}
+
+.audio-word-hidden {
+  display: none;
+}
+
+/* =========================================================
+   LEVEL COMPLETE — SECONDARY HOME BUTTON
+========================================================= */
+
+#homeButton.completion-home-button {
+  display: block;
+
+  width: fit-content;
+  min-width: 170px;
+
+  margin: 14px auto 0;
+
+  padding: 10px 20px;
+
+  border: 1.5px solid #cbd5e1;
+  border-radius: 10px;
+
+  background: #ffffff;
+  color: #334155;
+
+  font: inherit;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  box-shadow: none;
+
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease,
+    transform 0.18s ease;
+}
+
+#homeButton.completion-home-button:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+  color: #0f3158;
+
+  transform: translateY(-1px);
+}
+
+#homeButton.completion-home-button:active {
+  transform: translateY(0);
+}
+
+#homeButton.completion-home-button:focus-visible {
+  outline: 3px solid rgba(45, 212, 191, 0.3);
+  outline-offset: 3px;
+}
+
+#homeButton.completion-home-button.hidden {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .audio-clue-icon {
+    width: 36px;
+    height: 36px;
+    flex-basis: 36px;
+  }
+}
+
+/* Large screens */
+@media (min-width: 2100px) {
+  .game-app {
+    width: 1900px;
+  }
+  .play-layout {
+    grid-template-columns: minmax(0, 1fr) 300px;
+  }
+}
+
+/* Short laptops */
+@media (max-height: 760px) and (min-width: 1025px) {
+  .game-app {
+    padding: 6px 10px;
+    gap: 5px;
+  }
+  .game-header {
+    min-height: 34px;
+  }
+  .room-name,
+  .mission-summary {
+    display: none;
+  }
+  .game-title-copy h1 {
+    font-size: 27px;
+  }
+  .clue-panel {
+    min-height: 55px;
+    padding: 5px 11px;
+  }
+  .clue-icon {
+    width: 31px;
+    height: 31px;
+    font-size: 16px;
+  }
+  #cluePrompt {
+    font-size: 24px;
+  }
+  .progress-panel {
+    padding: 10px;
+  }
+  .step {
+    min-height: 45px;
+  }
+  .game-tip {
+    display: none;
+  }
+}
+
+/* Tablet / small laptop */
+@media (max-width: 1024px) {
+  body {
+    min-height: 100svh;
+    overflow-y: auto;
+  }
+  .game-app {
+    min-height: 100svh;
+  }
+  .play-layout {
+    display: flex;
+    flex-direction: column;
+  }
+  .progress-panel {
+    order: -1;
+    height: auto;
+    padding: 7px;
+  }
+  .progress-header,
+  .game-tip {
+    display: none;
+  }
+  .progress {
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(var(--progress-count, 5), minmax(0, 1fr));
+    gap: 5px;
+  }
+  .step {
+    min-height: 45px;
+    padding: 5px;
+    justify-content: center;
+  }
+  .step:not(:last-child)::after {
+    display: none;
+  }
+  .step-copy {
+    align-items: center;
+    text-align: center;
+  }
+  .step-status {
+    display: none;
+  }
+  .room-stage {
+    height: auto;
+  }
+  .room-panel {
+    width: 100% !important;
+    height: auto !important;
+  }
+  #roomMap {
+    height: auto;
+  }
+}
+
+/* Phone */
+@media (max-width: 640px) {
+  .game-app {
+    padding: 7px;
+  }
+  .game-title-group {
+    gap: 7px;
+  }
+  .level-badge {
+    padding: 5px 7px;
+    font-size: 8px;
+  }
+  .room-name,
+  .mission-summary {
+    display: none;
+  }
+  .game-title-copy h1 {
+    font-size: clamp(20px, 6vw, 25px);
+  }
+  .clue-panel {
+    min-height: 58px;
+    padding: 6px 8px;
+    grid-template-columns: auto minmax(85px, 105px) 1px minmax(0, 1fr);
+    gap: 7px;
+  }
+  .clue-icon {
+    width: 29px;
+    height: 29px;
+    font-size: 14px;
+  }
+  .clue-progress,
+  .hint-label {
+    font-size: 7px;
+  }
+  #cluePrompt {
+    font-size: 21px;
+  }
+  #clueHint {
+    font-size: 11px;
+  }
+  #feedback {
+    font-size: 9px;
+  }
+  .progress-panel {
+    padding: 5px;
+  }
+  .progress {
+    gap: 3px;
+  }
+  .step {
+    min-height: 39px;
+    padding: 3px 1px;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .step-number {
+    flex-basis: 20px;
+    width: 20px;
+    height: 20px;
+    font-size: 9px;
+  }
+  .step-title {
+    font-size: 8px;
+  }
+  .room-panel {
+    border-radius: 10px;
+  }
+}
+
+@media (max-width: 390px) {
+  .level-badge,
+  .clue-icon {
+    display: none;
+  }
+  .clue-panel {
+    grid-template-columns: 90px 1px minmax(0, 1fr);
+  }
+  .game-title-copy h1 {
+    font-size: 20px;
+  }
+}
+
+/* ===== Portal-ready shell additions ===== */
+@media (min-width: 1025px) {
+  body {
+    height: 100dvh;
+    overflow: hidden;
+  }
+  .game-app {
+    height: calc(100dvh - 60px);
+  }
+}
+.hide-game-hints .hint-label,
+.hide-game-hints #clueHint {
+  visibility: hidden;
+}
+.game-settings-dialog {
+  width: min(460px, calc(100% - 28px));
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--white);
+  color: var(--ink);
+  box-shadow: 0 24px 65px rgba(30, 41, 59, 0.28);
+}
+.game-settings-dialog::backdrop {
+  background: rgba(30, 41, 59, 0.62);
+  backdrop-filter: blur(4px);
+}
+.game-settings-dialog h2 {
+  margin: 0 0 14px;
+}
+.game-settings-dialog label {
+  padding: 12px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  border-bottom: 1px solid var(--border);
+}
+.game-settings-dialog label span {
+  display: flex;
+  flex-direction: column;
+}
+.game-settings-dialog label strong {
+  font-size: 12px;
+}
+.game-settings-dialog label small {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 9px;
+}
+.game-settings-dialog input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--teal-dark);
+}
+.game-settings-close {
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--white);
+  cursor: pointer;
+  font-size: 18px;
+}
+.load-error a {
+  color: var(--teal-dark);
+  font-weight: 800;
+}
+
+/* =========================================================
+   LEVEL COMPLETE — LEADERBOARD BUTTON
+========================================================= */
+
+#leaderboardButton.completion-leaderboard-button {
+  display: block;
+  width: fit-content;
+  min-width: 170px;
+  margin: 10px auto 0;
+  padding: 10px 20px;
+  border: 1.5px solid #006f9e;
+  border-radius: 10px;
+  background: #eef9fd;
+  color: #003865;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    transform 0.18s ease;
+}
+
+#leaderboardButton.completion-leaderboard-button:hover {
+  background: #dff3fb;
+  border-color: #003865;
+  transform: translateY(-1px);
+}
+
+#leaderboardButton.completion-leaderboard-button.hidden {
+  display: none;
+}

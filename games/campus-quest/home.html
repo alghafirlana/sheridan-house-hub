@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <meta
+      name="description"
+      content="Sheridan Campus Quest - choose an unlocked challenge, improve your score, and climb the leaderboard."
+    />
+
+    <title>Sheridan Campus Quest</title>
+
+    <link rel="stylesheet" href="shared/css/app-shell.css" />
+    <link rel="stylesheet" href="assets/css/home.css" />
+    <link rel="stylesheet" href="css/hub-integration.css" />
+  </head>
+
+  <body>
+    <div id="appHeader"></div>
+
+    <main class="home-main">
+      <section class="hero-shell">
+        <div class="hero-copy">
+          <span class="hero-kicker">SHERIDAN OPEN HOUSE CHALLENGE</span>
+
+          <h1>
+            Unlock your next
+            <span>campus challenge.</span>
+          </h1>
+
+          <p class="hero-lead">
+            Search interactive scenes, follow the clues, protect your score,
+            beat the timer, and keep unlocking new challenges as you progress.
+          </p>
+
+
+
+          <div class="hero-actions">
+            <a
+              id="continueButton"
+              class="primary-action"
+              href="game/game.html?level=1"
+            >
+              <span class="action-icon" aria-hidden="true">▶</span>
+
+              <span>
+                <small id="continueEyebrow">START CHALLENGE</small>
+                <strong id="continueLabel">Play Level 1</strong>
+              </span>
+            </a>
+
+            <a class="secondary-action" href="../../index.html#games">
+              All Hub Games
+            </a>
+
+            <button id="howToPlayButton" class="secondary-action" type="button">
+              How to Play
+            </button>
+          </div>
+
+          <div class="quick-stats">
+            <div>
+              <strong id="completedStat">0</strong>
+              <span id="completedStatLabel">Challenges completed</span>
+            </div>
+
+            <i aria-hidden="true"></i>
+
+            <div>
+              <strong id="unlockedStat">Level 1</strong>
+              <span id="unlockedStatLabel">Highest unlocked</span>
+            </div>
+
+            <i aria-hidden="true"></i>
+
+            <div>
+              <strong id="attemptStat">0</strong>
+              <span id="attemptStatLabel">Total attempts</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-preview" aria-label="Campus Quest game preview">
+          <div class="quest-window">
+            <div class="quest-toolbar">
+              <div>
+                <span>HOW THE QUEST WORKS</span>
+                <strong>Every run is about speed, accuracy, and discovery.</strong>
+              </div>
+
+              <span class="live-pill">LIVE</span>
+            </div>
+
+            <div class="quest-board quest-feature-board">
+              <div class="quest-feature-card">
+                <span class="quest-feature-number">01</span>
+                <strong>Find</strong>
+                <small>Read the challenge and search the scene.</small>
+              </div>
+
+              <div class="quest-feature-card">
+                <span class="quest-feature-number">02</span>
+                <strong>Solve</strong>
+                <small>Use your chances carefully and follow the clues.</small>
+              </div>
+
+              <div class="quest-feature-card">
+                <span class="quest-feature-number">03</span>
+                <strong>Score</strong>
+                <small>Protect your points and beat the timer.</small>
+              </div>
+
+              <div class="quest-feature-card">
+                <span class="quest-feature-number">04</span>
+                <strong>Unlock</strong>
+                <small>Complete a challenge to open the next one in your current progression.</small>
+              </div>
+            </div>
+
+            <div class="quest-bottom">
+              <span>Search</span>
+              <i aria-hidden="true"></i>
+              <span>Score</span>
+              <i aria-hidden="true"></i>
+              <span>Speed</span>
+              <i aria-hidden="true"></i>
+              <span>Leaderboard</span>
+            </div>
+          </div>
+
+          <div class="floating-card score-card" aria-hidden="true">
+            <small>BEST SCORE</small>
+            <strong id="heroBestScore">—</strong>
+          </div>
+
+          <div class="floating-card player-card" aria-hidden="true">
+            <small>PLAYER</small>
+            <strong id="heroPlayerName">Loading...</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="progress-strip">
+        <div>
+          <span id="progressKicker" class="section-kicker">YOUR PROGRESSION</span>
+
+          <h2 id="progressTitle">Ready for Level 1?</h2>
+
+          <p id="progressMessage">
+            Complete the current challenge to unlock what comes next. Earlier
+            unlocked levels always remain available to replay.
+          </p>
+        </div>
+
+        <div class="progress-status-card">
+          <span id="progressStatusLabel">NEXT UNLOCK</span>
+          <strong id="progressStatusValue">Level 2</strong>
+          <small id="progressStatusNote">Complete Level 1 to continue.</small>
+        </div>
+      </section>
+
+      <section class="levels-section" id="levels">
+        <div class="section-heading">
+          <div>
+            <span class="section-kicker">AVAILABLE CHALLENGES</span>
+            <h2 id="levelsHeading">Choose an unlocked level</h2>
+          </div>
+
+          <p id="levelsDescription">
+            New players begin with the first challenge. Completing a level
+            unlocks the next available challenge for that account, while any
+            level already unlocked stays replayable.
+          </p>
+        </div>
+
+        <div id="levelGrid" class="level-grid"></div>
+      </section>
+    </main>
+
+    <dialog id="howToPlayDialog" class="game-dialog">
+      <form method="dialog">
+        <button class="dialog-close" value="cancel" aria-label="Close">×</button>
+      </form>
+
+      <span class="section-kicker">HOW TO PLAY</span>
+      <h2>Protect your score while you search</h2>
+
+      <div class="instruction-list">
+        <div>
+          <span>1</span>
+          <p>Read the current challenge and search the scene for the matching object.</p>
+        </div>
+
+        <div>
+          <span>2</span>
+          <p>You start each clue with three chances. Wrong clicks reduce your score.</p>
+        </div>
+
+        <div>
+          <span>3</span>
+          <p>After your final missed chance, the correct object is highlighted for help.</p>
+        </div>
+
+        <div>
+          <span>4</span>
+          <p>
+            Your 4-digit Game Hub player code follows you between computers.
+            Your best level scores contribute to your shared Sheridan Points.
+          </p>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog id="settingsDialog" class="game-dialog settings-dialog">
+      <form method="dialog">
+        <button class="dialog-close" value="cancel" aria-label="Close">×</button>
+      </form>
+
+      <span class="section-kicker">GAME SETTINGS</span>
+      <h2>Settings</h2>
+
+      <label class="setting-row">
+        <span>
+          <strong>Sound</strong>
+          <small>Play game audio when a level includes it.</small>
+        </span>
+
+        <input id="soundSetting" type="checkbox" />
+      </label>
+
+      <label class="setting-row">
+        <span>
+          <strong>Show hints</strong>
+          <small>Show the clue hint beneath the challenge prompt.</small>
+        </span>
+
+        <input id="hintSetting" type="checkbox" />
+      </label>
+    </dialog>
+
+    <script type="module" src="js/hub-home.js"></script>
+  </body>
+</html>

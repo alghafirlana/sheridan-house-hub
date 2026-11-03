@@ -35,9 +35,10 @@ export const GAMES = [
       "Discover the campus through clues, exploration and surprises.",
     icon: "compass",
     accent: "violet",
-    status: "soon",
+    status: "playable",
     competitive: true,
-    duration: "Coming soon",
+    href: "games/campus-quest/home.html",
+    duration: "5–10 min",
   },
   {
     id: "hardware-challenge",

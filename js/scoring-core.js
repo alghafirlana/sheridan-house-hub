@@ -1,3 +1,14 @@
+/** Two Campus Quest levels are scored as ONE 0–100-point game for this event.
+ * Add a level ID here and to Firestore rules only when that level goes live.
+ * Keeping this list fixed during an event prevents mid-event score changes.
+ */
+export const CAMPUS_QUEST_LEVEL_IDS = Object.freeze([1, 2]);
+export const campusQuestLevelGameId = (id) => `campus-quest-level-${id}`;
+export const isCampusQuestLevelGame = (id) =>
+  typeof id === "string" && CAMPUS_QUEST_LEVEL_IDS.some(
+    (n) => id === campusQuestLevelGameId(n),
+  );
+
 /** Pure helpers: easy to test without Firebase or a browser. */
 export function scoreSummary(profiles, scoreDocs) {
   const result = new Map();
@@ -8,6 +19,7 @@ export function scoreSummary(profiles, scoreDocs) {
       total: 0,
       games: 0,
       best: {},
+      questLevels: {},
       createdAt: profile.createdAt ?? 0,
     });
   }
@@ -21,12 +33,28 @@ export function scoreSummary(profiles, scoreDocs) {
       typeof score.gameId !== "string"
     )
       continue;
-    player.best[score.gameId] = Math.max(
-      player.best[score.gameId] ?? -1,
-      score.points,
-    );
+    if (isCampusQuestLevelGame(score.gameId)) {
+      const levelId = Number(score.gameId.slice("campus-quest-level-".length));
+      player.questLevels[levelId] = Math.max(
+        player.questLevels[levelId] ?? -1,
+        score.points,
+      );
+    } else {
+      player.best[score.gameId] = Math.max(
+        player.best[score.gameId] ?? -1,
+        score.points,
+      );
+    }
   }
   for (const player of result.values()) {
+    // All live Quest levels together contribute AT MOST 100 Sheridan Points.
+    // Completing one perfect level of two yields 50; completing both yields 100.
+    if (Object.keys(player.questLevels).length) {
+      const sum = Object.values(player.questLevels).reduce((a, n) => a + n, 0);
+      player.best["campus-quest"] = Math.round(
+        sum / CAMPUS_QUEST_LEVEL_IDS.length,
+      );
+    }
     player.games = Object.keys(player.best).length;
     player.total = Object.values(player.best).reduce((sum, n) => sum + n, 0);
   }

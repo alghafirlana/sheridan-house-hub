@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Sheridan Campus Quest</title>
+
+    <link rel="stylesheet" href="../shared/css/app-shell.css" />
+    <link rel="stylesheet" href="css/game.css" />
+    <link rel="stylesheet" href="css/performance.css" />
+    <link rel="stylesheet" href="../css/hub-integration.css" />
+  </head>
+
+  <body>
+    <div id="appHeader"></div>
+
+    <main class="game-app">
+      <header class="game-header">
+        <div class="game-title-group">
+          <span id="levelBadge" class="level-badge">LEVEL</span>
+
+          <div class="game-title-copy">
+            <span id="roomName" class="room-name">CAMPUS QUEST</span>
+            <h1 id="gameTitle">Sheridan Campus Quest</h1>
+          </div>
+        </div>
+
+        <div class="mission-summary">
+          <span class="mission-dot"></span>
+          <span id="missionText">Complete the challenge</span>
+        </div>
+      </header>
+
+      <section class="clue-panel">
+        <div class="clue-icon">🔎</div>
+
+        <div class="clue-word">
+          <span id="clueProgress" class="clue-progress">CHALLENGE</span>
+          <h2 id="cluePrompt">Loading...</h2>
+        </div>
+
+        <div class="clue-divider"></div>
+
+        <div class="clue-hint">
+          <span class="hint-label">HINT</span>
+          <strong id="clueHint">Loading level...</strong>
+          <span id="feedback" aria-live="polite"></span>
+        </div>
+      </section>
+
+      <section class="play-layout">
+        <div id="roomStage" class="room-stage">
+          <div id="roomPanel" class="room-panel">
+            <svg
+              id="roomMap"
+              preserveAspectRatio="xMidYMid meet"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <image
+                id="roomBackground"
+                x="0"
+                y="0"
+                preserveAspectRatio="xMidYMid meet"
+              ></image>
+
+              <g id="hotspotLayer"></g>
+            </svg>
+          </div>
+        </div>
+
+        <aside class="progress-panel">
+          <div class="progress-header">
+            <div>
+              <span class="progress-eyebrow">QUEST PROGRESS</span>
+              <strong>Follow the challenge</strong>
+            </div>
+
+            <span id="progressCounter" class="progress-count">1 / 1</span>
+          </div>
+
+          <div
+            id="performancePanel"
+            class="performance-panel hidden"
+            aria-label="Level performance"
+          >
+            <div id="scoreStat" class="performance-stat hidden">
+              <span>SCORE</span>
+              <strong>
+                <span id="scoreValue">100</span>
+                <small id="scoreMax">/ 100</small>
+              </strong>
+            </div>
+
+            <div id="timerStat" class="performance-stat hidden">
+              <span>TIME</span>
+              <strong id="timerValue">00:00</strong>
+            </div>
+
+            <div id="chancesStat" class="performance-stat hidden">
+              <span>CHANCES</span>
+              <strong id="chancesValue">3 / 3</strong>
+            </div>
+          </div>
+
+          <div
+            id="progressList"
+            class="progress"
+            aria-label="Challenge progress"
+          ></div>
+
+          <div class="game-tip">
+            <span class="tip-symbol">💡</span>
+
+            <div>
+              <strong>Player tip</strong>
+              <p id="tipText">Look carefully around the scene.</p>
+            </div>
+          </div>
+        </aside>
+      </section>
+    </main>
+
+    <div id="storyPopup" class="popup hidden">
+      <div class="popup-card">
+        <div id="popupSymbol" class="popup-symbol">🔎</div>
+        <span id="popupEyebrow" class="popup-eyebrow">CHALLENGE CLEARED</span>
+        <h2 id="popupTitle">Great!</h2>
+        <p id="popupMessage"></p>
+
+        <div id="popupStats" class="popup-stats hidden">
+          <div id="popupScoreStat" class="popup-stat hidden">
+            <span>SCORE</span>
+            <strong id="popupScoreValue">100 / 100</strong>
+          </div>
+
+          <div id="popupTimeStat" class="popup-stat hidden">
+            <span>TIME</span>
+            <strong id="popupTimeValue">00:00</strong>
+          </div>
+
+          <div id="popupRankStat" class="popup-stat hidden">
+            <span>RANK</span>
+            <strong id="popupRankValue">#1</strong>
+          </div>
+        </div>
+
+        <button id="continueButton" type="button">Continue</button>
+      </div>
+    </div>
+
+    <div id="loadError" class="load-error hidden">
+      <div>
+        <h2>Level could not be loaded</h2>
+        <p>Please return to the Campus Quest home screen.</p>
+        <a href="../home.html">Campus Quest Home</a>
+      </div>
+    </div>
+
+    <dialog id="settingsDialog" class="game-settings-dialog">
+      <form method="dialog">
+        <button class="game-settings-close" value="cancel" aria-label="Close">×</button>
+      </form>
+
+      <h2>Game Settings</h2>
+
+      <label>
+        <span>
+          <strong>Sound</strong>
+          <small>Use game audio when a level includes it.</small>
+        </span>
+        <input id="soundSetting" type="checkbox" />
+      </label>
+
+      <label>
+        <span>
+          <strong>Show hints</strong>
+          <small>Show the clue hint for the current challenge.</small>
+        </span>
+        <input id="hintSetting" type="checkbox" />
+      </label>
+    </dialog>
+
+    <script type="module" src="js/game.js"></script>
+  </body>
+</html>
