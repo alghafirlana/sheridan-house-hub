@@ -31,3 +31,24 @@ export function validHotspots(level) {
       points.length >= 3 && points.every(([x,y]) => Number.isFinite(x) && Number.isFinite(y)
         && x >= 0 && y >= 0 && x <= level.width && y <= level.height)));
 }
+
+/**
+ * Photo and hotspot geometry for a contain-fitted stage (in original pixels).
+ * Rotate the entire stage, never just the bitmap, so original SVG polygons
+ * remain exactly on their components. Rotation is expressed in CSS degrees.
+ */
+export function fittedPhotoGeometry(imageWidth, imageHeight, viewportWidth, viewportHeight, rotation = 0) {
+  if (![imageWidth, imageHeight, viewportWidth, viewportHeight].every(n => Number.isFinite(n) && n > 0)) {
+    return { width: 0, height: 0, fitWidth: 0, fitHeight: 0 };
+  }
+  const sideways = ((rotation % 180) + 180) % 180 !== 0;
+  const orientedWidth = sideways ? imageHeight : imageWidth;
+  const orientedHeight = sideways ? imageWidth : imageHeight;
+  const scale = Math.min(viewportWidth / orientedWidth, viewportHeight / orientedHeight);
+  return {
+    width: imageWidth * scale,
+    height: imageHeight * scale,
+    fitWidth: orientedWidth * scale,
+    fitHeight: orientedHeight * scale,
+  };
+}

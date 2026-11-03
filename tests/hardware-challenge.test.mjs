@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 import { SCORED_LEVEL_COUNTS } from "../js/config.js";
 import { scoredLevelIds, scoredGamePoints, scoreSummary, submitLevelResult, levelGameInfo } from "../js/scoring-core.js";
 import { HARDWARE_LEVELS } from "../games/hardware-challenge/hardware-data.js";
-import { chooseQuestions, chooseQuickLevel, roundScore, validHotspots } from "../games/hardware-challenge/hardware-logic.js";
+import { chooseQuestions, chooseQuickLevel, roundScore, validHotspots, fittedPhotoGeometry } from "../games/hardware-challenge/hardware-logic.js";
 import { initStore } from "../js/store.js";
 
 class Storage { constructor(){this.map=new Map()} getItem(k){return this.map.get(k)??null} setItem(k,v){this.map.set(k,String(v))} removeItem(k){this.map.delete(k)} clear(){this.map.clear()} }
@@ -104,4 +104,22 @@ test('direct return to Hardware Challenge is available on the level and result v
   assert.match(code,/id=\"hardwareHomeBtn\"/);
   assert.match(code,/id=\"returnChallenge\"/);
   assert.match(code,/if \(!allowLeave\(\)\) return/);
+});
+
+test('horizontal photo display uses the correct contain geometry and does not alter hotspots',()=>{
+  const [two,four,dell,wifi]=HARDWARE_LEVELS;
+  assert.deepEqual([two.displayRotation,four.displayRotation,dell.displayRotation,wifi.displayRotation],[90,90,90,0]);
+  // Questions must stay correct whether the visitor rotates the photo or not.
+  assert.ok(HARDWARE_LEVELS.every(level => level.targets.every(target =>
+    !/\b(?:on the (?:left|right)|at the (?:top|bottom))\b/i.test(target.question))));
+  const horizontal=fittedPhotoGeometry(1122,1402,620,455,90);
+  const vertical=fittedPhotoGeometry(1122,1402,620,455,0);
+  assert.ok(horizontal.fitWidth<=620.000001 && horizontal.fitHeight<=455.000001);
+  assert.ok(vertical.fitWidth<=620.000001 && vertical.fitHeight<=455.000001);
+  assert.ok(horizontal.fitWidth>vertical.fitWidth,'horizontal orientation should make larger use of the photo column');
+  assert.ok(Math.abs(horizontal.fitWidth/horizontal.fitHeight-(1402/1122))<1e-9);
+  const code=readFileSync(new URL('../games/hardware-challenge/hardware.js',import.meta.url),'utf8');
+  assert.match(code,/stage\.style\.transform = `translate\(-50%, -50%\).*rotate\(\$\{rotation\}deg\)/);
+  assert.match(code,/id="rotateImage"/);
+  assert.match(code,/hc-mobile-prompt-meta/);
 });
