@@ -223,12 +223,31 @@ If a fifth hardware item is prepared during an existing event, you can add it to
 
 ### Hardware image fidelity and hotspot review
 
-The four launch assets in `games/hardware-challenge/assets/` are **cropped from the professor's original photographs, not AI recreations**. Their printed markings, chips, ports and other components are not redrawn. The first ASUS motherboard has **two** RAM slots, the second **four**, and the Dell board has its CPU installed. The wireless card retains the visible iMicro label. Crops were used because AI recreation can subtly replace critical board details.
+The four launch assets are the user's **approved `hc1.png`–`hc4.png` images copied without alteration** (byte-for-byte); these were derived from the professor's photos using earlier image editing and may contain minor AI-rendered differences from the physical hardware. We use large, visually verifiable parts rather than tiny printed chip labels. `hc1` is the wireless adapter, `hc2` is the **two-slot** ASUS motherboard, `hc3` is the Dell board with its CPU installed, and `hc4` is the **four-slot** ASUS motherboard. All hotspots are newly mapped against the exact approved images, rather than the previous original-photo crops.
 
 A hidden QA aid shows every region outline for verification: open
-`games/hardware-challenge/index.html?debug=hotspots` after joining. You can zoom the images and compare region boundaries against the physical component. The hotspots are configured as pixel-coordinate polygon points in `hardware-data.js`; changing the crop or image dimensions **requires adjusting the hotspot coordinates**. Keep the saved level IDs stable after launch to preserve scores.
+`games/hardware-challenge/index.html?debug=hotspots` after joining. You can zoom the images and compare region boundaries against the physical component. The hotspots are configured as pixel-coordinate polygons in `hardware-data.js`, including separate polygon regions for repeated parts such as RAM slots and SATA connectors. Changing the image, crop or its dimensions **requires remapping the hotspot coordinates**. All pages have a **Back to Hardware Challenge** button; an unfinished round requires confirmation before exiting. Keep the saved level IDs stable after launch to preserve scores.
 
 The user-facing physical-display status isn't guessed from the photo. Future hardware can be added digitally even if no physical version is available at the event.
+
+
+### Replacing the previous Hardware Challenge assets (HC hotspot update)
+
+The approved files `hc1.png` through `hc4.png` are used without resizing, cropping or modifying the images. The **game's level order** is HC2 (two-RAM ASUS), HC4 (four-RAM ASUS), HC3 (Dell), HC1 (wireless adapter). This retains your original four level score IDs.
+
+If you apply the **update-only ZIP** over an older checkout, the four old `.jpg` assets are unused and can be deleted to avoid storing duplicate photos:
+
+```sh
+rm games/hardware-challenge/assets/asus-two-slots.jpg \
+   games/hardware-challenge/assets/asus-four-slots.jpg \
+   games/hardware-challenge/assets/dell-motherboard.jpg \
+   games/hardware-challenge/assets/wifi-adapter.jpg
+```
+
+The full project ZIP has these obsolete JPGs already removed.
+
+The **Back to Hardware Challenge** button is visible in Explore Hardware, gameplay and the result screen. Exiting an unfinished level asks for confirmation before discarding that attempt. Neither scoring rules nor Firebase configuration changed in this update.
+
 
 ### Limitations and testing
 

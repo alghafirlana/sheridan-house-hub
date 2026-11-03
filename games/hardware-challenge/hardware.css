@@ -7,3 +7,10 @@
 @media(max-width:440px){.hardware-page .header-link{display:none}.hardware-page .header-inner{gap:8px}.hardware-page .brand-text>span{font-size:8px}}
 
 .hc-hit:focus-visible{stroke:#0078bd;stroke-width:8;fill:rgba(40,155,223,.26);outline:none}
+
+/* Persistent Hardware Challenge navigation, including while a level is open. */
+.hc-nav-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+.hc-back{cursor:pointer}
+.hc-back-home{border:1px solid #93d5d1;background:#e7faf5;color:#0b655f;font-weight:800;padding:10px 14px;border-radius:10px;min-height:40px}
+.hc-back-home:hover{background:#d1f4eb}
+@media(max-width:700px){.hc-topline{align-items:flex-start;flex-wrap:wrap}.hc-nav-actions{justify-content:flex-start;width:100%}}

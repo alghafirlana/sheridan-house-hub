@@ -24,15 +24,34 @@ const hubPoints = () => store.board.find(p => p.id === store.player?.id)?.best?.
 const hasScore = id => Object.hasOwn(scores(), String(id));
 const allScoresCount = () => scoredLevelIds(GAME_ID).filter(id => hasScore(id)).length;
 
-function header(title, sub, nav = "home") {
-  const back = nav === "home" ? "" : `<button class="hc-back" type="button" id="backBtn">← ${nav === 'library' ? 'All hardware' : 'Choose mode'}</button>`;
-  return `<div class="hc-topline"><div class="hc-crumb">GAME HUB <span>/</span> HARDWARE CHALLENGE</div>${back}</div><div class="hc-page-head"><div><div class="hc-eyebrow">✳ LEARN • IDENTIFY • EARN POINTS</div><h1>${escape(title)}</h1><p>${escape(sub)}</p></div>${store.player ? `<div class="hc-score-chip"><span>HARDWARE POINTS</span><strong>${hubPoints()}<small> / 100</small></strong><em>${allScoresCount()} of ${scoredLevelIds(GAME_ID).length} levels played</em></div>` : ''}</div>`;
+function header(title, sub, nav = "") {
+  // The first button follows the current mode, while the explicit second one
+  // always takes the visitor to the Hardware Challenge landing page.
+  const contextual = nav === "library"
+    ? `<button class="hc-back" type="button" id="backBtn">← All hardware levels</button>`
+    : nav === "home"
+      ? `<button class="hc-back hc-back-home" type="button" id="backBtn">← Back to Hardware Challenge</button>`
+      : "";
+  const home = nav === "library"
+    ? `<button class="hc-back hc-back-home" type="button" id="hardwareHomeBtn">⌂ Back to Hardware Challenge</button>`
+    : "";
+  return `<div class="hc-topline"><div class="hc-crumb">GAME HUB <span>/</span> HARDWARE CHALLENGE</div><div class="hc-nav-actions">${contextual}${home}</div></div><div class="hc-page-head"><div><div class="hc-eyebrow">✳ LEARN • IDENTIFY • EARN POINTS</div><h1>${escape(title)}</h1><p>${escape(sub)}</p></div>${store.player ? `<div class="hc-score-chip"><span>HARDWARE POINTS</span><strong>${hubPoints()}<small> / 100</small></strong><em>${allScoresCount()} of ${scoredLevelIds(GAME_ID).length} levels played</em></div>` : ''}</div>`;
 }
 function wireBack(nav) {
+  function allowLeave() {
+    return !round || round.finished || confirm('Exit this level? This unfinished round will not be saved.');
+  }
   app.querySelector('#backBtn')?.addEventListener('click', () => {
-    if (round && !round.finished && !confirm('Exit this level? This unfinished round will not be saved.')) return;
-    round = null; setGameplayActive(false);
+    if (!allowLeave()) return;
+    round = null;
+    setGameplayActive(false);
     nav === 'library' ? showLibrary() : showHome();
+  });
+  app.querySelector('#hardwareHomeBtn')?.addEventListener('click', () => {
+    if (!allowLeave()) return;
+    round = null;
+    setGameplayActive(false);
+    showHome();
   });
 }
 function showHome() {
@@ -81,12 +100,12 @@ function startLevel(level, mode) {
   zoom = 1; setGameplayActive(true); showQuestion();
 }
 function questionSvg(level, activeQuestion, reveal) {
-  const polygons = level.targets.map((t,index) => {
-    const pts = t.points.map(x=>x.join(',')).join(' ');
+  const polygons = level.targets.flatMap((t,index) => t.regions.map((region, regionIndex) => {
+    const pts = region.map(([x,y])=>`${x},${y}`).join(' ');
     const state = t.id === activeQuestion.id && reveal ? `hc-target-answer ${round.feedback?.correct ? 'hc-target-correct' : ''}` : '';
     const debugLabel = debug ? `data-title="${escape(t.label)}"` : '';
-    return `<polygon data-target="${escape(t.id)}" ${debugLabel} class="hc-hit ${state}" points="${pts}" tabindex="0" role="button" aria-label="Select hardware region ${index+1}" />`;
-  }).join('');
+    return `<polygon data-target="${escape(t.id)}" ${debugLabel} class="hc-hit ${state}" points="${pts}" tabindex="0" role="button" aria-label="Select hardware region ${index+1}${t.regions.length > 1 ? `, section ${regionIndex+1}` : ''}" />`;
+  })).join('');
   return `<svg class="hc-overlay ${debug ? 'hc-debug' : ''}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${level.width} ${level.height}" preserveAspectRatio="none" role="group" aria-label="Tap a hardware region, or use Tab and Enter to select a region">${polygons}</svg>`;
 }
 function showQuestion() {
@@ -175,8 +194,9 @@ function showResult(level, mode, result) {
     `You just added ${result.pointsAdded} Sheridan ${result.pointsAdded===1?'Point':'Points'} to your Game Hub leaderboard score! ${left?`Play ${left} more ${left===1?'level':'levels'} or improve your personal best to earn more.`:'You have played every level! Replay to improve your personal best.'}` :
     `Your best score is safe, and no points were lost. ${left?'Try another hardware level to build your leaderboard score.':'Replay a level to try for a higher score.'}`;
   app.innerHTML = `${header('Level complete!', 'Your hardware knowledge is growing. Here is how your result affects the shared leaderboard.', 'library')}
-    <section class="hc-results"><div class="hc-results-icon" aria-hidden="true">🏆</div><span class="hc-label">${escape(level.title.toUpperCase())}</span><h2>${result.personalBest?'New personal best!':'Great effort!'}</h2><p>${escape(message)}</p><div class="hc-result-stats"><div><span>THIS LEVEL</span><strong>${result.levelScore}<small>/100</small></strong></div><div><span>LEADERBOARD POINTS ADDED</span><strong class="mint">+${result.pointsAdded}</strong></div><div><span>HARDWARE CHALLENGE TOTAL</span><strong>${result.gamePoints}<small>/100</small></strong></div></div><div class="hc-save ${result.savedToLeaderboard?'hc-save-live':''}">${result.savedToLeaderboard?'✓ Score saved to the live leaderboard!':'✓ Result saved in demo mode on this browser.'}<small>${finished} of ${scoredLevelIds(GAME_ID).length} scored levels completed. Your highest level score is always protected.</small></div><div class="hc-result-actions"><button class="hc-btn hc-btn-mint" id="anotherLevel" type="button">Explore another level →</button><button class="hc-btn hc-btn-outline" id="replay" type="button">Replay this level</button><button class="hc-btn hc-btn-dark" id="againQuick" type="button">Surprise me again ⚡</button></div><a class="hc-home-link" href="../../index.html#games">← Back to Sheridan Game Hub</a></section>`;
+    <section class="hc-results"><div class="hc-results-icon" aria-hidden="true">🏆</div><span class="hc-label">${escape(level.title.toUpperCase())}</span><h2>${result.personalBest?'New personal best!':'Great effort!'}</h2><p>${escape(message)}</p><div class="hc-result-stats"><div><span>THIS LEVEL</span><strong>${result.levelScore}<small>/100</small></strong></div><div><span>LEADERBOARD POINTS ADDED</span><strong class="mint">+${result.pointsAdded}</strong></div><div><span>HARDWARE CHALLENGE TOTAL</span><strong>${result.gamePoints}<small>/100</small></strong></div></div><div class="hc-save ${result.savedToLeaderboard?'hc-save-live':''}">${result.savedToLeaderboard?'✓ Score saved to the live leaderboard!':'✓ Result saved in demo mode on this browser.'}<small>${finished} of ${scoredLevelIds(GAME_ID).length} scored levels completed. Your highest level score is always protected.</small></div><div class="hc-result-actions"><button class="hc-btn hc-btn-mint" id="anotherLevel" type="button">Explore another level →</button><button class="hc-btn hc-btn-outline" id="replay" type="button">Replay this level</button><button class="hc-btn hc-btn-dark" id="againQuick" type="button">Surprise me again ⚡</button><button class="hc-btn hc-btn-outline" id="returnChallenge" type="button">← Back to Hardware Challenge</button></div><a class="hc-home-link" href="../../index.html#games">← Back to Sheridan Game Hub</a></section>`;
   wireBack('library');
+  app.querySelector('#returnChallenge').addEventListener('click',showHome);
   app.querySelector('#anotherLevel').addEventListener('click',showLibrary);
   app.querySelector('#replay').addEventListener('click',()=>startLevel(level,mode));
   app.querySelector('#againQuick').addEventListener('click',()=>{

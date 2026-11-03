@@ -26,6 +26,8 @@ export function roundScore(earned, possible) {
   return possible > 0 ? Math.max(0, Math.min(100, Math.round(100 * earned / possible))) : 0;
 }
 export function validHotspots(level) {
-  return level.targets.every(t => t.points.length >= 3 && t.points.every(([x,y]) =>
-    Number.isFinite(x) && Number.isFinite(y) && x >= 0 && y >= 0 && x <= level.width && y <= level.height));
+  return level.targets.length > 0 && level.targets.every(t =>
+    Array.isArray(t.regions) && t.regions.length > 0 && t.regions.every(points =>
+      points.length >= 3 && points.every(([x,y]) => Number.isFinite(x) && Number.isFinite(y)
+        && x >= 0 && y >= 0 && x <= level.width && y <= level.height)));
 }

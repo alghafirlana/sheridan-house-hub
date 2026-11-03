@@ -78,3 +78,30 @@ test('Firestore generated score IDs match the single configured counts',()=>{
   const expected=['tech-sprint',...Object.entries(SCORED_LEVEL_COUNTS).flatMap(([game,n])=>Array.from({length:n},(_,i)=>`${game}-level-${i+1}`))];
   assert.deepEqual(ids,expected);
 });
+
+
+test('launch levels reference the exact approved HC images and image geometry',()=>{
+  const expected=['hc2.png','hc4.png','hc3.png','hc1.png'];
+  for(const [i,level] of HARDWARE_LEVELS.entries()){
+    assert.equal(level.image,`assets/${expected[i]}`);
+    const data=readFileSync(new URL(`../games/hardware-challenge/${level.image}`,import.meta.url));
+    assert.equal(data.toString('ascii',1,4),'PNG');
+    assert.equal(data.readUInt32BE(16),level.width);
+    assert.equal(data.readUInt32BE(20),level.height);
+    assert.equal(level.width,1122);
+    assert.equal(level.height,1402);
+    assert.equal(validHotspots(level),true);
+  }
+  const [two,four,dell,wifi]=HARDWARE_LEVELS;
+  assert.equal(two.targets.find(t=>t.id==='ram').regions.length,2);
+  assert.equal(four.targets.find(t=>t.id==='ram').regions.length,4);
+  assert.equal(dell.targets.find(t=>t.id==='ram').regions.length,4);
+  assert.equal(wifi.targets.find(t=>t.id==='contacts').regions.length,3);
+});
+
+test('direct return to Hardware Challenge is available on the level and result views',()=>{
+  const code=readFileSync(new URL('../games/hardware-challenge/hardware.js',import.meta.url),'utf8');
+  assert.match(code,/id=\"hardwareHomeBtn\"/);
+  assert.match(code,/id=\"returnChallenge\"/);
+  assert.match(code,/if \(!allowLeave\(\)\) return/);
+});
