@@ -60,7 +60,9 @@ service cloud.firestore {
           && request.resource.data.keys().hasAll(['playerId','gameId','points','updatedAt'])
           && request.resource.data.playerId is string
           && request.resource.data.gameId is string
-          && request.resource.data.gameId in ['tech-sprint', 'campus-quest-level-1', 'campus-quest-level-2'] // one record per Quest level
+// BEGIN GENERATED SCORE GAME IDS (edit js/config.js, not this block)
+          && request.resource.data.gameId in ['tech-sprint', 'campus-quest-level-1', 'campus-quest-level-2', 'hardware-challenge-level-1', 'hardware-challenge-level-2', 'hardware-challenge-level-3', 'hardware-challenge-level-4']
+          // END GENERATED SCORE GAME IDS
           && scoreId == request.resource.data.playerId + '_' + request.resource.data.gameId
           && validPlayerMembership(eventId, request.resource.data.playerId)
           && request.resource.data.points is int

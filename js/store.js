@@ -5,7 +5,7 @@ import {
   nextPin,
   normalizeScore,
   scoreSummary,
-  isCampusQuestLevelGame,
+  isScoredLevelGame,
 } from "./scoring-core.js";
 const localKey = `sheridan-hub:${CONFIG.eventId}`;
 const activeKey = `${localKey}:session`;
@@ -49,7 +49,13 @@ class BaseStore {
   }
   async waitForScores() {} // Demo mode already has synchronous local data.
   questLevelScores() {
-    return this.board.find((p) => p.id === this.player?.id)?.questLevels || {};
+    return this.levelScoresFor("campus-quest");
+  }
+  levelScoresFor(gameId) {
+    const profile = this.board.find((p) => p.id === this.player?.id);
+    if (gameId === "campus-quest") return profile?.questLevels || {};
+    if (gameId === "hardware-challenge") return profile?.hardwareLevels || {};
+    return {};
   }
   currentTotal() {
     return this.board.find((p) => p.id === this.player?.id)?.total ?? 0;
@@ -70,7 +76,10 @@ class BaseStore {
 
   validateGame(gameId) {
     const game = getGame(gameId);
-    if (isCampusQuestLevelGame(gameId)) return;
+    if (isScoredLevelGame(gameId)) return;
+    // Multi-level games must only submit individual level records.
+    if (gameId === "campus-quest" || gameId === "hardware-challenge")
+      throw Error("Submit a scored level instead of a game-wide total.");
     if (!game || !game.competitive || game.status !== "playable")
       throw Error("This game is not available for scoring yet.");
   }

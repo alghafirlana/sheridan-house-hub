@@ -1,23 +1,67 @@
-/** Two Campus Quest levels are scored as ONE 0–100-point game for this event.
- * Add a level ID here and to Firestore rules only when that level goes live.
- * Keeping this list fixed during an event prevents mid-event score changes.
- */
-export const CAMPUS_QUEST_LEVEL_IDS = Object.freeze([1, 2]);
-export const campusQuestLevelGameId = (id) => `campus-quest-level-${id}`;
+import { SCORED_LEVEL_COUNTS } from "./config.js";
 
-/** Match the global leaderboard exactly, including its whole-point rounding. */
-export function campusQuestPoints(levelScores = {}) {
-  const sum = CAMPUS_QUEST_LEVEL_IDS.reduce((total, id) => {
-    const score = levelScores[id];
-    return total + (Number.isInteger(score) && score >= 0 && score <= 100 ? score : 0);
+/** A single shared scoring contract for EVERY multi-level competitive game. */
+export function scoredLevelIds(gameId) {
+  const count = SCORED_LEVEL_COUNTS[gameId];
+  if (!Number.isInteger(count) || count < 1 || count > 99) return [];
+  return Array.from({ length: count }, (_, i) => i + 1);
+}
+export const scoredLevelGameId = (gameId, levelId) => `${gameId}-level-${levelId}`;
+export function levelGameInfo(scoreId) {
+  if (typeof scoreId !== "string") return null;
+  for (const gameId of Object.keys(SCORED_LEVEL_COUNTS)) {
+    const prefix = `${gameId}-level-`;
+    if (!scoreId.startsWith(prefix)) continue;
+    const suffix = scoreId.slice(prefix.length);
+    // Invalid level IDs are recognized as levels and NEVER count as standalone games.
+    if (!/^[1-9][0-9]*$/.test(suffix)) return { gameId, levelId: null, valid: false };
+    const levelId = Number(suffix);
+    return { gameId, levelId, valid: scoredLevelIds(gameId).includes(levelId) };
+  }
+  return null;
+}
+export const isScoredLevelGame = (id) => Boolean(levelGameInfo(id)?.valid);
+export function scoredGamePoints(gameId, levelScores = {}) {
+  const ids = scoredLevelIds(gameId);
+  if (!ids.length) return 0;
+  const total = ids.reduce((sum, level) => {
+    const raw = levelScores[level];
+    return sum + (Number.isInteger(raw) && raw >= 0 && raw <= 100 ? raw : 0);
   }, 0);
-  return Math.round(sum / CAMPUS_QUEST_LEVEL_IDS.length);
+  return Math.round(total / ids.length);
 }
 
-export const isCampusQuestLevelGame = (id) =>
-  typeof id === "string" && CAMPUS_QUEST_LEVEL_IDS.some(
-    (n) => id === campusQuestLevelGameId(n),
-  );
+// Compatibility aliases used by existing Campus Quest files and tests.
+export const CAMPUS_QUEST_LEVEL_IDS = Object.freeze(scoredLevelIds("campus-quest"));
+export const campusQuestLevelGameId = (id) => scoredLevelGameId("campus-quest", id);
+export const campusQuestPoints = (scores) => scoredGamePoints("campus-quest", scores);
+export const isCampusQuestLevelGame = (id) => levelGameInfo(id)?.gameId === "campus-quest" && isScoredLevelGame(id);
+
+/** Save the best score for a level and compute exactly the SAME rounded points
+ * as the global leaderboard. Only report success after submitScore resolves.
+ */
+export async function submitLevelResult(store, gameId, levelId, score) {
+  if (!scoredLevelIds(gameId).includes(levelId)) throw Error("Level is not currently scored.");
+  const points = normalizeScore(score);
+  const previousLevels = { ...store.levelScoresFor(gameId) };
+  const saved = await store.submitScore(scoredLevelGameId(gameId, levelId), points);
+  const before = { ...previousLevels, [levelId]: saved.previous };
+  const after = { ...before, [levelId]: saved.best };
+  const previousGamePoints = scoredGamePoints(gameId, before);
+  const gamePoints = scoredGamePoints(gameId, after);
+  const levelsCompleted = scoredLevelIds(gameId).filter(id => Object.hasOwn(after, String(id))).length;
+  return {
+    levelsCompleted,
+    levelScore: points,
+    previousBest: saved.previous,
+    bestScore: saved.best,
+    personalBest: saved.gained > 0,
+    previousGamePoints,
+    gamePoints,
+    pointsAdded: Math.max(0, gamePoints - previousGamePoints),
+    savedToLeaderboard: store.mode === "live",
+  };
+}
 
 /** Pure helpers: easy to test without Firebase or a browser. */
 export function scoreSummary(profiles, scoreDocs) {
@@ -30,6 +74,7 @@ export function scoreSummary(profiles, scoreDocs) {
       games: 0,
       best: {},
       questLevels: {},
+      hardwareLevels: {},
       createdAt: profile.createdAt ?? 0,
     });
   }
@@ -43,12 +88,11 @@ export function scoreSummary(profiles, scoreDocs) {
       typeof score.gameId !== "string"
     )
       continue;
-    if (isCampusQuestLevelGame(score.gameId)) {
-      const levelId = Number(score.gameId.slice("campus-quest-level-".length));
-      player.questLevels[levelId] = Math.max(
-        player.questLevels[levelId] ?? -1,
-        score.points,
-      );
+    const info = levelGameInfo(score.gameId);
+    if (info) {
+      if (!info.valid) continue;
+      const levels = info.gameId === "campus-quest" ? player.questLevels : player.hardwareLevels;
+      levels[info.levelId] = Math.max(levels[info.levelId] ?? -1, score.points);
     } else {
       player.best[score.gameId] = Math.max(
         player.best[score.gameId] ?? -1,
@@ -57,10 +101,12 @@ export function scoreSummary(profiles, scoreDocs) {
     }
   }
   for (const player of result.values()) {
-    // All live Quest levels together contribute AT MOST 100 Sheridan Points.
-    // Completing one perfect level of two yields 50; completing both yields 100.
-    if (Object.keys(player.questLevels).length) {
-      player.best["campus-quest"] = campusQuestPoints(player.questLevels);
+    // Each multi-level game is ONE game, capped at 100, regardless of level count.
+    for (const gameId of Object.keys(SCORED_LEVEL_COUNTS)) {
+      const levels = gameId === "campus-quest" ? player.questLevels : player.hardwareLevels;
+      if (Object.keys(levels).length) {
+        player.best[gameId] = scoredGamePoints(gameId, levels);
+      }
     }
     player.games = Object.keys(player.best).length;
     player.total = Object.values(player.best).reduce((sum, n) => sum + n, 0);
