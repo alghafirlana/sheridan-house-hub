@@ -148,6 +148,7 @@ export default class GameController {
     ===================================================== */
 
     this.view.bindContinue(() => this.handleContinue());
+    this.view.bindReplay(() => this.restartLevel());
 
     /* =====================================================
        AUDIO BUTTON
@@ -716,11 +717,13 @@ export default class GameController {
     // The shared Game Hub store saves the BEST score for this specific level.
     // Quest levels are normalized into ONE game worth up to 100 Hub points.
     let leaderboardRank = null;
+    let savedResult;
     try {
-      await this.progressStore.completeLevel(this.model.level.id, {
+      const completion = await this.progressStore.completeLevel(this.model.level.id, {
         score: finalScore,
         timeSeconds: elapsedSeconds,
       });
+      savedResult = completion.result;
     } catch (error) {
       console.error("Unable to save Campus Quest result:", error);
       this.inputLocked = false;
@@ -786,6 +789,7 @@ export default class GameController {
         rank: leaderboardRank,
 
         guestMode: this.guestMode,
+        savedResult,
       },
     );
   }

@@ -130,7 +130,7 @@
 
         <div id="popupStats" class="popup-stats hidden">
           <div id="popupScoreStat" class="popup-stat hidden">
-            <span>SCORE</span>
+            <span>LEVEL SCORE</span>
             <strong id="popupScoreValue">100 / 100</strong>
           </div>
 
@@ -144,6 +144,24 @@
             <strong id="popupRankValue">#1</strong>
           </div>
         </div>
+
+        <section id="questResultSummary" class="quest-result-summary hidden" aria-live="polite" aria-label="Saved Quest score">
+          <p id="questSaveStatus" class="quest-save-status"></p>
+          <div class="quest-result-metrics">
+            <div class="quest-result-metric">
+              <span>POINTS ADDED</span>
+              <strong id="questPointsAdded">+0</strong>
+              <small>to the leaderboard</small>
+            </div>
+            <div class="quest-result-metric">
+              <span>CAMPUS QUEST TOTAL</span>
+              <strong id="questTotal">0 / 100</strong>
+              <small>Sheridan Points</small>
+            </div>
+          </div>
+          <p id="questReplayMessage" class="quest-replay-message"></p>
+          <p class="quest-scoring-note">Your best level scores count toward one Campus Quest total of up to 100 points.</p>
+        </section>
 
         <button id="continueButton" type="button">Continue</button>
       </div>

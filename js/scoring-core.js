@@ -4,6 +4,16 @@
  */
 export const CAMPUS_QUEST_LEVEL_IDS = Object.freeze([1, 2]);
 export const campusQuestLevelGameId = (id) => `campus-quest-level-${id}`;
+
+/** Match the global leaderboard exactly, including its whole-point rounding. */
+export function campusQuestPoints(levelScores = {}) {
+  const sum = CAMPUS_QUEST_LEVEL_IDS.reduce((total, id) => {
+    const score = levelScores[id];
+    return total + (Number.isInteger(score) && score >= 0 && score <= 100 ? score : 0);
+  }, 0);
+  return Math.round(sum / CAMPUS_QUEST_LEVEL_IDS.length);
+}
+
 export const isCampusQuestLevelGame = (id) =>
   typeof id === "string" && CAMPUS_QUEST_LEVEL_IDS.some(
     (n) => id === campusQuestLevelGameId(n),
@@ -50,10 +60,7 @@ export function scoreSummary(profiles, scoreDocs) {
     // All live Quest levels together contribute AT MOST 100 Sheridan Points.
     // Completing one perfect level of two yields 50; completing both yields 100.
     if (Object.keys(player.questLevels).length) {
-      const sum = Object.values(player.questLevels).reduce((a, n) => a + n, 0);
-      player.best["campus-quest"] = Math.round(
-        sum / CAMPUS_QUEST_LEVEL_IDS.length,
-      );
+      player.best["campus-quest"] = campusQuestPoints(player.questLevels);
     }
     player.games = Object.keys(player.best).length;
     player.total = Object.values(player.best).reduce((sum, n) => sum + n, 0);

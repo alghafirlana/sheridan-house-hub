@@ -164,6 +164,11 @@ export default class GameView {
     this.popupRankStat = document.getElementById("popupRankStat");
 
     this.popupRankValue = document.getElementById("popupRankValue");
+    this.questResultSummary = document.getElementById("questResultSummary");
+    this.questSaveStatus = document.getElementById("questSaveStatus");
+    this.questPointsAdded = document.getElementById("questPointsAdded");
+    this.questTotal = document.getElementById("questTotal");
+    this.questReplayMessage = document.getElementById("questReplayMessage");
 
     // =========================================================
     // SECONDARY POPUP BUTTONS
@@ -185,6 +190,13 @@ export default class GameView {
       this.leaderboardButton,
     );
 
+    this.replayButton = document.createElement("button");
+    this.replayButton.type = "button";
+    this.replayButton.id = "replayButton";
+    this.replayButton.className = "completion-replay-button hidden";
+    this.replayButton.textContent = "Replay this level";
+    this.leaderboardButton.insertAdjacentElement("afterend", this.replayButton);
+
     this.homeButton = document.createElement("button");
 
     this.homeButton.type = "button";
@@ -195,7 +207,7 @@ export default class GameView {
 
     this.homeButton.textContent = "Back to Home";
 
-    this.leaderboardButton.insertAdjacentElement("afterend", this.homeButton);
+    this.replayButton.insertAdjacentElement("afterend", this.homeButton);
 
     // =========================================================
     // ERROR SCREEN
@@ -843,6 +855,7 @@ export default class GameView {
       showTime = true,
       rank = null,
       guestMode = false,
+      savedResult = null,
     } = {},
   ) {
     this.popupSymbol.textContent = "🎉";
@@ -859,6 +872,7 @@ export default class GameView {
       : baseMessage;
 
     this.hidePopupStats();
+    this.questResultSummary.classList.add("hidden");
 
     if (showScore) {
       this.popupScoreValue.textContent = `${Math.max(
@@ -889,12 +903,25 @@ export default class GameView {
       this.popupStats.classList.remove("hidden");
     }
 
+    if (savedResult) {
+      this.questSaveStatus.textContent = savedResult.savedToLeaderboard
+        ? "✓ Score saved to the live leaderboard!"
+        : "✓ Score saved in demo mode (this browser only)";
+      this.questPointsAdded.textContent = `+${savedResult.pointsAdded}`;
+      this.questTotal.textContent = `${savedResult.questPoints} / 100`;
+      this.questReplayMessage.textContent = savedResult.personalBest
+        ? `New level best: ${savedResult.bestScore}/100! ${savedResult.pointsAdded > 0 ? 'Your leaderboard points increased.' : 'Your level score improved; your rounded Quest total stayed the same.'} Replay to improve even more.`
+        : `Your best level score is still ${savedResult.bestScore}/100. No points lost! Replay this level or explore another one.`;
+      this.questResultSummary.classList.remove("hidden");
+    }
+
     if (nextLevel) {
       this.continueButton.textContent = `Next Level — ${nextLevel.title}`;
     } else {
-      this.continueButton.textContent = "Return Home";
+      this.continueButton.textContent = "Explore Quest levels";
     }
 
+    this.replayButton.classList.remove("hidden");
     this.leaderboardButton.classList.remove("hidden");
 
     this.homeButton.classList.remove("hidden");
@@ -919,6 +946,8 @@ export default class GameView {
       "You ran out of time before completing the level. Try again and see if you can escape faster.";
 
     this.hidePopupStats();
+    this.questResultSummary.classList.add("hidden");
+    this.replayButton.classList.add("hidden");
 
     this.continueButton.textContent = "Try Again";
 
@@ -929,6 +958,10 @@ export default class GameView {
     this.popup.classList.remove("hidden");
 
     this.continueButton.focus();
+  }
+
+  bindReplay(handler) {
+    this.replayButton.addEventListener("click", handler);
   }
 
   bindHome(handler) {

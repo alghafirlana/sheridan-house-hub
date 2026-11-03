@@ -189,3 +189,100 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* =========================================================
+   FRIENDLY, CONFIRMED CAMPUS QUEST SCORE FEEDBACK
+========================================================= */
+.quest-result-summary.hidden,
+#replayButton.hidden { display: none !important; }
+
+/* The completion popup can be taller than a phone viewport. */
+.popup-card:has(.quest-result-summary:not(.hidden)) {
+  width: min(470px, 100%);
+  max-height: calc(100dvh - 36px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.quest-result-summary {
+  margin: 2px 0 16px;
+  padding: 12px;
+  border: 1px solid #d0eae7;
+  border-radius: 14px;
+  background: linear-gradient(145deg, #f2fcfa, #f3f9fe);
+  text-align: left;
+}
+
+.popup-card .quest-save-status {
+  margin: 0 0 10px;
+  color: #0e755a;
+  font-size: 12px;
+  line-height: 1.45;
+  font-weight: 800;
+  text-align: center;
+}
+
+.quest-result-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 8px;
+}
+
+.quest-result-metric {
+  min-width: 0;
+  padding: 10px 7px;
+  background: #fff;
+  border: 1px solid #dce8f0;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.quest-result-metric span,
+.quest-result-metric small { display:block; }
+.quest-result-metric span { color:#50718a; font-size:9px; font-weight:850; letter-spacing:.07em; }
+.quest-result-metric strong { display:block; margin:4px 0; font-size:clamp(23px,5vw,28px); line-height:1.2; color:#07577e; font-variant-numeric:tabular-nums; }
+.quest-result-metric small { color:#5c768e; font-size:10px; }
+
+.popup-card .quest-replay-message {
+  margin: 12px 0 5px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #244e65;
+  text-align: center;
+}
+.popup-card .quest-scoring-note {
+  margin: 0;
+  font-size: 10px;
+  line-height: 1.45;
+  color: #607d8d;
+  text-align: center;
+}
+
+#replayButton.completion-replay-button {
+  display: block;
+  width: fit-content;
+  min-width: 170px;
+  margin: 10px auto 0;
+  padding: 10px 20px;
+  color: #07577e;
+  background: #e7f6f7;
+  border: 1px solid #addfe2;
+  border-radius: 10px;
+  font-weight: 800;
+}
+#replayButton.completion-replay-button:hover { background:#d3edf2; }
+#replayButton.completion-replay-button:focus-visible { outline: 3px solid #53bbbd; outline-offset:3px; }
+
+/* Score card is more useful than decorative space on compact screens. */
+@media (max-width: 640px) {
+  .popup:has(.quest-result-summary:not(.hidden)) { padding: 10px; }
+  .popup-card:has(.quest-result-summary:not(.hidden)) {
+    padding: 16px;
+    max-height: calc(100dvh - 20px);
+  }
+  .popup-card:has(.quest-result-summary:not(.hidden)) > button:not(.hidden) {
+    width: 100%;
+    min-height: 44px;
+  }
+  .popup-stats { margin-bottom: 10px; }
+}

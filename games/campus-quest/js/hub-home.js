@@ -26,19 +26,19 @@ function render() {
   el('progressKicker').textContent = 'YOUR CAMPUS QUEST PROGRESS';
   if (locked) {
     el('progressTitle').textContent = `${locked.title} is next to unlock`;
-    el('progressMessage').textContent = 'Finish the previous level to unlock the next. Your saved scores and unlocked levels follow your four-digit player code.';
+    el('progressMessage').textContent = `You have earned ${getQuestPoints()} / 100 Sheridan Points from Campus Quest. Finish the previous level to unlock another chance to improve your total. Your progress follows your four-digit player code.`;
     el('progressStatusLabel').textContent = 'NEXT UNLOCK';
     el('progressStatusValue').textContent = `Level ${locked.id}`;
     el('progressStatusNote').textContent = `Finish Level ${available.findIndex((lv) => lv.id === locked.id)}`;
   } else {
     el('progressTitle').textContent = 'All available levels unlocked!';
-    el('progressMessage').textContent = 'Replay any level to improve your best score. Both levels together count for up to 100 Sheridan Points.';
+    el('progressMessage').textContent = 'All available levels are yours to explore! Replay either level to improve your personal best and earn more Sheridan Points.';
     el('progressStatusLabel').textContent = 'YOUR QUEST SCORE';
     el('progressStatusValue').textContent = `${getQuestPoints()} / 100`;
-    el('progressStatusNote').textContent = 'Best score from each level counts.';
+    el('progressStatusNote').textContent = 'Your best score from each level counts.';
   }
   el('levelsHeading').textContent = 'Choose your campus challenge';
-  el('levelsDescription').textContent = 'Levels unlock in order. Your best result for each level is saved in the shared Game Hub.';
+  el('levelsDescription').textContent = `You've earned ${getQuestPoints()} / 100 Sheridan Points in Campus Quest. Your best level results combine into one score; replay to improve it!`;
   if (next) {
     el('continueButton').href = next.href;
     el('continueEyebrow').textContent = state.levels[next.id].completed ? 'PLAY AGAIN' : 'CONTINUE YOUR QUEST';
@@ -52,7 +52,7 @@ function render() {
     card.className = `level-card ${saved.unlocked ? 'unlocked' : 'locked'}`;
     card.innerHTML = `<div class="level-card-image"><img src="${lv.image}" alt="${lv.title} preview" loading="lazy"><span class="level-number">LEVEL ${lv.id}</span><span class="level-lock">${saved.completed ? 'COMPLETED' : saved.unlocked ? 'UNLOCKED' : 'LOCKED'}</span></div>
       <div class="level-card-body"><div class="level-card-top"><h3>${lv.title}</h3><span class="difficulty-pill">${lv.difficulty}</span></div><p>${lv.description}</p>
-      <div class="level-meta"><div><span>BEST SCORE</span><strong>${saved.completed ? saved.bestScore + ' / 100' : '—'}</strong></div>
+      <div class="level-meta"><div><span>BEST LEVEL SCORE</span><strong>${saved.completed ? saved.bestScore + ' / 100' : '—'}</strong></div>
       <div><span>STATUS</span><strong>${saved.completed ? 'Finished' : saved.unlocked ? 'Ready' : 'Locked'}</strong></div>
       <div><span>ATTEMPTS HERE</span><strong>${saved.attempts}</strong></div></div>
       ${saved.unlocked ? `<a class="level-action play" href="${lv.href}">${saved.completed ? 'Play Again' : 'Play Level'}</a>` : `<span class="level-action locked">Complete Level ${prev?.id ?? 1} to unlock</span>`}</div>`;
