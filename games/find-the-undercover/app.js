@@ -1,5 +1,6 @@
 import { initStore } from '../../js/store.js';
 import { initChrome, requirePlayer, setGameplayActive, toast } from '../../js/ui.js';
+import { loadWordBank } from './word-bank.js';
 
 const MAX_ATTEMPTS = 5;
 const TOTAL_ROUNDS = 3;
@@ -319,10 +320,7 @@ async function initialize() {
   try {
     store = await initStore();
     initChrome(store);
-    const response = await fetch('./src/assets/words.json');
-    if (!response.ok) throw new Error(`Word bank request failed (${response.status})`);
-    state.words = await response.json();
-    if (!Array.isArray(state.words) || state.words.length === 0) throw new Error('Word bank is empty.');
+    state.words = await loadWordBank();
     renderIntro();
   } catch (error) {
     console.error(error);
@@ -330,7 +328,8 @@ async function initialize() {
       app.innerHTML = `<div class="top-bar"><h1>Find the Undercover</h1></div><p class="error-msg">Could not connect to the Game Hub. Please reload the page.</p>`;
       toast(error.message || 'Could not initialize Game Hub.', 'error');
     } else {
-      app.innerHTML = `<div class="top-bar"><h1>Find the Undercover</h1></div><p class="error-msg">Could not load the word bank. Make sure the site is hosted over HTTP and the <code>src/assets/words.json</code> file is available.</p>`;
+      app.innerHTML = `<div class="top-bar"><h1>Find the Undercover</h1></div><p class="error-msg">Could not load word pairs from Firebase: ${escapeHtml(error.message || 'Unknown error')}</p>`;
+      toast(error.message || 'Could not load the word bank from Firebase.', 'error');
     }
   }
 }
