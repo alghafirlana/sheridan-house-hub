@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Sheridan Campus Quest</title>
+    <link rel="icon" href="../../../assets/favicon.png" type="image/png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../../../css/main.css" />
 
     <link rel="stylesheet" href="../shared/css/app-shell.css" />
     <link rel="stylesheet" href="css/game.css" />
@@ -12,7 +17,8 @@
     <link rel="stylesheet" href="../css/hub-integration.css" />
   </head>
 
-  <body>
+  <body class="game-page campus-quest-page">
+    <div id="modeNotice" class="demo-notice" hidden></div>
     <div id="appHeader"></div>
 
     <main class="game-app">
@@ -200,5 +206,7 @@
     </dialog>
 
     <script type="module" src="js/game.js"></script>
+      <div id="modalRoot"></div>
+    <div id="toastRoot" class="toast-root" role="status" aria-live="polite"></div>
   </body>
 </html>
