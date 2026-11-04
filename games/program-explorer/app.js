@@ -448,7 +448,6 @@ function createLocalQuizRecommendations() {
   const q4Names = new Set(q4Eligible.map(program => program.name.toLowerCase()));
   const q2AndQ3 = q2Eligible.filter(program => q3Names.has(program.name.toLowerCase()));
   const allThree = q2AndQ3.filter(program => q4Names.has(program.name.toLowerCase()));
-
   let candidates;
   let reasonQuestionIds;
   if (allThree.length) {

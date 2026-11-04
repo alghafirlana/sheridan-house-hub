@@ -144,6 +144,7 @@ function revealMoreClues() {
 }
 
 async function submitFinalScore() {
+  if (state.status === 'SAVING') return;
   state.status = 'SAVING';
   state.scoreError = '';
   render();
@@ -157,9 +158,14 @@ async function submitFinalScore() {
   render();
 }
 
+function continueToScoreResult() {
+  if (state.status !== 'FINAL_READY') return;
+  submitFinalScore();
+}
+
 function finishGame(status) {
   state.pendingStatus = status;
-  state.status = 'SAVING';
+  state.status = 'FINAL_READY';
   if (!state.scoreSettled) {
     state.score += state.attemptsLeft * 2;
     state.scoreSettled = true;
@@ -168,7 +174,7 @@ function finishGame(status) {
   state.feedback = '';
   stopClock();
   setGameplayActive(false);
-  submitFinalScore();
+  render();
 }
 
 function nextRound() {
@@ -243,7 +249,9 @@ function render() {
   }
 
   const finalResult = state.status === 'WON' || state.status === 'LOST';
-  const settled = finalResult || state.status === 'SAVING' || state.status === 'ROUND_RESULT';
+  const finalReady = state.status === 'FINAL_READY';
+  const savingScore = state.status === 'SAVING';
+  const settled = finalResult || finalReady || savingScore || state.status === 'ROUND_RESULT';
   const npcCards = state.game.npcs.map(npc => `
     <article class="npc-card ${state.selectedNpcId === npc.id ? 'active' : ''}" data-npc-id="${npc.id}" role="button" tabindex="0" aria-pressed="${state.selectedNpcId === npc.id}">
       <div class="npc-word">${settled ? escapeHtml(npc.word) : '<span aria-label="Word hidden">？？？</span>'}</div>
@@ -251,16 +259,30 @@ function render() {
       <ul>${npc.displayedClues.map((clue, index) => `<li><strong>Clue ${index + 1}:</strong> ${escapeHtml(clue)}</li>`).join('')}</ul>
     </article>`).join('');
 
-  const showRoundResult = state.status === 'ROUND_RESULT' || finalResult || state.status === 'SAVING';
+  const showRoundResult = state.status === 'ROUND_RESULT' || finalResult || finalReady || savingScore;
+  const scorePopup = finalResult || savingScore;
   const foundRound = state.roundOutcome === 'FOUND';
+  const finalTitle = scorePopup
+    ? (state.status === 'WON' || state.pendingStatus === 'WON' ? '🎉 Congratulations!' : 'Try again')
+    : foundRound ? '🎉 You found the undercover!' : '💥 The undercover got away.';
+  const scoreDetails = state.scoreResult ? `
+    <div class="final-result-stats">
+      <div><span>YOUR SCORE</span><strong>${state.scoreResult.points}</strong></div>
+      <div><span>POINTS ADDED</span><strong class="points-added">+${state.scoreResult.gained}</strong></div>
+      <div><span>PERSONAL BEST</span><strong>${state.scoreResult.best}</strong></div>
+    </div>
+    <p class="score-save-message ${store?.mode === 'live' ? 'is-live' : ''}">${store?.mode === 'live' ? '✓ Score submitted to the live leaderboard!' : '✓ Score saved in demo mode on this browser.'}</p>
+    <div class="score-actions"><button class="primary-button" data-action="play-again">Play Again</button></div>` : state.scoreError ? `
+    <p class="error-msg">${escapeHtml(state.scoreError)} Your score has not been saved yet.</p>
+    <div class="score-actions"><button class="primary-button" data-action="retry-score">Retry saving score</button><button class="secondary-button" data-action="play-again">Play Again</button></div>` : '';
   const result = showRoundResult ? `
     <div class="round-result-backdrop">
       <section class="round-result-dialog" role="dialog" aria-modal="true" aria-labelledby="roundResultTitle" aria-live="assertive">
-        <div class="mini-eyebrow">ROUND ${state.round} / ${TOTAL_ROUNDS} RESULT</div>
-        <h2 id="roundResultTitle">${foundRound ? '🎉 You found the undercover!' : '💥 The undercover got away.'}</h2>
-        <p class="round-result-words">Civilian: <strong>${escapeHtml(state.game.civilianWord)}</strong><br>Undercover: <strong>${escapeHtml(state.game.undercoverWord)}</strong></p>
-        <div class="round-conclusion"><span>CONCLUSION</span><p>${escapeHtml(state.game.conclusion || 'No conclusion is available for this word pair.')}</p></div>
-        ${finalResult || state.status === 'SAVING' ? `<div class="final-score"><span>FINAL SCORE</span><strong>${state.score}<small>PTS</small></strong></div>${state.status === 'SAVING' ? '<p class="leaderboard-message">Sending your score to the leaderboard…</p>' : state.scoreResult ? `<p class="leaderboard-message">Your best: ${state.scoreResult.best}</p><div class="score-actions"><button class="primary-button" data-action="play-again">Play Again</button></div>` : `<p class="error-msg">${escapeHtml(state.scoreError)} Your score has not been saved yet.</p><div class="score-actions"><button class="primary-button" data-action="play-again">Play Again</button></div>`}` : '<div class="score-actions"><button class="primary-button" data-action="next-round">Continue</button></div>'}
+        <div class="mini-eyebrow">${scorePopup ? 'GAME RESULT' : `ROUND ${state.round} / ${TOTAL_ROUNDS} RESULT`}</div>
+        <h2 id="roundResultTitle">${finalTitle}</h2>
+        ${scorePopup ? '' : `<p class="round-result-words">Civilian: <strong>${escapeHtml(state.game.civilianWord)}</strong><br>Undercover: <strong>${escapeHtml(state.game.undercoverWord)}</strong></p>
+        <div class="round-conclusion"><span>CONCLUSION</span><p>${escapeHtml(state.game.conclusion || 'No conclusion is available for this word pair.')}</p></div>`}
+        ${finalReady ? '<div class="score-actions"><button class="primary-button" data-action="continue-score">Continue</button></div>' : savingScore ? '<p class="leaderboard-message">Submitting your score to the leaderboard…</p><div class="score-saving-spinner" aria-label="Saving score"></div>' : finalResult ? `<div class="final-score"><span>FINAL SCORE</span><strong>${state.score}<small>PTS</small></strong></div>${scoreDetails}` : '<div class="score-actions"><button class="primary-button" data-action="next-round">Continue</button></div>'}
       </section>
     </div>` : '';
   const intro = state.status === 'IDLE' ? `
@@ -278,7 +300,7 @@ function render() {
     <header class="game-header">
       <span>Round: ${state.round} / ${TOTAL_ROUNDS}</span>
       <span>Attempts: ${state.attemptsLeft} / ${MAX_ATTEMPTS}</span>
-      <span>Score: ${state.score}</span>
+      ${finalReady ? '' : `<span>Score: ${state.score}</span>`}
     </header>
     <section class="npc-grid">${npcCards}</section>
     ${state.feedback ? `<p class="vote-feedback" role="status">${escapeHtml(state.feedback)}</p>` : ''}
@@ -299,6 +321,8 @@ app.addEventListener('click', event => {
   if (action === 'vote') submitVote();
   if (action === 'more-clues') revealMoreClues();
   if (action === 'next-round') nextRound();
+  if (action === 'continue-score') continueToScoreResult();
+  if (action === 'retry-score') submitFinalScore();
   if (action === 'play-again') startGame();
 
   const npcCard = event.target.closest('[data-npc-id]');
