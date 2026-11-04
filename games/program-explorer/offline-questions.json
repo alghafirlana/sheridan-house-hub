@@ -1,6 +1,6 @@
 {
   "quiz_title": "Sheridan College Computing Program Selector",
-  "total_questions": 5,
+  "total_questions": 4,
   "questions": [
     {
       "id": 1,
@@ -30,89 +30,126 @@
         {
           "label": "A",
           "text": "Software Development, Mobile Apps & Game Programming",
-          "track": "software_development"
+          "track": "software_development",
+          "matched_programs": [
+            "Bachelor of Computer Science (Mobile Computing)",
+            "Game Development – Advanced Programming",
+            "Computer Programming (Diploma)",
+            "Computer Systems Technology – Software Development and Network Engineering (Advanced Diploma)"
+          ]
         },
         {
           "label": "B",
           "text": "Cybersecurity, Ethical Hacking & Infrastructure Defense",
-          "track": "cybersecurity"
+          "track": "cybersecurity",
+          "matched_programs": [
+            "Cloud Security (Graduate Certificate)",
+            "Computer Systems Technician – Cyber Security",
+            "Bachelor of Information Sciences – Cyber Security",
+            "Operational Technology Cybersecurity"
+          ]
         },
         {
           "label": "C",
           "text": "Artificial Intelligence, Data Science & Machine Learning",
-          "track": "ai_data"
+          "track": "ai_data",
+          "matched_programs": [
+            "Artificial Intelligence Development and Applications (Graduate Certificate)",
+            "Bachelor of Computer Science",
+            "Bachelor of Computer Science (Mobile Computing)"
+          ]
         },
         {
           "label": "D",
           "text": "Network Engineering, IT Infrastructure & Systems Administration",
-          "track": "networks_infrastructure"
+          "track": "networks_infrastructure",
+          "matched_programs": [
+            "Computer Systems Technician – Information Technology Infrastructure Services",
+            "Network Engineering Technology",
+            "Computer Systems Technology – Software Development and Network Engineering (Advanced Diploma)"
+          ]
         },
         {
           "label": "E",
           "text": "IT Project Management, UX/UI Design & Interactive Media",
-          "track": "management_design"
+          "track": "management_design",
+          "matched_programs": [
+            "Project Management – Information Technology",
+            "Interactive Media Management – Digital Design"
+          ]
         },
         {
           "label": "F",
           "text": "Comprehensive Computer Science Theory & Large-Scale Systems",
-          "track": "computer_science"
+          "track": "computer_science",
+          "matched_programs": [
+            "Bachelor of Computer Science",
+            "Computer Systems Technology – Software Development and Network Engineering (Advanced Diploma)",
+            "Bachelor of Computer Science (Mobile Computing)"
+          ]
         }
       ]
     },
     {
       "id": 3,
-      "question": "How long would you like to study before starting your next step?",
-      "options": [
-        {
-          "label": "A",
-          "text": "A shorter program so I can get started as soon as possible",
-          "duration": "short_term"
-        },
-        {
-          "label": "B",
-          "text": "A longer program that lets me explore the subject in depth",
-          "duration": "long_term_in_depth"
-        },
-        {
-          "label": "C",
-          "text": "I’m open to different program lengths",
-          "duration": "no_preference"
-        }
-      ]
-    },
-    {
-      "id": 4,
       "question": "When you picture your ideal daily tasks in tech, what do you prefer doing?",
       "options": [
         {
           "label": "A",
           "text": "Writing code, building applications, designing interfaces, or creating interactive game graphics.",
-          "task_preference": "coding_dev"
+          "task_preference": "coding_dev",
+          "matched_programs": [
+            "Bachelor of Computer Science (Mobile Computing)",
+            "Game Development – Advanced Programming",
+            "Computer Programming (Diploma)",
+            "Computer Systems Technology – Software Development and Network Engineering (Advanced Diploma)",
+            "Interactive Media Management – Digital Design"
+          ]
         },
         {
           "label": "B",
           "text": "Investigating security threats, auditing vulnerabilities, and defending network environments.",
-          "task_preference": "security_ops"
+          "task_preference": "security_ops",
+          "matched_programs": [
+            "Cloud Security (Graduate Certificate)",
+            "Computer Systems Technician – Cyber Security",
+            "Bachelor of Information Sciences – Cyber Security",
+            "Operational Technology Cybersecurity"
+          ]
         },
         {
           "label": "C",
           "text": "Training smart data models, analyzing big data patterns, and building automated tools.",
-          "task_preference": "ai_analytics"
+          "task_preference": "ai_analytics",
+          "matched_programs": [
+            "Artificial Intelligence Development and Applications (Graduate Certificate)",
+            "Bachelor of Computer Science",
+            "Bachelor of Computer Science (Mobile Computing)"
+          ]
         },
         {
           "label": "D",
           "text": "Configuring routers, setting up cloud hardware, and keeping system backbones running smoothly.",
-          "task_preference": "sys_networking"
+          "task_preference": "sys_networking",
+          "matched_programs": [
+            "Computer Systems Technician – Information Technology Infrastructure Services",
+            "Network Engineering Technology",
+            "Computer Systems Technology – Software Development and Network Engineering (Advanced Diploma)"
+          ]
         },
         {
           "label": "E",
           "text": "Leading agile sprint teams, planning projects, or designing user-centric web/app interfaces.",
-          "task_preference": "mgmt_ux"
+          "task_preference": "mgmt_ux",
+          "matched_programs": [
+            "Project Management – Information Technology",
+            "Interactive Media Management – Digital Design"
+          ]
         }
       ]
     },
     {
-      "id": 5,
+      "id": 4,
       "question": "When you graduate, what kind of project or real-world impact would you love to focus on?",
       "options": [
         {
