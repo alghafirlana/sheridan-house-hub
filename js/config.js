@@ -12,6 +12,21 @@ export const CONFIG = Object.freeze({
   },
 });
 
+/**
+ * THE ONLY PLACE TO CHANGE SCORING LEVEL COUNTS.
+ * Each active level is weighted equally; unplayed levels count as zero.
+ * Freeze these counts throughout an Open House. For a future event, change
+ * CONFIG.eventId and these counts, then run:
+ *   node scripts/sync-firestore-rules.mjs
+ * Publish the generated firestore.rules in Firebase Console.
+ * New hardware can be added to the library without changing these values,
+ * but becomes competitive only once included in a future scoring roster.
+ */
+export const SCORED_LEVEL_COUNTS = Object.freeze({
+  "campus-quest": 2,
+  "hardware-challenge": 4,
+});
+
 /** Add new games here. A new competitive game must ALSO be added to firestore.rules. */
 export const GAMES = [
   {
@@ -47,9 +62,10 @@ export const GAMES = [
     description: "Explore computer components and recognize the right parts.",
     icon: "cpu",
     accent: "mint",
-    status: "soon",
+    status: "playable",
     competitive: true,
-    duration: "Coming soon",
+    href: "games/hardware-challenge/index.html",
+    duration: "3–6 min",
   },
   {
     id: "find-undercover",
