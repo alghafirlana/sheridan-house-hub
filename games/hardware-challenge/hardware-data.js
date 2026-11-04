@@ -1,20 +1,4 @@
-/**
- * Hardware Challenge question bank.
- *
- * These four launch assets are the user-approved hc1.png–hc4.png images,
- * copied as-is. They are not the previous photo crops. Small AI-rendered
- * detail differences may exist versus the professor's original photos.
- *
- * Hotspot polygons use pixel coordinates in the APPROVED IMAGE ITSELF.
- * The SVG viewBox tracks image width/height, preserving hit alignment at
- * different screen sizes and zoom levels.
- *
- * displayRotation rotates the image AND its hotspots visually in the viewer,
- * without modifying the original image or hotspot coordinates. Use 0/90/180/270.
- * Add more hardware by adding an image and a level here. Set the number of
- * competitive levels for a NEW event once in ../../js/config.js.
- */
-// Multiple disjoint polygons can belong to one answer (e.g. each RAM slot).
+import { SERVER_LEVEL } from "./hardware-server-level.js";
 const p = (id, label, question, fact, geometry) => {
   // One physical hotspot can have several question wordings. A round asks
   // about each physical target at most once, with the prompt randomized.
@@ -1090,6 +1074,9 @@ for (const target of wifiLevel.targets) {
 
   target.regions = typeof geometry[0][0] === "number" ? [geometry] : geometry;
 }
+
+// The optional digital-only Server Explorer level. Existing hotspots are unchanged.
+HARDWARE_LEVELS.push(SERVER_LEVEL);
 
 export const activeHardware = () => HARDWARE_LEVELS.filter((h) => h.enabled);
 export const getHardwareLevel = (id) =>

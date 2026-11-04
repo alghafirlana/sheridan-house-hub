@@ -185,13 +185,13 @@ function showLibrary() {
   round = null;
   setGameplayActive(false);
   const active = activeHardware();
-  app.innerHTML = `${header("Explore the hardware", "Pick any available photo mission. Play and replay levels to build your leaderboard score.", "home")}
+  app.innerHTML = `${header("Explore the hardware", "Choose a hardware photo. The first four levels earn leaderboard points; the new server level is digital practice until the next scoring event.", "home")}
     <section class="hc-library-head"><h2>Choose a hardware level</h2><span>${active.length} photo missions</span></section>
     <section class="hc-level-grid">${active
       .map((level) => {
         const eligible = scored().has(level.id);
         const best = scores()[level.id];
-        return `<article class="hc-level-card"><div class="hc-level-image"><img src="${escape(level.thumbnail || level.image)}" alt="${escape(level.subtitle)}" loading="lazy"/><span class="hc-level-number">LEVEL ${level.id}</span></div><div class="hc-level-body"><div class="hc-level-tags"><span>${eligible ? "SCORED LEVEL" : "PREVIEW ONLY"}</span><span>${typeof best === "number" ? "✓ COMPLETED" : "NOT PLAYED"}</span></div><h3>${escape(level.title)}</h3><p>${escape(level.description)}</p><div class="hc-level-foot"><div><small>BEST SCORE</small><strong>${typeof best === "number" ? `${best} / 100` : "—"}</strong></div><button data-level="${level.id}" class="hc-btn hc-btn-dark" type="button" ${eligible ? "" : 'disabled title="This level joins scoring at a future event"'}>${!eligible ? "Next event" : typeof best === "number" ? "Play again" : "Play level"} →</button></div></div></article>`;
+        return `<article class="hc-level-card"><div class="hc-level-image"><img src="${escape(level.thumbnail || level.image)}" alt="${escape(level.subtitle)}" loading="lazy"/><span class="hc-level-number">LEVEL ${level.id}</span></div><div class="hc-level-body"><div class="hc-level-tags"><span>${eligible ? "SCORED LEVEL" : "DIGITAL PRACTICE"}</span><span>${typeof best === "number" ? "✓ COMPLETED" : "NOT PLAYED"}</span></div><h3>${escape(level.title)}</h3><p>${escape(level.description)}</p><div class="hc-level-foot"><div><small>BEST SCORE</small><strong>${typeof best === "number" ? `${best} / 100` : "—"}</strong></div><button data-level="${level.id}" class="hc-btn hc-btn-dark" type="button" >${!eligible ? "Practice level" : typeof best === "number" ? "Play again" : "Play level"} →</button></div></div></article>`;
       })
       .join(
         "",
@@ -211,11 +211,6 @@ function showLibrary() {
 function startLevel(level, mode) {
   if (!level?.enabled || !validHotspots(level))
     return toast("This level needs its image or hotspots checked.", "error");
-  if (!scored().has(level.id))
-    return toast(
-      "This is a preview level; activate it for a future event first.",
-      "error",
-    );
   const recent = readLocal(savedKey(`recent-${level.id}`), []);
   const questions = chooseQuestions(level, recent);
   if (!questions.length)
@@ -504,6 +499,16 @@ async function nextQuestion() {
   const { level, questions, earned, mode } = round;
   const score = roundScore(earned, 10 * questions.length);
   try {
+    if (!scored().has(level.id)) {
+      const recentKey = savedKey(`recent-${level.id}`);
+      const recent = readLocal(recentKey, []);
+      writeLocal(recentKey, [...new Set([...questions.map(q => q.id), ...recent])].slice(0, level.targets.length));
+      round.finished = true;
+      clearSavedRound();
+      setGameplayActive(false);
+      showPracticeResult(level, mode, score);
+      return;
+    }
     const result = await submitLevelResult(store, GAME_ID, level.id, score);
     const recentKey = savedKey(`recent-${level.id}`);
     const recent = readLocal(recentKey, []);
@@ -532,6 +537,30 @@ async function nextQuestion() {
   } finally {
     busy = false;
   }
+}
+function showPracticeResult(level, mode, score) {
+  clearSavedRound();
+  leaveQuestionView();
+  round = null;
+  app.dataset.view = "result";
+  app.innerHTML = `${header("Server mission complete!", "Digital practice — your existing leaderboard score is unchanged.", "library")}
+    <section class="hc-results">
+      <div class="hc-results-icon" aria-hidden="true">🖥️</div>
+      <span class="hc-label">DIGITAL PRACTICE • ${escape(level.title.toUpperCase())}</span>
+      <h2>Great exploring!</h2>
+      <p>You answered questions about the inside of a server. This optional level is for learning and does not change your Sheridan Points for the current event.</p>
+      <div class="hc-result-stats"><div><span>YOUR PRACTICE SCORE</span><strong>${score}<small>/100</small></strong></div><div><span>LEADERBOARD POINTS ADDED</span><strong class="mint">+0</strong></div><div><span>HARDWARE CHALLENGE TOTAL</span><strong>${hubPoints()}<small>/100</small></strong></div></div>
+      <div class="hc-save">Practice complete — no Firebase score was submitted. <small>This server mission can become scored at a future event by updating the central scoring-level count and publishing new Firestore rules.</small></div>
+      <div class="hc-result-actions">
+        <button class="hc-btn hc-btn-mint" id="anotherLevel" type="button">Explore another level →</button>
+        <button class="hc-btn hc-btn-outline" id="replay" type="button">Replay this level</button>
+        <button class="hc-btn hc-btn-dark" id="returnChallenge" type="button">← Back to Hardware Challenge</button>
+      </div>
+    </section>`;
+  wireBack("library");
+  app.querySelector("#anotherLevel").addEventListener("click", showLibrary);
+  app.querySelector("#replay").addEventListener("click", () => startLevel(level, mode));
+  app.querySelector("#returnChallenge").addEventListener("click", showHome);
 }
 function showResult(level, mode, result) {
   clearSavedRound();

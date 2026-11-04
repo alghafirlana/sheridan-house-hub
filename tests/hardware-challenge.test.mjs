@@ -82,15 +82,15 @@ test('Firestore generated score IDs match the single configured counts',()=>{
 
 
 test('launch levels reference the exact approved HC images and image geometry',()=>{
-  const expected=['hc2.png','hc4.png','hc3.png','hc1.png'];
+  const expected=['hc2.png','hc4.png','hc3.png','hc1.png','hc5.png'];
   for(const [i,level] of HARDWARE_LEVELS.entries()){
     assert.equal(level.image,`assets/${expected[i]}`);
     const data=readFileSync(new URL(`../games/hardware-challenge/${level.image}`,import.meta.url));
     assert.equal(data.toString('ascii',1,4),'PNG');
     assert.equal(data.readUInt32BE(16),level.width);
     assert.equal(data.readUInt32BE(20),level.height);
-    assert.equal(level.width,1122);
-    assert.equal(level.height,1402);
+    assert.equal(level.width,i === 4 ? 1448 : 1122);
+    assert.equal(level.height,i === 4 ? 1086 : 1402);
     assert.equal(validHotspots(level),true);
   }
   const [two,four,dell,wifi]=HARDWARE_LEVELS;
@@ -127,8 +127,8 @@ test('horizontal photo display uses the correct contain geometry and does not al
 
 
 test('expanded hardware question bank has unique targets and randomized prompt variants',()=>{
-  assert.deepEqual(HARDWARE_LEVELS.map(level=>level.targets.length),[12,12,10,8]);
-  assert.deepEqual(HARDWARE_LEVELS.map(level=>level.questionsPerRound),[5,5,5,4]);
+  assert.deepEqual(HARDWARE_LEVELS.map(level=>level.targets.length),[12,12,10,8,15]);
+  assert.deepEqual(HARDWARE_LEVELS.map(level=>level.questionsPerRound),[5,5,5,4,6]);
   for(const level of HARDWARE_LEVELS){
     assert.ok(validHotspots(level));
     assert.equal(new Set(level.targets.map(t=>t.id)).size,level.targets.length);
