@@ -4,7 +4,6 @@ import TimerManager from "../features/TimerManager.js";
 
 import levels from "../../../levels/manifest.js";
 
-
 /* =========================================================
    IMPLEMENTED LEVELS
 ========================================================= */
@@ -18,7 +17,11 @@ const implementedLevels = levels
 ========================================================= */
 
 export default class GameController {
-  constructor(model, view, { user, progressStore, onFinished = () => {} } = {}) {
+  constructor(
+    model,
+    view,
+    { user, progressStore, onFinished = () => {} } = {},
+  ) {
     this.model = model;
     this.view = view;
 
@@ -719,16 +722,21 @@ export default class GameController {
     let leaderboardRank = null;
     let savedResult;
     try {
-      const completion = await this.progressStore.completeLevel(this.model.level.id, {
-        score: finalScore,
-        timeSeconds: elapsedSeconds,
-      });
+      const completion = await this.progressStore.completeLevel(
+        this.model.level.id,
+        {
+          score: finalScore,
+          timeSeconds: elapsedSeconds,
+        },
+      );
       savedResult = completion.result;
     } catch (error) {
       console.error("Unable to save Campus Quest result:", error);
       this.inputLocked = false;
-      this.view.loadError.querySelector('h2').textContent = 'Could not save your score';
-      this.view.loadError.querySelector('p').textContent = 'Your result has not been recorded. Check your connection or Firebase rules, then return to the challenge.';
+      this.view.loadError.querySelector("h2").textContent =
+        "Could not save your score";
+      this.view.loadError.querySelector("p").textContent =
+        "Your result has not been recorded. Check your connection or Firebase rules, then return to the challenge.";
       this.view.showLoadError();
       return;
     }

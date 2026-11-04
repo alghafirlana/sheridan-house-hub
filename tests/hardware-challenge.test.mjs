@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 import { SCORED_LEVEL_COUNTS, GAMES } from "../js/config.js";
 import { scoredLevelIds, scoredGamePoints, scoreSummary, submitLevelResult, levelGameInfo } from "../js/scoring-core.js";
 import { HARDWARE_LEVELS } from "../games/hardware-challenge/hardware-data.js";
-import { chooseQuestions, chooseQuickLevel, roundScore, validHotspots, fittedPhotoGeometry } from "../games/hardware-challenge/hardware-logic.js";
+import { chooseQuestions, chooseQuickLevel, roundScore, validHotspots, fittedPhotoGeometry, recoverHardwareRound } from "../games/hardware-challenge/hardware-logic.js";
 import { initStore } from "../js/store.js";
 
 class Storage { constructor(){this.map=new Map()} getItem(k){return this.map.get(k)??null} setItem(k,v){this.map.set(k,String(v))} removeItem(k){this.map.delete(k)} clear(){this.map.clear()} }
@@ -123,4 +123,58 @@ test('horizontal photo display uses the correct contain geometry and does not al
   assert.match(code,/stage\.style\.transform = `translate\(-50%, -50%\).*rotate\(\$\{rotation\}deg\)/);
   assert.match(code,/id="rotateImage"/);
   assert.match(code,/hc-mobile-prompt-meta/);
+});
+
+
+test('expanded hardware question bank has unique targets and randomized prompt variants',()=>{
+  assert.deepEqual(HARDWARE_LEVELS.map(level=>level.targets.length),[12,12,10,8]);
+  assert.deepEqual(HARDWARE_LEVELS.map(level=>level.questionsPerRound),[5,5,5,4]);
+  for(const level of HARDWARE_LEVELS){
+    assert.ok(validHotspots(level));
+    assert.equal(new Set(level.targets.map(t=>t.id)).size,level.targets.length);
+    for(const target of level.targets){
+      assert.ok(target.questionVariants.length >= 2, `${level.id}/${target.id} should have more than one question`);
+      assert.equal(new Set(target.questionVariants).size,target.questionVariants.length);
+      assert.ok(target.questionVariants.every(p=>typeof p==='string' && p.length>10));
+    }
+  }
+  const stub={questionsPerRound:1,targets:[{id:'a',question:'Prompt one',questionVariants:['Prompt one','Prompt two']}]};
+  assert.equal(chooseQuestions(stub,[],()=>0.01)[0].question,'Prompt one');
+  assert.equal(chooseQuestions(stub,[],()=>0.99)[0].question,'Prompt two');
+  assert.equal(stub.targets[0].question,'Prompt one','question selection should not mutate source targets');
+});
+
+test('unfinished round survives a development-server reload without affecting Firebase scoring',()=>{
+  const source=readFileSync(new URL('../games/hardware-challenge/hardware.js',import.meta.url),'utf8');
+  assert.match(source,/function persistRound\(\)/);
+  assert.match(source,/function restoreRound\(\)/);
+  assert.match(source,/sessionStorage\.setItem\(roundStorageKey/);
+  assert.match(source,/sessionStorage\.removeItem\(roundStorageKey/);
+  assert.match(source,/if \(!restoreRound\(\)\) showHome\(\)/);
+  assert.match(source,/if \(saved\.expanded\) app\.querySelector\(\"#expandImage\"\)\?\.click\(\)/);
+  assert.match(source,/round\.finished = true;\s+clearSavedRound\(\)/);
+  assert.match(source,/round\.playerId !== store\.player\?\.id/);
+});
+
+
+test('restoring a round preserves question, progress and current player, rejecting stale data',()=>{
+  const level=HARDWARE_LEVELS[0];
+  const qs=chooseQuestions(level,[],()=>0.3);
+  const saved={
+    version:1,playerId:'player-A',levelId:1,mode:'explore',
+    questionIds:qs.map(q=>q.id),questionPrompts:qs.map(q=>q.question),
+    step:2,tries:1,earned:15,feedback:null,saveError:null,
+  };
+  const round=recoverHardwareRound(saved,level,'player-A');
+  assert.ok(round);
+  assert.equal(round.step,2);
+  assert.equal(round.tries,1);
+  assert.equal(round.questions.length,5);
+  assert.deepEqual(round.questions.map(q=>q.question),qs.map(q=>q.question));
+  assert.equal(round.finished,false);
+  assert.equal(recoverHardwareRound(saved,level,'player-B'),null);
+  assert.equal(recoverHardwareRound({...saved,questionIds:['missing']},level,'player-A'),null);
+  assert.equal(recoverHardwareRound({...saved,earned:100},level,'player-A'),null);
+  assert.equal(recoverHardwareRound({...saved,questionIds:[qs[0].id,qs[0].id]},level,'player-A'),null);
+  assert.equal(recoverHardwareRound({...saved,step:42},level,'player-A'),null);
 });

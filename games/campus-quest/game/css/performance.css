@@ -194,7 +194,9 @@
    FRIENDLY, CONFIRMED CAMPUS QUEST SCORE FEEDBACK
 ========================================================= */
 .quest-result-summary.hidden,
-#replayButton.hidden { display: none !important; }
+#replayButton.hidden {
+  display: none !important;
+}
 
 /* The completion popup can be taller than a phone viewport. */
 .popup-card:has(.quest-result-summary:not(.hidden)) {
@@ -224,7 +226,7 @@
 
 .quest-result-metrics {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0,1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
 }
 
@@ -238,10 +240,27 @@
 }
 
 .quest-result-metric span,
-.quest-result-metric small { display:block; }
-.quest-result-metric span { color:#50718a; font-size:9px; font-weight:850; letter-spacing:.07em; }
-.quest-result-metric strong { display:block; margin:4px 0; font-size:clamp(23px,5vw,28px); line-height:1.2; color:#07577e; font-variant-numeric:tabular-nums; }
-.quest-result-metric small { color:#5c768e; font-size:10px; }
+.quest-result-metric small {
+  display: block;
+}
+.quest-result-metric span {
+  color: #50718a;
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: 0.07em;
+}
+.quest-result-metric strong {
+  display: block;
+  margin: 4px 0;
+  font-size: clamp(23px, 5vw, 28px);
+  line-height: 1.2;
+  color: #07577e;
+  font-variant-numeric: tabular-nums;
+}
+.quest-result-metric small {
+  color: #5c768e;
+  font-size: 10px;
+}
 
 .popup-card .quest-replay-message {
   margin: 12px 0 5px;
@@ -270,12 +289,19 @@
   border-radius: 10px;
   font-weight: 800;
 }
-#replayButton.completion-replay-button:hover { background:#d3edf2; }
-#replayButton.completion-replay-button:focus-visible { outline: 3px solid #53bbbd; outline-offset:3px; }
+#replayButton.completion-replay-button:hover {
+  background: #d3edf2;
+}
+#replayButton.completion-replay-button:focus-visible {
+  outline: 3px solid #53bbbd;
+  outline-offset: 3px;
+}
 
 /* Score card is more useful than decorative space on compact screens. */
 @media (max-width: 640px) {
-  .popup:has(.quest-result-summary:not(.hidden)) { padding: 10px; }
+  .popup:has(.quest-result-summary:not(.hidden)) {
+    padding: 10px;
+  }
   .popup-card:has(.quest-result-summary:not(.hidden)) {
     padding: 16px;
     max-height: calc(100dvh - 20px);
@@ -284,5 +310,7 @@
     width: 100%;
     min-height: 44px;
   }
-  .popup-stats { margin-bottom: 10px; }
+  .popup-stats {
+    margin-bottom: 10px;
+  }
 }

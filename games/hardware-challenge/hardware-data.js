@@ -15,13 +15,19 @@
  * competitive levels for a NEW event once in ../../js/config.js.
  */
 // Multiple disjoint polygons can belong to one answer (e.g. each RAM slot).
-const p = (id, label, question, fact, geometry) => ({
-  id,
-  label,
-  question,
-  fact,
-  regions: typeof geometry?.[0]?.[0] === "number" ? [geometry] : geometry,
-});
+const p = (id, label, question, fact, geometry) => {
+  // One physical hotspot can have several question wordings. A round asks
+  // about each physical target at most once, with the prompt randomized.
+  const questionVariants = Array.isArray(question) ? question : [question];
+  return {
+    id,
+    label,
+    question: questionVariants[0],
+    questionVariants,
+    fact,
+    regions: typeof geometry?.[0]?.[0] === "number" ? [geometry] : geometry,
+  };
+};
 const IMAGE_WIDTH = 1122;
 const IMAGE_HEIGHT = 1402;
 
@@ -38,12 +44,12 @@ export const HARDWARE_LEVELS = [
     displayRotation: 90,
     availability: "photo",
     enabled: true,
-    questionsPerRound: 4,
+    questionsPerRound: 5,
     targets: [
       p(
         "cpu",
         "CPU socket",
-        "Tap the CPU socket.",
+        ["Tap the CPU socket.", "Find the empty square socket where a processor would be installed."],
         "This is where the processor is installed. The socket in this photo is empty.",
         [
           [346, 807],
@@ -55,7 +61,7 @@ export const HARDWARE_LEVELS = [
       p(
         "ram",
         "RAM slots",
-        "Find the two long blue RAM slots.",
+        ["Find the two long blue RAM slots.", "Tap either of the two blue memory connectors."],
         "RAM slots hold memory modules used by the computer while it is running.",
         [
           [
@@ -77,7 +83,7 @@ export const HARDWARE_LEVELS = [
       p(
         "battery",
         "CMOS battery",
-        "Find the round silver CMOS battery.",
+        ["Find the round silver CMOS battery.", "Tap the round coin-cell battery."],
         "This coin-cell battery helps maintain the system clock and some motherboard settings.",
         [
           [468, 249],
@@ -93,7 +99,7 @@ export const HARDWARE_LEVELS = [
       p(
         "sata",
         "SATA ports",
-        "Find the group of four blue SATA ports.",
+        ["Find the group of four blue SATA ports.", "Tap one of the four blue storage connectors."],
         "SATA connectors let compatible SSDs and hard drives communicate with the motherboard.",
         [
           [
@@ -125,7 +131,7 @@ export const HARDWARE_LEVELS = [
       p(
         "atx",
         "24-pin power connector",
-        "Find the long blue motherboard power connector.",
+        ["Find the long blue motherboard power connector.", "Tap the 24-pin main power socket."],
         "The 24-pin ATX connector supplies main power to the motherboard.",
         [
           [44, 594],
@@ -137,18 +143,58 @@ export const HARDWARE_LEVELS = [
       p(
         "heatsink",
         "Chipset heatsink",
-        "Tap the large blue heatsink near the middle of the board.",
+        ["Tap the large blue heatsink near the middle of the board.", "Find the large blue finned cooling block."],
         "Heatsinks transfer heat away from chips to help prevent overheating.",
         [
-          [389, 478],
-          [433, 475],
-          [440, 468],
-          [638, 470],
-          [637, 598],
-          [710, 597],
-          [708, 629],
-          [389, 627],
+          [435, 474],
+          [639, 471],
+          [638, 591],
+          [706, 592],
+          [705, 625],
+          [437, 626],
         ],
+      ),
+      p(
+        "small-heatsink",
+        "Small blue heatsink",
+        ["Find the smaller blue finned heatsink.", "Tap the small blue cooling fins on this motherboard."],
+        "Metal heatsinks help dissipate heat from electronic components.",
+        [[207, 258], [337, 256], [338, 381], [209, 381]],
+      ),
+      p(
+        "pcie-x16",
+        "PCI Express x16 slot",
+        ["Find the long blue PCI Express expansion slot.", "Tap the blue expansion slot with a retaining clip."],
+        "PCI Express slots connect expansion cards such as compatible graphics cards.",
+        [[289, 390], [345, 385], [843, 385], [842, 417], [351, 420], [286, 430]],
+      ),
+      p(
+        "legacy-pci",
+        "Legacy PCI slot",
+        ["Find the long blue PCI slot marked PCI1.", "Tap the upper blue legacy expansion slot."],
+        "Legacy PCI slots support older compatible expansion cards.",
+        [[441, 178], [868, 179], [868, 239], [440, 238]],
+      ),
+      p(
+        "pcie-small",
+        "Short blue PCIe slot",
+        ["Find the short blue expansion slot near the CMOS battery.", "Tap the small blue PCI Express slot beside the ITE chip."],
+        "Short PCI Express slots can accept compatible add-in cards.",
+        [[713, 286], [841, 285], [842, 333], [713, 333]],
+      ),
+      p(
+        "cpu-power",
+        "Four-pin CPU power socket",
+        ["Tap the blue four-pin CPU power connector.", "Find the small blue 2-by-2 power socket."],
+        "This connector provides additional power for the CPU circuitry.",
+        [[741, 1190], [803, 1190], [805, 1257], [741, 1256]],
+      ),
+      p(
+        "vga",
+        "VGA display connector",
+        ["Find the blue VGA display connector at the rear edge.", "Tap the blue video socket with a white sticker."],
+        "VGA is an older analog display connector.",
+        [[945, 855], [1072, 856], [1075, 1143], [947, 1144]],
       ),
     ],
   },
@@ -164,12 +210,12 @@ export const HARDWARE_LEVELS = [
     displayRotation: 90,
     availability: "photo",
     enabled: true,
-    questionsPerRound: 4,
+    questionsPerRound: 5,
     targets: [
       p(
         "cpu",
         "CPU socket",
-        "Find the empty CPU socket.",
+        ["Find the empty CPU socket.", "Tap the square socket that holds a processor."],
         "The CPU socket holds the processor; this one is currently empty.",
         [
           [253, 531],
@@ -181,7 +227,7 @@ export const HARDWARE_LEVELS = [
       p(
         "ram",
         "RAM slots",
-        "Tap the four long memory slots.",
+        ["Tap the four long memory slots.", "Find any of the four alternating black-and-blue RAM slots."],
         "Four RAM slots let this board hold multiple compatible memory modules.",
         [
           [
@@ -213,7 +259,7 @@ export const HARDWARE_LEVELS = [
       p(
         "battery",
         "CMOS battery",
-        "Tap the round silver CMOS battery.",
+        ["Tap the round silver CMOS battery.", "Find the circular coin-cell battery."],
         "The coin-cell battery helps preserve timekeeping and certain settings when unplugged.",
         [
           [845, 198],
@@ -229,7 +275,7 @@ export const HARDWARE_LEVELS = [
       p(
         "sata",
         "SATA connectors",
-        "Find the group of six blue SATA connectors.",
+        ["Find the group of six blue SATA connectors.", "Tap one of the blue connectors used for SATA drives."],
         "SATA ports connect compatible storage devices to the computer.",
         [
           [
@@ -273,7 +319,7 @@ export const HARDWARE_LEVELS = [
       p(
         "power",
         "24-pin ATX power",
-        "Find the large blue 24-pin power connector.",
+        ["Find the large blue 24-pin power connector.", "Tap the long 24-pin ATX power socket."],
         "This main connector supplies power from the power supply to the motherboard.",
         [
           [456, 146],
@@ -285,17 +331,61 @@ export const HARDWARE_LEVELS = [
       p(
         "heatsink",
         "ASUS heatsink",
-        "Find the large blue ASUS heatsink beside the CPU socket.",
+        ["Find the large blue ASUS heatsink beside the CPU socket.", "Tap the blue ASUS-branded cooling block."],
         "Its metal body and fins carry heat away from the chip underneath.",
         [
-          [626, 464],
-          [732, 465],
-          [732, 535],
-          [757, 550],
-          [760, 792],
-          [621, 793],
-          [620, 546],
+          [624, 473],
+          [736, 473],
+          [734, 539],
+          [757, 547],
+          [757, 790],
+          [625, 789],
         ],
+      ),
+      p(
+        "small-heatsink",
+        "Small blue chipset heatsink",
+        ["Find the smaller blue heatsink beside the SATA connectors.", "Tap the small blue finned heatsink on this ASUS board."],
+        "A heatsink transfers heat from the chip beneath it into the air.",
+        [[826, 418], [942, 418], [940, 534], [828, 534]],
+      ),
+      p(
+        "pcie-x16",
+        "PCI Express x16 slot",
+        ["Find the tall blue PCI Express x16 slot.", "Tap the long dark-blue expansion connector with the clip."],
+        "A PCI Express x16 slot is commonly used for compatible graphics cards.",
+        [[800, 539], [839, 540], [838, 1018], [797, 1018], [788, 562]],
+      ),
+      p(
+        "pci",
+        "Legacy PCI slots",
+        ["Find the two long light-blue PCI slots.", "Tap either of the light-blue legacy expansion slots."],
+        "These older PCI slots accept compatible legacy add-in cards.",
+        [
+          [[892, 649], [940, 648], [941, 1042], [891, 1041]],
+          [[982, 649], [1031, 649], [1032, 1045], [981, 1045]],
+        ],
+      ),
+      p(
+        "pcie-small",
+        "Short PCI Express slot",
+        ["Find the small blue PCI Express slot beside the long slots.", "Tap the short blue expansion connector near the bottom of the motherboard."],
+        "Smaller PCI Express slots can connect compatible add-on cards.",
+        [[712, 899], [760, 899], [761, 1019], [711, 1018]],
+      ),
+      p(
+        "cpu-power",
+        "Four-pin CPU power connector",
+        ["Find the small blue square four-pin power connector.", "Tap the blue 2-by-2 CPU power socket."],
+        "This connector provides additional electrical power to the CPU.",
+        [[62, 861], [112, 861], [112, 916], [62, 916]],
+      ),
+      p(
+        "vga",
+        "Blue VGA video port",
+        ["Tap the large blue VGA display connector.", "Find the blue monitor connector along the rear edge."],
+        "VGA carries analog video to compatible monitors.",
+        [[227, 1119], [387, 1120], [387, 1260], [227, 1260]],
       ),
     ],
   },
@@ -311,12 +401,12 @@ export const HARDWARE_LEVELS = [
     displayRotation: 90,
     availability: "photo",
     enabled: true,
-    questionsPerRound: 4,
+    questionsPerRound: 5,
     targets: [
       p(
         "cpu",
         "Installed processor",
-        "Tap the installed CPU.",
+        ["Tap the installed CPU.", "Find the silver processor already mounted on this board."],
         "The CPU executes program instructions. This processor is installed in its socket.",
         [
           [482, 858],
@@ -328,7 +418,7 @@ export const HARDWARE_LEVELS = [
       p(
         "ram",
         "RAM slots",
-        "Find the four long black memory slots.",
+        ["Find the four long black memory slots.", "Tap any of the four memory-module connectors."],
         "These RAM slots hold the memory modules used by running programs.",
         [
           [
@@ -364,7 +454,7 @@ export const HARDWARE_LEVELS = [
       p(
         "heatsink",
         "Chipset heatsink",
-        "Tap the silver finned heatsink.",
+        ["Tap the silver finned heatsink.", "Find the silver metal cooling fins."],
         "The metal fins help release heat from the chip beneath them.",
         [
           [443, 419],
@@ -376,7 +466,7 @@ export const HARDWARE_LEVELS = [
       p(
         "pcie",
         "Blue expansion slot",
-        "Find the long blue expansion slot.",
+        ["Find the long blue expansion slot.", "Tap the long blue PCI Express connector."],
         "PCI Express expansion slots provide a way to add compatible expansion cards.",
         [
           [749, 323],
@@ -389,7 +479,7 @@ export const HARDWARE_LEVELS = [
       p(
         "pci",
         "White PCI slots",
-        "Find the two tall white expansion slots.",
+        ["Find the two tall white expansion slots.", "Tap either of the two long white PCI slots."],
         "Older PCI slots are designed for compatible legacy expansion cards.",
         [
           [
@@ -412,7 +502,7 @@ export const HARDWARE_LEVELS = [
       p(
         "battery",
         "Coin-cell battery holder",
-        "Find the round black battery holder.",
+        ["Find the round black battery holder.", "Tap the empty circular coin-cell holder."],
         "This holder is for a motherboard's RTC/CMOS battery; it appears empty in this photo.",
         [
           [644, 343],
@@ -424,6 +514,34 @@ export const HARDWARE_LEVELS = [
           [615, 416],
           [613, 371],
         ],
+      ),
+      p(
+        "parallel",
+        "Pink parallel port",
+        ["Find the large pink legacy parallel port.", "Tap the long pink connector in the rear I/O section."],
+        "Parallel ports were commonly used to connect older printers and peripherals.",
+        [[406, 123], [626, 124], [628, 252], [405, 252]],
+      ),
+      p(
+        "rear-blue",
+        "Blue rear-panel port",
+        ["Find the large blue connector in the rear port cluster.", "Tap the upright blue rear-panel connector beside the pink port."],
+        "Motherboards provide external connectors for peripherals and other devices.",
+        [[286, 127], [379, 128], [379, 255], [286, 254]],
+      ),
+      p(
+        "cpu-power",
+        "Four-pin ATX power connector",
+        ["Find the small white four-pin power socket.", "Tap the white 2-by-2 power connector on the green board."],
+        "An additional power connector supports the motherboard's CPU power circuitry.",
+        [[128, 1156], [174, 1156], [174, 1212], [127, 1212]],
+      ),
+      p(
+        "black-slot",
+        "Black expansion slot",
+        ["Find the long black expansion slot closest to the board's edge.", "Tap the vertical black expansion connector beside the white slots."],
+        "Expansion slots let compatible cards add capabilities to a computer.",
+        [[1007, 324], [1052, 324], [1052, 701], [1006, 701]],
       ),
     ],
   },
@@ -441,38 +559,37 @@ export const HARDWARE_LEVELS = [
     displayRotation: 0,
     availability: "photo",
     enabled: true,
-    questionsPerRound: 3,
+    questionsPerRound: 4,
     targets: [
       p(
         "antenna",
         "Wireless antenna",
-        "Tap the long black wireless antenna.",
+        ["Tap the long black wireless antenna.", "Find the angled black radio antenna."],
         "This antenna sends and receives radio signals for the Wi-Fi adapter.",
         [
-          [70, 923],
-          [82, 906],
-          [126, 882],
-          [187, 849],
-          [245, 821],
-          [312, 788],
-          [373, 762],
-          [395, 759],
-          [403, 773],
-          [400, 792],
-          [378, 799],
-          [331, 818],
-          [262, 852],
-          [193, 885],
-          [128, 923],
-          [95, 947],
-          [80, 955],
-          [72, 946],
+          [72, 914],
+          [123, 889],
+          [195, 855],
+          [277, 818],
+          [348, 786],
+          [387, 768],
+          [408, 763],
+          [408, 784],
+          [391, 805],
+          [348, 831],
+          [282, 866],
+          [204, 903],
+          [127, 945],
+          [97, 965],
+          [78, 971],
+          [66, 960],
+          [66, 938],
         ],
       ),
       p(
         "contacts",
         "PCI edge connector",
-        "Find the gold contacts on the edge of the card.",
+        ["Find the gold contacts on the edge of the card.", "Tap the gold PCI connector fingers."],
         "The gold contacts fit into a compatible PCI slot on a desktop motherboard.",
         [
           [
@@ -498,7 +615,7 @@ export const HARDWARE_LEVELS = [
       p(
         "bracket",
         "Metal mounting bracket",
-        "Tap the tall silver metal mounting bracket.",
+        ["Tap the tall silver metal mounting bracket.", "Find the silver bracket that attaches the adapter to a PC case."],
         "The metal bracket secures the card to a desktop computer case.",
         [
           [361, 436],
@@ -519,7 +636,7 @@ export const HARDWARE_LEVELS = [
       p(
         "chip",
         "Controller chip",
-        "Find the black square controller chip.",
+        ["Find the black square controller chip.", "Tap the large square integrated circuit on the green board."],
         "The controller chip handles communication between the adapter and the computer.",
         [
           [734, 707],
@@ -531,13 +648,37 @@ export const HARDWARE_LEVELS = [
       p(
         "shield",
         "Wireless module shield",
-        "Tap the silver rectangular module shield.",
+        ["Tap the silver rectangular module shield.", "Find the rectangular metal shield labelled iMicro."],
         "This metal cover shields a section of the adapter's wireless circuitry.",
         [
           [550, 706],
           [665, 707],
           [664, 783],
           [549, 782],
+        ],
+      ),
+      p(
+        "antenna-base",
+        "Antenna connector base",
+        ["Find the black connector where the antenna joins the card.", "Tap the black antenna mount beside the metal bracket."],
+        "The antenna connector provides the physical connection for the external antenna.",
+        [[441, 751], [475, 752], [475, 802], [441, 802]],
+      ),
+      p(
+        "coax",
+        "Thin gold RF cable",
+        ["Find the curved gold cable on the adapter.", "Tap the thin curved antenna cable beside the silver shield."],
+        "A short coaxial cable carries radio-frequency signals between components.",
+        [[504, 733], [520, 728], [531, 740], [536, 777], [544, 803], [539, 824], [522, 829], [510, 816], [510, 793]],
+      ),
+      p(
+        "screws",
+        "Bracket mounting screws",
+        ["Find one of the two silver screws holding the bracket.", "Tap either silver screw securing the Wi-Fi card."],
+        "The mounting screws hold the metal bracket firmly in place.",
+        [
+          [[438, 677], [463, 676], [468, 705], [441, 706]],
+          [[440, 806], [466, 805], [467, 831], [440, 831]],
         ],
       ),
     ],

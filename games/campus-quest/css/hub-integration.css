@@ -10,17 +10,37 @@
   font-size: 12px;
   font-weight: 800;
 }
-.header-settings:hover { background: #e3f1fc; }
-.hub-quest-error { max-width:560px; margin:14vh auto; padding:35px; font:16px/1.5 system-ui; }
-.hub-quest-error a { color:#00669b; }
-/* Campus Quest's desktop gameplay fills the space BELOW the standard 88px navbar. */
-@media (min-width:1025px) {
-  body:has(.game-app) { overflow: hidden; }
-  .game-app { height: calc(100dvh - 88px) !important; }
+.header-settings:hover {
+  background: #e3f1fc;
 }
-@media (max-width:1024px) {
-  body:has(.game-app) { overflow: auto; }
-  .game-app { height:auto; min-height:0; }
+.hub-quest-error {
+  max-width: 560px;
+  margin: 14vh auto;
+  padding: 35px;
+  font: 16px/1.5 system-ui;
+}
+.hub-quest-error a {
+  color: #00669b;
+}
+/* Campus Quest's desktop gameplay fills the space BELOW the standard 88px navbar. */
+@media (min-width: 1025px) {
+  body:has(.game-app) {
+    overflow: hidden;
+  }
+  .game-app {
+    height: calc(100dvh - 88px) !important;
+  }
+}
+@media (max-width: 1024px) {
+  body:has(.game-app) {
+    overflow: auto;
+  }
+  .game-app {
+    height: auto;
+    min-height: 0;
+  }
 }
 /* TV scoreboard stays separate, not advertised inside the game. */
-.completion-leaderboard-button { display:none !important; }
+.completion-leaderboard-button {
+  display: none !important;
+}

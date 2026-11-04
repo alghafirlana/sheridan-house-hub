@@ -11,7 +11,12 @@ export function chooseQuestions(hardware, recentIds = [], rng = Math.random) {
   const limit = Math.min(hardware.questionsPerRound || 4, hardware.targets.length);
   const unseen = shuffled(hardware.targets.filter(t => !recentIds.includes(t.id)), rng);
   const seen = shuffled(hardware.targets.filter(t => recentIds.includes(t.id)), rng);
-  return [...unseen, ...seen].slice(0, limit);
+  return [...unseen, ...seen].slice(0, limit).map(target => {
+    const prompts = target.questionVariants?.length
+      ? target.questionVariants : [target.question];
+    const index = Math.min(prompts.length - 1, Math.floor(rng() * prompts.length));
+    return { ...target, question: prompts[index] };
+  });
 }
 export function chooseQuickLevel(levels, savedScores = {}, lastLevelId = null, rng = Math.random) {
   const usable = levels.filter(l => l.enabled && l.targets.length > 0);
@@ -50,5 +55,31 @@ export function fittedPhotoGeometry(imageWidth, imageHeight, viewportWidth, view
     height: imageHeight * scale,
     fitWidth: orientedWidth * scale,
     fitHeight: orientedHeight * scale,
+  };
+}
+
+/** Restore a round after Live Server refreshes the current browser tab. */
+export function recoverHardwareRound(saved, level, playerId) {
+  if (!saved || saved.version !== 1 || saved.playerId !== playerId || !level) return null;
+  const ids = saved.questionIds;
+  if (!Array.isArray(ids) || !ids.length || ids.length > (level.questionsPerRound || 4) ||
+      new Set(ids).size !== ids.length ||
+      !Number.isInteger(saved.step) || saved.step < 0 || saved.step >= ids.length ||
+      !Number.isInteger(saved.tries) || saved.tries < 0 || saved.tries > 2 ||
+      !Number.isInteger(saved.earned) || saved.earned < 0 || saved.earned > 10 * (saved.step + 1)) return null;
+  const questions = ids.map((id, i) => {
+    const target = level.targets.find(t => t.id === id);
+    if (!target) return null;
+    const chosen = saved.questionPrompts?.[i];
+    const prompt = target.questionVariants?.includes(chosen) ? chosen : target.question;
+    return { ...target, question: prompt };
+  });
+  if (questions.some(q => !q)) return null;
+  return {
+    playerId, level, mode: saved.mode === 'quick' ? 'quick' : 'explore',
+    questions, step: saved.step, tries: saved.tries, earned: saved.earned,
+    feedback: saved.feedback?.finished ? saved.feedback : null,
+    saveError: typeof saved.saveError === 'string' ? saved.saveError : null,
+    finished: false,
   };
 }
