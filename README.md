@@ -2,7 +2,7 @@
 
 **Discover. Play. Explore.** A single-site game experience for prospective students at Sheridan Open House.
 
-> **Project status:** Working portal foundation + a playable Tech Sprint sample quiz. The other game cards are marked **Coming Soon** until their real implementations are added. This is a student-built activity, not an official Sheridan College service.
+> **Project status (November 2026):** Playable Tech Sprint, Campus Quest, Hardware Challenge, Find the Undercover, and Program Explorer. The separate Kahoot card remains Coming Soon. This is a student-built activity, not an official Sheridan College service.
 
 ## What's ready
 
@@ -197,7 +197,7 @@ Hardware Challenge has **two scored ways to play**:
 - **Explore Hardware:** select one of the hardware photos, identify random components, and save your best level result.
 - **Quick Challenge:** get a randomly selected hardware level (prefer unplayed levels), answer random questions, and save to that **same** level result. Playing both modes does **not** double your points.
 
-Both modes share the same hotspot renderer, photo zoom tools, second-chance feedback, and short explanations. Each round selects 3 or 4 different targets from its level's question bank; an answer correct on the first try earns 10 question points, second try 5, and two misses 0. The round total is normalized to a whole score out of 100 and only the **best completed score per level** is saved. Hotspots are SVG polygons aligned against the included photographs. Keyboard users can Tab through regions and press Enter; zoom buttons help on phones.
+Both modes share the same hotspot renderer, photo zoom tools, second-chance feedback, and short explanations. Each round selects a configured number of distinct targets (4–6, depending on the level) from its question bank; an answer correct on the first try earns 10 question points, second try 5, and two misses 0. The round total is normalized to a whole score out of 100 and only the **best completed score per level** is saved. Hotspots are SVG polygons aligned against the included photographs. Keyboard users can Tab through regions and press Enter; zoom buttons help on phones.
 
 ### Change the level count in ONE place for a future event
 
@@ -219,13 +219,13 @@ export const SCORED_LEVEL_COUNTS = Object.freeze({
 3. Run `node scripts/sync-firestore-rules.mjs` once. This generates the exact level-score IDs allowed by Firestore from the same config. **Publish the updated root `firestore.rules` in Firebase Console → Firestore Database → Rules**. Committing rules to GitHub alone will not publish them.
 4. Run `node --test tests/*.mjs` and test on a phone + two computers before opening the event.
 
-If a fifth hardware item is prepared during an existing event, you can add it to the collection, but it remains a **Next event** preview until you activate it in the next event's scored-level count. This is intentional: adding a fifth scoring level during an active four-level event would lower everyone's score even though they did nothing wrong. A hardware image can be used digitally without its physical component being displayed.
+The fifth hardware item, **Inside a Server** (`hc5.png`), is already installed and playable as **digital-only practice**. It contributes no leaderboard points while the current event keeps four scored levels. To make it scored at a future event, update the event ID and the centrally configured count from 4 to 5, regenerate Firestore rules, and publish them. Do not change the denominator during a live event, because that would reduce existing totals.
 
 ### Hardware image fidelity and hotspot review
 
-The four launch assets are the user's **approved `hc1.png`–`hc4.png` images copied without alteration** (byte-for-byte); these were derived from the professor's photos using earlier image editing and may contain minor AI-rendered differences from the physical hardware. We use large, visually verifiable parts rather than tiny printed chip labels. `hc1` is the wireless adapter, `hc2` is the **two-slot** ASUS motherboard, `hc3` is the Dell board with its CPU installed, and `hc4` is the **four-slot** ASUS motherboard. All hotspots are newly mapped against the exact approved images, rather than the previous original-photo crops.
+The first four assets are the user's **approved `hc1.png`–`hc4.png` images copied without alteration** (byte-for-byte); these were derived from the professor's photos using earlier image editing and may contain minor AI-rendered differences from the physical hardware. We use large, visually verifiable parts rather than tiny printed chip labels. `hc1` is the wireless adapter, `hc2` is the **two-slot** ASUS motherboard, `hc3` is the Dell board with its CPU installed, and `hc4` is the **four-slot** ASUS motherboard. All hotspots are newly mapped against the exact approved images, rather than the previous original-photo crops.
 
-A hidden QA aid shows every region outline for verification: open
+The fifth image is `hc5.png`, a generated server interior; its 15 hotspot targets are defined separately in `hardware-server-level.js`. A hidden QA aid shows every region outline for verification: open
 `games/hardware-challenge/index.html?debug=hotspots` after joining. You can zoom the images and compare region boundaries against the physical component. The hotspots are configured as pixel-coordinate polygons in `hardware-data.js`, including separate polygon regions for repeated parts such as RAM slots and SATA connectors. Changing the image, crop or its dimensions **requires remapping the hotspot coordinates**. All pages have a **Back to Hardware Challenge** button; an unfinished round requires confirmation before exiting. Keep the saved level IDs stable after launch to preserve scores.
 
 The user-facing physical-display status isn't guessed from the photo. Future hardware can be added digitally even if no physical version is available at the event.
