@@ -165,10 +165,11 @@ Example: 100 on Level 1 plus 80 on Level 2 → 90 Campus Quest points, not 180.
 A completed Level 1 (even a score of zero) unlocks Level 2 on other stations using the same player code.
 Tech Sprint remains independently worth up to 100 points.
 
-If more Campus Quest levels become playable **during a future event**, update all of:
-`levels/manifest.js`, `js/scoring-core.js` (`CAMPUS_QUEST_LEVEL_IDS`),
-`firestore.rules`, and the relevant level files. Do not change the number of scoring
-levels mid-event, because that would change the normalized points for existing players.
+For a future event with additional Campus Quest levels, add their level files and
+manifest entries, change the **single** `SCORED_LEVEL_COUNTS["campus-quest"]`
+setting in `js/config.js`, then run `node scripts/sync-firestore-rules.mjs`
+and **publish** the generated rules in Firebase Console. Do not increase the
+scored-level count during an existing event.
 
 ### Shared files and protections
 
@@ -186,3 +187,73 @@ and best-attempt updates. The test suite uses isolated demo storage and does not
 write to live Firebase. Also test the actual deployed portal on a phone and on two
 separate computers before Open House. QR codes should point to the published site,
 not to localhost.
+
+## Hardware Challenge and shared level scoring (November 2026)
+
+**Playable URL:** `games/hardware-challenge/index.html`. The portal card is enabled.
+
+Hardware Challenge has **two scored ways to play**:
+
+- **Explore Hardware:** select one of the hardware photos, identify random components, and save your best level result.
+- **Quick Challenge:** get a randomly selected hardware level (prefer unplayed levels), answer random questions, and save to that **same** level result. Playing both modes does **not** double your points.
+
+Both modes share the same hotspot renderer, photo zoom tools, second-chance feedback, and short explanations. Each round selects 3 or 4 different targets from its level's question bank; an answer correct on the first try earns 10 question points, second try 5, and two misses 0. The round total is normalized to a whole score out of 100 and only the **best completed score per level** is saved. Hotspots are SVG polygons aligned against the included photographs. Keyboard users can Tab through regions and press Enter; zoom buttons help on phones.
+
+### Change the level count in ONE place for a future event
+
+Open **`js/config.js`** and find:
+
+```js
+export const SCORED_LEVEL_COUNTS = Object.freeze({
+  "campus-quest": 2,
+  "hardware-challenge": 4,
+});
+```
+
+**This is the only place you edit the number of scored levels.** Every scored level has equal weight, unplayed levels count as zero, and the single combined score per game is the rounded average of level bests. Thus Hardware Challenge with 4 levels: `round((L1 + L2 + L3 + L4) / 4)`, maximum **100 Sheridan Points** total. Campus Quest with 2 levels: `round((L1 + L2) / 2)`. Scores always reflect the same formula in the game result and in the live leaderboard. Replay scores never replace a higher score.
+
+**Freeze the counts during an Open House.** For a future event that uses more scored levels:
+
+1. Add the next numbered level(s) and their photo/hotspot/question data to `games/hardware-challenge/hardware-data.js`; put the corresponding images in `games/hardware-challenge/assets/`.
+2. In `js/config.js`, set the **new eventId** and change only the corresponding entry in `SCORED_LEVEL_COUNTS` (e.g. Hardware Challenge from `4` to `5`). **Do not change the count mid-event**, since that would alter scores already on the live leaderboard.
+3. Run `node scripts/sync-firestore-rules.mjs` once. This generates the exact level-score IDs allowed by Firestore from the same config. **Publish the updated root `firestore.rules` in Firebase Console → Firestore Database → Rules**. Committing rules to GitHub alone will not publish them.
+4. Run `node --test tests/*.mjs` and test on a phone + two computers before opening the event.
+
+If a fifth hardware item is prepared during an existing event, you can add it to the collection, but it remains a **Next event** preview until you activate it in the next event's scored-level count. This is intentional: adding a fifth scoring level during an active four-level event would lower everyone's score even though they did nothing wrong. A hardware image can be used digitally without its physical component being displayed.
+
+### Hardware image fidelity and hotspot review
+
+The four launch assets are the user's **approved `hc1.png`–`hc4.png` images copied without alteration** (byte-for-byte); these were derived from the professor's photos using earlier image editing and may contain minor AI-rendered differences from the physical hardware. We use large, visually verifiable parts rather than tiny printed chip labels. `hc1` is the wireless adapter, `hc2` is the **two-slot** ASUS motherboard, `hc3` is the Dell board with its CPU installed, and `hc4` is the **four-slot** ASUS motherboard. All hotspots are newly mapped against the exact approved images, rather than the previous original-photo crops.
+
+A hidden QA aid shows every region outline for verification: open
+`games/hardware-challenge/index.html?debug=hotspots` after joining. You can zoom the images and compare region boundaries against the physical component. The hotspots are configured as pixel-coordinate polygons in `hardware-data.js`, including separate polygon regions for repeated parts such as RAM slots and SATA connectors. Changing the image, crop or its dimensions **requires remapping the hotspot coordinates**. All pages have a **Back to Hardware Challenge** button; an unfinished round requires confirmation before exiting. Keep the saved level IDs stable after launch to preserve scores.
+
+The user-facing physical-display status isn't guessed from the photo. Future hardware can be added digitally even if no physical version is available at the event.
+
+
+### Replacing the previous Hardware Challenge assets (HC hotspot update)
+
+The approved files `hc1.png` through `hc4.png` are used without resizing, cropping or modifying the images. The **game's level order** is HC2 (two-RAM ASUS), HC4 (four-RAM ASUS), HC3 (Dell), HC1 (wireless adapter). This retains your original four level score IDs.
+
+If you apply the **update-only ZIP** over an older checkout, the four old `.jpg` assets are unused and can be deleted to avoid storing duplicate photos:
+
+```sh
+rm games/hardware-challenge/assets/asus-two-slots.jpg \
+   games/hardware-challenge/assets/asus-four-slots.jpg \
+   games/hardware-challenge/assets/dell-motherboard.jpg \
+   games/hardware-challenge/assets/wifi-adapter.jpg
+```
+
+The full project ZIP has these obsolete JPGs already removed.
+
+The **Back to Hardware Challenge** button is visible in Explore Hardware, gameplay and the result screen. Exiting an unfinished level asks for confirmation before discarding that attempt. Neither scoring rules nor Firebase configuration changed in this update.
+
+
+### Limitations and testing
+
+- This static GitHub Pages site does not have a trusted backend, so a determined visitor could forge game outcomes. The Firestore rules constrain the allowed score IDs, ranges, player membership and best-score updates; they do not prove that someone tapped the right component.
+- The score ID allowlist is generated by `scripts/sync-firestore-rules.mjs`; whenever you edit the scoring config you must regenerate **and publish** the rules.
+- User scores are tied to the existing shared four-digit player code and existing Firebase project. No second account or Firebase project is needed.
+- Local/demo mode saves only on that browser. Check that the demo banner disappears in your production deployment.
+
+Official references: [Firebase Firestore security rules](https://firebase.google.com/docs/firestore/security/get-started), [Firebase transactions](https://firebase.google.com/docs/firestore/manage-data/transactions), [GitHub Pages static deployment](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages).

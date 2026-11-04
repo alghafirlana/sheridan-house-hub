@@ -1,7 +1,7 @@
 /** Campus Quest uses the Game Hub's 4-digit player identity and live score store. */
 import { initStore, markSessionActivity } from "../../../js/store.js";
 import { CONFIG } from "../../../js/config.js";
-import { CAMPUS_QUEST_LEVEL_IDS, campusQuestLevelGameId, campusQuestPoints } from "../../../js/scoring-core.js";
+import { CAMPUS_QUEST_LEVEL_IDS, submitLevelResult } from "../../../js/scoring-core.js";
 
 const hubHome = new URL("../../../index.html", import.meta.url).href;
 let gameActive = false;
@@ -107,28 +107,17 @@ export function createQuestProgressStore(store, levelIds = CAMPUS_QUEST_LEVEL_ID
     const levelId = Number(id);
     if (!ids.includes(levelId)) throw Error('Invalid Quest level.');
     const points = Math.max(0, Math.min(100, Math.round(score)));
-    // Capture the old board before the transaction/real-time listener updates it.
-    const oldLevels = { ...store.questLevelScores() };
-    // Resolves only after Firestore accepts the transaction, or the local demo writes.
-    const saved = await store.submitScore(campusQuestLevelGameId(levelId), points);
-    // Use the transaction's actual previous best to handle a replay from another station.
-    const before = { ...oldLevels, [levelId]: saved.previous };
-    const after = { ...before, [levelId]: saved.best };
-    const previousQuestPoints = campusQuestPoints(before);
-    const questPoints = campusQuestPoints(after);
+    const result = await submitLevelResult(store, "campus-quest", levelId, points);
+    const saved = { best: result.bestScore };
     localScores.set(levelId, Math.max(localScores.get(levelId) ?? 0, saved.best));
     return {
       ...getSnapshot(),
       result: {
-        levelScore: points,
-        previousBest: saved.previous,
-        bestScore: saved.best,
-        personalBest: saved.gained > 0,
-        previousQuestPoints,
-        questPoints,
-        pointsAdded: Math.max(0, questPoints - previousQuestPoints),
-        savedToLeaderboard: store.mode === 'live',
+        ...result,
+        previousQuestPoints: result.previousGamePoints,
+        questPoints: result.gamePoints,
       },
+
     };
   }
   return { getSnapshot, startLevel, completeLevel };
