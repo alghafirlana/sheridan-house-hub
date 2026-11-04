@@ -60,7 +60,7 @@ service cloud.firestore {
           && request.resource.data.keys().hasAll(['playerId','gameId','points','updatedAt'])
           && request.resource.data.playerId is string
           && request.resource.data.gameId is string
-          && request.resource.data.gameId in ['tech-sprint', 'campus-quest-level-1', 'campus-quest-level-2'] // one record per Quest level
+          && request.resource.data.gameId in ['tech-sprint', 'find-undercover', 'campus-quest-level-1', 'campus-quest-level-2'] // one record per Quest level
           && scoreId == request.resource.data.playerId + '_' + request.resource.data.gameId
           && validPlayerMembership(eventId, request.resource.data.playerId)
           && request.resource.data.points is int

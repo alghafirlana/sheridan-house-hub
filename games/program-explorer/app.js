@@ -389,7 +389,7 @@ const firstQuizQuestion = {
     'I’m exploring different fields.'
   ]
 };
-const QUIZ_RESPONSE_TIMEOUT_MS = 3000;
+const QUIZ_RESPONSE_TIMEOUT_MS = 2500;
 const ENABLE_LOCAL_QUIZ_FALLBACK = true;
 const localQuizQuestionBank = [];
 let localQuizMode = false;
@@ -448,6 +448,7 @@ async function requestQuizStep() {
             : {})
         })),
         knowledge: knowledgeMarkdown,
+        localMode: localQuizMode,
         recommendNow
       })
     }).then(async response => {
@@ -524,19 +525,21 @@ function renderQuiz() {
     quizRecommendations.forEach((recommendation, index) => {
       const program = programs.find(item => item.name.toLowerCase() === recommendation.name.toLowerCase());
       if (!program) return;
+      const programCard = document.createElement('article');
+      programCard.className = 'recommended-program-card';
       const heading = document.createElement('h3');
       heading.textContent = `${index + 1}. ${program.name}`;
-      card.append(heading);
+      programCard.append(heading);
       const reason = document.createElement('p');
       reason.textContent = recommendation.reason;
-      card.append(reason);
+      programCard.append(reason);
       const details = document.createElement('p');
       const credentialLabel = document.createElement('strong');
       credentialLabel.textContent = 'Credential: ';
       const careersLabel = document.createElement('strong');
       careersLabel.textContent = 'Career paths: ';
       details.append(credentialLabel, document.createTextNode(program.credential), document.createElement('br'), careersLabel, document.createTextNode(program.careers));
-      card.append(details);
+      programCard.append(details);
       const learnMore = document.createElement('button');
       learnMore.className = 'text-button learn-more-button';
       learnMore.type = 'button';
@@ -545,7 +548,8 @@ function renderQuiz() {
         switchMode('chat');
         void sendChatMessage(`Tell me more about the ${program.name} program, including its curriculum, key highlights, and career paths.`);
       });
-      card.append(learnMore);
+      programCard.append(learnMore);
+      card.append(programCard);
     });
     if (quizRecommendations.length > 1) {
       const compareRecommendations = document.createElement('button');
