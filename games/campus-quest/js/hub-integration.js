@@ -1,33 +1,28 @@
 /** Campus Quest uses the Game Hub's 4-digit player identity and live score store. */
-import { initStore, markSessionActivity } from "../../../js/store.js";
+import { initStore } from "../../../js/store.js";
+import { initChrome, setGameplayActive as setHubGameplayActive } from "../../../js/ui.js";
 import { CONFIG } from "../../../js/config.js";
 import { CAMPUS_QUEST_LEVEL_IDS, submitLevelResult } from "../../../js/scoring-core.js";
 
 const hubHome = new URL("../../../index.html", import.meta.url).href;
-let gameActive = false;
+const questHome = new URL("../home.html", import.meta.url).href;
+const logoUrl = new URL("../../../assets/sheridan-logo.webp", import.meta.url).href;
 
-function showHeader(store, gameplay) {
+function showHeader(gameplay) {
   const host = document.querySelector("#appHeader");
-  host.innerHTML = `<header class="hub-quest-header">
-    <a class="hub-quest-brand" href="${hubHome}"><span class="hub-quest-spark">✳</span><span><strong>SHERIDAN</strong><small>GAME HUB · CAMPUS QUEST</small></span></a>
-    <div class="hub-quest-actions">
-      <span class="hub-quest-points" id="questPoints"></span>
-      <span class="hub-quest-name" id="questPlayerName"></span>
-      ${gameplay ? '<button id="questSettings" class="hub-quest-action" type="button">Settings</button>' : ''}
-      <a class="hub-quest-action" href="${gameplay ? '../home.html' : '../../index.html#games'}">${gameplay ? 'Quest Levels' : 'All Games'}</a>
-      <button class="hub-quest-switch" id="questSwitch" type="button">Switch player</button>
-    </div></header>`;
-  function update() {
-    host.querySelector("#questPoints").textContent = `${store.currentTotal()} Hub pts`;
-    host.querySelector("#questPlayerName").textContent = store.player?.displayName || '';
-  }
-  store.listenBoard(update);
-  update();
-  host.querySelector("#questSwitch").addEventListener("click", async () => {
-    if (gameActive && !window.confirm("Exit this game and switch players? Your unfinished challenge will not be saved.")) return;
-    await store.switchPlayer();
-    window.location.href = hubHome + '#games';
-  });
+  host.innerHTML = `<header class="site-header">
+    <div class="shell header-inner">
+      <a class="brand" href="${hubHome}" aria-label="Sheridan Game Hub home">
+        <img class="brand-logo" src="${logoUrl}" alt="" width="46" height="46" />
+        <span class="brand-text"><strong>SHERIDAN</strong><span>GAME HUB <span class="brand-dot">•</span> OPEN HOUSE</span></span>
+      </a>
+      <div class="header-actions">
+        ${gameplay ? '<button id="questSettings" class="header-settings" type="button">Settings</button>' : ''}
+        <a class="header-link" href="${gameplay ? questHome : hubHome + '#games'}">${gameplay ? '← Quest levels' : '← All games'}</a>
+        <div id="playerWidget" class="player-widget" aria-label="Current player"></div>
+      </div>
+    </div>
+  </header>`;
 }
 
 export async function initQuestShell({ gameplay = false } = {}) {
@@ -43,29 +38,15 @@ export async function initQuestShell({ gameplay = false } = {}) {
     window.location.replace(hubHome + '#games');
     throw Error('Join with a name or player code first.');
   }
-  gameActive = gameplay;
-  let lastActivity = Date.now();
-  function activity() {
-    lastActivity = Date.now();
-    markSessionActivity();
-  }
-  for (const name of ['pointerdown', 'touchstart', 'keydown'])
-    document.addEventListener(name, activity, { passive: true });
-  activity();
-  const interval = setInterval(async () => {
-    if (gameActive) markSessionActivity();
-    else if (Date.now() - lastActivity >= CONFIG.inactivityMinutes * 60000) {
-      clearInterval(interval);
-      await store.switchPlayer();
-      window.location.replace(hubHome + '#games');
-    }
-  }, 15000);
-  showHeader(store, gameplay);
+  // Match the navbar and session controls used by all other Hub games.
+  showHeader(gameplay);
+  initChrome(store);
+  setHubGameplayActive(gameplay);
   return {
     store,
     user: { id: store.player.id, name: store.player.displayName },
     getQuestPoints: () => store.board.find((p) => p.id === store.player.id)?.best?.['campus-quest'] ?? 0,
-    setGameplayActive(active) { gameActive = Boolean(active); activity(); },
+    setGameplayActive(active) { setHubGameplayActive(active); },
   };
 }
 

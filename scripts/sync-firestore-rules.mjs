@@ -24,5 +24,9 @@ else {
   updated=source.replace(line,block);
 }
 if (!updated.includes(block)) throw Error('Could not update Firestore rule block.');
+// Guard against a second, manually added `gameId in [...]` condition:
+// two ANDed lists would silently reject games excluded from either one.
+const checks = updated.match(/request\.resource\.data\.gameId\s+in\s+\[/g) ?? [];
+if (checks.length !== 1) throw Error(`Expected exactly one game ID allowlist; found ${checks.length}. Remove extra manual checks.`);
 if (source!==updated) writeFileSync(file,updated);
 console.log(`Firestore rules synchronized: ${ids.length} game score IDs (${ids.join(', ')})`);

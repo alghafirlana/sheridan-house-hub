@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { SCORED_LEVEL_COUNTS } from "../js/config.js";
+import { SCORED_LEVEL_COUNTS, GAMES } from "../js/config.js";
 import { scoredLevelIds, scoredGamePoints, scoreSummary, submitLevelResult, levelGameInfo } from "../js/scoring-core.js";
 import { HARDWARE_LEVELS } from "../games/hardware-challenge/hardware-data.js";
 import { chooseQuestions, chooseQuickLevel, roundScore, validHotspots, fittedPhotoGeometry } from "../games/hardware-challenge/hardware-logic.js";
@@ -75,8 +75,9 @@ test('Firestore generated score IDs match the single configured counts',()=>{
   const line=rules.split('\n').find(s=>s.includes('&& request.resource.data.gameId in ['));
   assert.ok(line);
   const ids=[...line.matchAll(/'([^']+)'/g)].map(m=>m[1]);
-  const expected=['tech-sprint',...Object.entries(SCORED_LEVEL_COUNTS).flatMap(([game,n])=>Array.from({length:n},(_,i)=>`${game}-level-${i+1}`))];
+  const expected=[...GAMES.filter(g=>g.status==='playable' && g.competitive && !Object.hasOwn(SCORED_LEVEL_COUNTS,g.id)).map(g=>g.id),...Object.entries(SCORED_LEVEL_COUNTS).flatMap(([game,n])=>Array.from({length:n},(_,i)=>`${game}-level-${i+1}`))];
   assert.deepEqual(ids,expected);
+  assert.equal((rules.match(/request\.resource\.data\.gameId\s+in\s+\[/g)||[]).length,1,"a second ANDed allowlist would silently reject scores");
 });
 
 
