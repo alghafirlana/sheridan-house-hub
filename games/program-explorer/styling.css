@@ -1,0 +1,646 @@
+/* Program Explorer layout and components that are not part of the shared game shell. */
+.program-explorer .game-shell {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  min-height: max(470px, calc(100vh - 246px));
+}
+
+.program-explorer .game-side {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  min-width: 0;
+  padding: 28px 42px;
+}
+
+.program-explorer .game-side-mark {
+  display: grid;
+  flex: none;
+  width: 58px;
+  height: 58px;
+  margin: 0;
+  font-size: 30px;
+}
+
+.program-explorer .game-side .section-kicker,
+.program-explorer .game-side h1 {
+  flex: none;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.program-explorer .game-side h1 {
+  font: 700 clamp(28px, 3vw, 40px)/1 Outfit, sans-serif;
+  letter-spacing: -.05em;
+}
+
+.program-explorer .game-side-copy {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex: 1 1 300px;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  max-width: none;
+  margin: 0;
+}
+
+.program-explorer .game-side-copy .section-kicker {
+  flex: none;
+  white-space: nowrap;
+}
+
+.program-explorer .game-side-copy p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.program-explorer .program-explorer-content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.program-explorer .mode-tabs {
+  display: flex;
+  justify-content: flex-start;
+  align-self: stretch;
+  width: 100%;
+  gap: 7px;
+  margin: 0;
+  padding: 0 32px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--line);
+}
+
+.program-explorer .mode-tab {
+  flex: 0 0 auto;
+  padding: 16px 12px 13px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: #768397;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.program-explorer .mode-tab.is-active {
+  border-color: #2f98d1;
+  color: #1686b8;
+}
+
+.program-explorer .panel {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  width: 100%;
+  min-height: 0;
+  padding: 27px 32px;
+}
+
+.program-explorer .panel-intro {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.program-explorer .panel-intro h2 {
+  margin: 0 0 5px;
+  color: var(--navy);
+  font-size: 17px;
+}
+
+.program-explorer .panel-intro p,
+.program-explorer .result-card p {
+  margin: 0;
+  color: #6c8198;
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.program-explorer .quiz-progress-wrap {
+  flex: 0 0 34%;
+  min-width: 180px;
+}
+
+.program-explorer .progress-bar.is-loading {
+  animation: program-progress-pulse 1.1s ease-in-out infinite alternate;
+}
+
+@keyframes program-progress-pulse {
+  to { opacity: .4; }
+}
+
+.program-explorer .question-panel-title,
+.program-explorer .result-card .result-label {
+  margin: 0 0 18px;
+  color: var(--ink);
+  font: 650 clamp(27px, 3vw, 35px)/1.19 Outfit, sans-serif;
+  letter-spacing: -.04em;
+}
+
+.program-explorer .quiz-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+}
+
+.program-explorer .text-button,
+.program-explorer .primary-button {
+  padding: 10px 14px;
+  border: 0;
+  border-radius: 10px;
+  background: #0b4e88;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.program-explorer .text-button {
+  padding: 8px 0;
+  background: transparent;
+  color: #52708a;
+}
+
+.program-explorer .result-card h3 {
+  margin: 0;
+  color: var(--navy);
+}
+
+.program-explorer .result-card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  overflow-wrap: anywhere;
+}
+
+.program-explorer .recommended-program-card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  padding: 18px;
+  border: 1px solid #c9e2f4;
+  border-radius: 16px;
+  background: #eaf6fe;
+}
+
+.program-explorer .result-card .learn-more-button,
+.program-explorer .result-card .compare-recommendations-button {
+  position: static;
+  display: block;
+  width: 100%;
+  min-height: 40px;
+  margin: 0;
+  white-space: normal;
+  text-align: left;
+}
+
+.program-explorer .result-card .learn-more-button {
+  color: var(--sky);
+}
+
+.program-explorer .result-card .compare-recommendations-button {
+  width: max-content;
+  max-width: 100%;
+  margin-inline: auto;
+  color: #fff;
+  text-align: center;
+}
+
+.program-explorer .chat-messages {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 180px;
+  overflow: auto;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: #f7fafd;
+}
+
+.program-explorer .message {
+  max-width: 90%;
+  padding: 12px 14px;
+  overflow-wrap: anywhere;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: #fff;
+  color: #31506b;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.program-explorer .message.user {
+  align-self: flex-end;
+  background: #0b4e88;
+  color: #fff;
+}
+
+.program-explorer .chat-input-area {
+  display: flex;
+  gap: 9px;
+  margin-top: 12px;
+}
+
+.program-explorer .chat-input-area input {
+  flex: 1;
+  min-width: 0;
+  height: 46px;
+  padding: 0 13px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+}
+
+.program-explorer footer {
+  padding: 14px 30px;
+  border-top: 1px solid var(--line);
+  color: #8798ac;
+  font-size: 11px;
+}
+
+.program-explorer .compare-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.program-explorer .compare-toolbar > div {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.program-explorer .compare-panel {
+  min-height: 0;
+}
+
+.program-explorer .comparison-results {
+  flex: 1 1 0;
+  min-height: 0;
+  margin-top: 14px;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.program-explorer .program-checklist {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px 12px;
+  max-height: 110px;
+  overflow: auto;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.program-explorer .program-check-option {
+  display: flex;
+  gap: 8px;
+  padding: 6px 2px;
+  color: #31506b;
+  font-size: 12px;
+}
+
+.program-explorer .program-check-option input {
+  accent-color: #1686b8;
+}
+
+.program-explorer .comparison-table-wrap {
+  max-width: 100%;
+  overflow: visible;
+}
+
+.program-explorer .comparison-export {
+  display: flex;
+  justify-content: flex-end;
+  flex: none;
+  margin-top: 14px;
+}
+
+.program-explorer .comparison-table {
+  min-width: 650px;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.program-explorer .comparison-table th,
+.program-explorer .comparison-table td {
+  padding: 10px;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+.program-explorer .comparison-table thead th {
+  position: sticky;
+  top: 0;
+  background: #edf5fb;
+  color: var(--navy);
+}
+
+.program-explorer .comparison-table tbody th {
+  position: sticky;
+  left: 0;
+  background: #f7fafd;
+}
+
+.program-explorer .comparison-table td {
+  min-width: 230px;
+  color: #31506b;
+}
+
+.program-explorer .comparison-mobile-cards {
+  display: none;
+}
+
+.program-explorer .comparison-mobile-card {
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.program-explorer .comparison-mobile-card h3 {
+  margin: 0 0 14px;
+  color: var(--navy);
+  font: 700 20px/1.2 Outfit, sans-serif;
+}
+
+.program-explorer .comparison-mobile-values {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.program-explorer .comparison-mobile-value + .comparison-mobile-value {
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.program-explorer .comparison-mobile-value h4 {
+  margin: 0 0 5px;
+  color: #52708a;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.program-explorer .comparison-mobile-card .comparison-bullets {
+  padding-left: 18px;
+  color: #31506b;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.program-explorer .comparison-bullets {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.program-explorer .comparison-bullets li {
+  margin-bottom: 6px;
+}
+
+.program-explorer .quiz-thinking {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: #f7fafd;
+  color: #31506b;
+}
+
+.program-explorer .quiz-spinner {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border: 3px solid #dbe6fb;
+  border-top-color: #2f98d1;
+  border-radius: 50%;
+  animation: program-spin .8s linear infinite;
+}
+
+@keyframes program-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 900px) {
+  .program-explorer .game-side {
+    flex-wrap: wrap;
+    gap: 14px 20px;
+    padding: 26px 30px;
+  }
+
+  .program-explorer .game-side-copy {
+    flex-basis: 100%;
+  }
+}
+
+@media (max-width: 560px) {
+  .program-explorer .game-side {
+    gap: 10px 14px;
+    padding: 22px 20px;
+  }
+
+  .program-explorer .game-side-mark {
+    width: 42px;
+    height: 42px;
+    font-size: 23px;
+  }
+
+  .program-explorer .game-side .section-kicker {
+    font-size: 9px;
+  }
+
+  .program-explorer .game-side h1 {
+    font-size: 25px;
+  }
+
+  .program-explorer .mode-tabs {
+    padding-inline: 20px;
+  }
+
+  .program-explorer .mode-tab {
+    padding-inline: 9px;
+    font-size: 11px;
+  }
+
+  .program-explorer .panel {
+    padding: 22px 20px;
+  }
+
+  .program-explorer .program-checklist {
+    grid-template-columns: 1fr;
+  }
+
+  .program-explorer .quiz-panel > .panel-intro {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .program-explorer .quiz-progress-wrap {
+    flex-basis: auto;
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 700px) {
+  .program-explorer .game-shell {
+    grid-template-rows: auto auto;
+    min-height: 0;
+    overflow: visible;
+  }
+
+  .program-explorer .game-content {
+    min-height: 0;
+    align-items: stretch;
+    justify-content: flex-start;
+    overflow: visible;
+  }
+
+  .program-explorer .program-explorer-content {
+    overflow: visible;
+  }
+
+  .program-explorer .compare-panel {
+    flex: none;
+  }
+
+  .program-explorer .comparison-table-wrap {
+    display: none;
+  }
+
+  .program-explorer .comparison-results {
+    flex: none;
+    max-height: none;
+    overflow: visible;
+    border: 0;
+  }
+
+  .program-explorer .comparison-mobile-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .program-explorer .compare-toolbar > div {
+    flex-wrap: wrap;
+  }
+}
+
+@media print {
+  @page {
+    size: landscape;
+    margin: 12mm;
+  }
+
+  body.program-explorer {
+    background: #fff;
+  }
+
+  body.program-explorer * {
+    visibility: hidden;
+  }
+
+  body.program-explorer .game-main,
+  body.program-explorer .game-shell,
+  body.program-explorer .program-explorer-content,
+  body.program-explorer .compare-panel,
+  body.program-explorer .compare-panel * {
+    visibility: visible;
+  }
+
+  body.program-explorer .game-main {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  body.program-explorer .game-crumb,
+  body.program-explorer .game-side,
+  body.program-explorer .mode-tabs,
+  body.program-explorer .compare-panel > :not(.comparison-results),
+  body.program-explorer footer {
+    display: none !important;
+  }
+
+  body.program-explorer .game-shell {
+    display: block;
+    min-height: 0;
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  body.program-explorer .program-explorer-content,
+  body.program-explorer .compare-panel {
+    display: block !important;
+    padding: 0;
+    overflow: visible;
+  }
+
+  body.program-explorer .compare-panel::before {
+    display: block;
+    margin: 0 0 16px;
+    color: #0b315e;
+    content: "Program comparison";
+    font: 700 22px Outfit, sans-serif;
+  }
+
+  body.program-explorer .comparison-table-wrap {
+    display: block !important;
+    height: auto;
+    max-height: none;
+    overflow: visible;
+    border: 0;
+  }
+
+  body.program-explorer .comparison-results {
+    flex: none;
+    min-height: 0;
+    margin-top: 0;
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+  }
+
+  body.program-explorer .comparison-table {
+    width: 100% !important;
+    min-width: 0;
+    table-layout: fixed;
+    font-size: 9pt;
+  }
+
+  body.program-explorer .comparison-table th,
+  body.program-explorer .comparison-table td {
+    position: static;
+    min-width: 0;
+    padding: 6px;
+    overflow-wrap: anywhere;
+  }
+
+  body.program-explorer .comparison-mobile-cards {
+    display: none !important;
+  }
+}

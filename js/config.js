@@ -68,16 +68,17 @@ export const GAMES = [
     duration: "3–6 min",
   },
   {
-    id: "undercover",
+    id: "find-undercover",
     title: "Find the Undercover",
     category: "Mystery & Logic",
     description:
       "Follow the clues, trust your instincts and find the undercover.",
     icon: "search",
     accent: "amber",
-    status: "soon",
+    status: "playable",
     competitive: true,
-    duration: "Coming soon",
+    href: "games/find-the-undercover/index.html",
+    duration: "10–15 min",
   },
   {
     id: "program-discovery",
@@ -86,9 +87,10 @@ export const GAMES = [
     description: "Explore the programs and pathways that spark your interest.",
     icon: "graduation",
     accent: "coral",
-    status: "soon",
+    status: "playable",
     competitive: false,
-    duration: "Coming soon",
+    href: "games/program-explorer/index.html",
+    duration: "5–10 min",
   },
   {
     id: "kahoot",
