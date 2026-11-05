@@ -1,642 +1,152 @@
+/** Campus Quest Level 3: photo-style scene. All polygons are in the native 1672x941 coordinate space. */
 const level3 = {
-  /* ---------------------------------------------------------
-     BASIC LEVEL INFORMATION
-  --------------------------------------------------------- */
-
   id: 3,
-
   gameTitle: "Sheridan Campus Quest",
-
-  roomName: "The Campus Green",
-  mission:
-    "Explore the outdoor scene and complete six randomly selected search challenges before time runs out.",
-
-  tip: "Look carefully around the whole scene. Each replay can choose a different mix of six objects.",
-
-  /* ---------------------------------------------------------
-     LEVEL FEATURES
-  --------------------------------------------------------- */
-
-  settings: {
-    timer: true,
-    questions: false,
-    audio: false,
-    scoring: true,
-
-    randomizeObjects: true,
-    randomClueCount: 6,
-  },
-
-  /* ---------------------------------------------------------
-     SCORING
-  --------------------------------------------------------- */
-
-  scoring: {
-    maxScore: 100,
-    wrongClickPenalty: 5,
-    maxTimePenalty: 20,
-    chancesPerClue: 3,
-  },
-
-  /* ---------------------------------------------------------
-     TIMER
-  --------------------------------------------------------- */
-
-  timer: {
-    durationSeconds: 300,
-    perfectTimeSeconds: 180,
-  },
-
-  /* ---------------------------------------------------------
-     ROOM / BACKGROUND
-  --------------------------------------------------------- */
-
-  room: {
-    width: 1672,
-
-    height: 941,
-
-    backgroundUrl: new URL(
-      "../../assets/images/levels/level-3/background.png",
-      import.meta.url,
-    ).href,
-  },
-
-  /* ---------------------------------------------------------
-     LEVEL COMPLETION
-  --------------------------------------------------------- */
-
-  completion: {
-    title: "Garden Adventure Complete! 🎉",
-
-    prompt: "QUEST COMPLETE",
-
-    message:
-      "You completed all six randomized challenges in The Campus Green. Replay to get a different mix of objects.",
-  },
-
-  /* ---------------------------------------------------------
-     RANDOM CLUE POOL
-  --------------------------------------------------------- */
-
+  roomName: "Library Mystery",
+  mission: "Search a vibrant library study area, decode six practical clues and find the right objects before time runs out.",
+  tip: "Look across the foreground table, group-study space and reading area. Only six objects are chosen from twelve each round.",
+  settings: {timer: true, questions: false, audio: false, scoring: true, randomizeObjects: true, randomClueCount: 6},
+  scoring: {maxScore: 100, wrongClickPenalty: 5, maxTimePenalty: 20, chancesPerClue: 3},
+  timer: {durationSeconds: 300, perfectTimeSeconds: 180},
+  room: {width: 1672, height: 941, backgroundUrl: new URL("../../assets/images/levels/level-3/background.png", import.meta.url).href},
+  completion: {title: "Library Mystery Solved! 🎉", prompt: "QUEST COMPLETE", message: "You solved the Library Mystery. Replay to discover a fresh set of study-space clues." },
   steps: [
-    /* =====================================================
-       KITE
-    ===================================================== */
-
     {
-      id: "kite",
-
+      id: "laptop",
       prompt: "FIND THE OBJECT",
-
-      hint: "Look up near the trees for something flying in the air.",
-
-      foundLabel: "Kite",
-
-      title: "You found the kite!",
-
-      story:
-        "The colorful kite dances above the garden. Great searching — another clue is waiting somewhere in the festival!",
-
+      hint: "Find the portable computer open in front of the student who is working alone.",
+      helpHint: "Look to the far-left side of the round foreground table.",
+      foundLabel: "Open Laptop",
+      title: "Open Laptop found!",
+      story: "Correct! Laptops let students work on coursework from shared study spaces.",
       clueType: "text",
     },
-
-    /* =====================================================
-       BICYCLE
-    ===================================================== */
-
     {
-      id: "bicycle",
-
+      id: "notebook",
       prompt: "FIND THE OBJECT",
-
-      hint: "Find something with two wheels that a child can ride.",
-
-      foundLabel: "Bicycle",
-
-      title: "You found the bicycle!",
-
-      story:
-        "You spotted the bicycle beside the garden path. Keep exploring carefully!",
-
+      hint: "Find the spiral-bound pages ready for handwritten notes.",
+      helpHint: "Look on the front-left part of the round table.",
+      foundLabel: "Spiral Notebook",
+      title: "Spiral Notebook found!",
+      story: "Correct! Paper notes are useful when you want to sketch an idea or study without a screen.",
       clueType: "text",
     },
-
-    /* =====================================================
-       BALL
-    ===================================================== */
-
     {
-      id: "ball",
-
+      id: "student-id",
       prompt: "FIND THE OBJECT",
-
-      hint: "Find something round that children can roll, throw, or kick.",
-
-      foundLabel: "Ball",
-
-      title: "You found the ball!",
-
-      story:
-        "The little ball was hiding among the garden activities. Nice work!",
-
+      hint: "Find the small card that helps identify a student.",
+      helpHint: "Look near the front edge of the round table, just left of the paper map.",
+      foundLabel: "Student ID Card",
+      title: "Student ID Card found!",
+      story: "Correct! An identification card can help confirm membership in a campus community.",
       clueType: "text",
     },
-
-    /* =====================================================
-       UMBRELLA
-    ===================================================== */
-
     {
-      id: "umbrella",
-
+      id: "water-bottle",
       prompt: "FIND THE OBJECT",
-
-      hint: "Find something that can protect you from rain or bright sunshine.",
-
-      foundLabel: "Umbrella",
-
-      title: "You found the umbrella!",
-
-      story:
-        "You found the garden umbrella. Your observation skills are getting stronger!",
-
+      hint: "Find the tall blue drink container with a metal cap.",
+      helpHint: "Look just behind the tablet on the foreground study table.",
+      foundLabel: "Reusable Water Bottle",
+      title: "Reusable Water Bottle found!",
+      story: "Correct! Refillable bottles help students stay hydrated throughout a long study day.",
       clueType: "text",
     },
-
-    /* =====================================================
-       WATERING CAN
-    ===================================================== */
-
     {
-      id: "watering-can",
-
+      id: "tablet",
       prompt: "FIND THE OBJECT",
-
-      hint: "Gardeners use this container to give water to plants.",
-
-      foundLabel: "Watering Can",
-
-      title: "You found the watering can!",
-
-      story: "The watering can is ready for the flowers. Excellent searching!",
-
+      hint: "Find the touch-screen device propped upright without a physical keyboard.",
+      helpHint: "Look near the middle of the large foreground table.",
+      foundLabel: "Tablet Computer",
+      title: "Tablet Computer found!",
+      story: "Correct! Tablets are often used for reading, annotating and reviewing course materials.",
       clueType: "text",
     },
-
-    /* =====================================================
-       FLOWER POT
-    ===================================================== */
-
     {
-      id: "flower-pot",
-
+      id: "textbook",
       prompt: "FIND THE OBJECT",
-
-      hint: "Find a container where flowers or plants can grow.",
-
-      foundLabel: "Flower Pot",
-
-      title: "You found the flower pot!",
-
-      story:
-        "You discovered the flower pot among the colorful garden decorations. Keep going!",
-
+      hint: "Find the thick hardcover book with a dark-blue cover lying flat.",
+      helpHint: "Look behind the headphones toward the right-hand side of the table.",
+      foundLabel: "Thick Textbook",
+      title: "Thick Textbook found!",
+      story: "Correct! Course books can provide detailed examples and reference material.",
       clueType: "text",
     },
-
-    /* =====================================================
-       DRUM
-    ===================================================== */
-
     {
-      id: "drum",
-
+      id: "headphones",
       prompt: "FIND THE OBJECT",
-
-      hint: "Find the musical instrument that you play by tapping or beating it.",
-
-      foundLabel: "Drum",
-
-      title: "You found the drum!",
-
-      story:
-        "You found one of the festival instruments. The garden celebration is full of surprises!",
-
+      hint: "Find the over-ear audio accessory resting on the table.",
+      helpHint: "Look to the right of the thick book on the foreground table.",
+      foundLabel: "Headphones",
+      title: "Headphones found!",
+      story: "Correct! Headphones can be useful for listening to recorded lectures in a shared space.",
       clueType: "text",
     },
-
-    /* =====================================================
-       PICNIC BASKET
-    ===================================================== */
-
     {
-      id: "picnic-basket",
-
+      id: "backpack",
       prompt: "FIND THE OBJECT",
-
-      hint: "Look near the picnic area for something used to carry food.",
-
-      foundLabel: "Picnic Basket",
-
-      title: "You found the picnic basket!",
-
-      story:
-        "The picnic basket was tucked into the busy garden scene. Great job noticing it!",
-
+      hint: "Find the large black bag resting on the right chair.",
+      helpHint: "Look along the far-right edge of the big foreground table.",
+      foundLabel: "Black Backpack",
+      title: "Black Backpack found!",
+      story: "Correct! A backpack helps students carry equipment, books and personal supplies.",
       clueType: "text",
     },
-
-    /* =====================================================
-       LANTERN
-    ===================================================== */
-
     {
-      id: "lantern",
-
+      id: "campus-map",
       prompt: "FIND THE OBJECT",
-
-      hint: "Look around the pavilion for a hanging light.",
-
-      foundLabel: "Lantern",
-
-      title: "You found the lantern!",
-
-      story:
-        "The hanging lantern adds a warm glow to the festival. You found it!",
-
+      hint: "Find the unfolded colour map that could help a new visitor find their way.",
+      helpHint: "Look across the open pages at the front-right of the table.",
+      foundLabel: "Folded Campus Guide",
+      title: "Folded Campus Guide found!",
+      story: "Correct! A campus map can help visitors plan routes between buildings and services.",
       clueType: "text",
     },
-
-    /* =====================================================
-       WHEELBARROW
-    ===================================================== */
-
     {
-      id: "wheelbarrow",
-
+      id: "power-adapter",
       prompt: "FIND THE OBJECT",
-
-      hint: "Find the garden tool with one wheel that can be pushed to carry things.",
-
-      foundLabel: "Wheelbarrow",
-
-      title: "You found the wheelbarrow!",
-
-      story:
-        "You found the wheelbarrow used to move things around the garden. Well done!",
-
+      hint: "Find the small white charging block at the end of a cable.",
+      helpHint: "Look near the tablet, on the tabletop slightly left of the folded map.",
+      foundLabel: "Power Adapter",
+      title: "Power Adapter found!",
+      story: "Correct! A power adapter converts electricity for a device; it is not a battery.",
       clueType: "text",
     },
-
-    /* =====================================================
-       TOY BOAT
-    ===================================================== */
-
     {
-      id: "toy-boat",
-
+      id: "potted-plant",
       prompt: "FIND THE OBJECT",
-
-      hint: "Look carefully at the pond for something floating on the water.",
-
-      foundLabel: "Toy Boat",
-
-      title: "You found the toy boat!",
-
-      story:
-        "The little boat floats peacefully on the pond. Excellent observation!",
-
+      hint: "Find the tiny leafy plant sitting on the students’ shared table in the background.",
+      helpHint: "Look at the centre group-study table, between the people.",
+      foundLabel: "Small Potted Plant",
+      title: "Small Potted Plant found!",
+      story: "Correct! Plants can make shared study spaces feel more welcoming.",
       clueType: "text",
     },
-
-    /* =====================================================
-       BINOCULARS
-    ===================================================== */
-
     {
-      id: "binoculars",
-
+      id: "reading-book",
       prompt: "FIND THE OBJECT",
-
-      hint: "Find something you can look through to see things that are far away.",
-
-      foundLabel: "Binoculars",
-
-      title: "You found the binoculars!",
-
-      story:
-        "You discovered the binoculars among the festival items. Great eyes!",
-
+      hint: "Find the open book being read by someone on the lounge sofa.",
+      helpHint: "Look at the seated student on the couch at the far right.",
+      foundLabel: "Open Reading Book",
+      title: "Open Reading Book found!",
+      story: "Correct! Reading can be part of both classwork and independent learning.",
       clueType: "text",
     },
   ],
-
-  /* ---------------------------------------------------------
-     CLICKABLE HOTSPOTS
-  --------------------------------------------------------- */
-
   hotspots: [
-    /* =========================================================
-       KITE
-    ========================================================= */
-
-    {
-      type: "polygon",
-
-      object: "kite",
-
-      points: "219,69 302,45 319,112 228,160",
-    },
-
-    /* =========================================================
-       BICYCLE
-
-       Two wheels + central frame/body.
-    ========================================================= */
-
-    {
-      type: "circle",
-
-      object: "bicycle",
-
-      cx: 299,
-
-      cy: 455,
-
-      r: 51,
-    },
-
-    {
-      type: "circle",
-
-      object: "bicycle",
-
-      cx: 460,
-
-      cy: 449,
-
-      r: 46,
-    },
-
-    {
-      type: "polygon",
-
-      object: "bicycle",
-
-      points:
-        "315,390 341,385 361,415 411,377 426,386 394,447 360,465 312,460 300,440 326,414",
-    },
-
-    /* =========================================================
-       UMBRELLA
-
-       Canopy + shaft / curved handle.
-    ========================================================= */
-
-    {
-      type: "polygon",
-
-      object: "umbrella",
-
-      points:
-        "17,670 21,641 34,608 52,575 77,547 107,524 143,505 181,492 234,486 289,494 294,507 282,539 261,568 230,608 193,637 153,653 111,660 63,661",
-    },
-
-    {
-      type: "polygon",
-
-      object: "umbrella",
-
-      points:
-        "137,553 147,556 218,681 228,680 235,687 235,696 229,704 219,705 211,699 212,690 218,687",
-    },
-
-    /* =========================================================
-       PICNIC BASKET
-
-       Lid + main basket body.
-    ========================================================= */
-
-    {
-      type: "polygon",
-
-      object: "picnic-basket",
-
-      points: "240,610 401,608 410,626 399,642 257,647 236,632",
-    },
-
-    {
-      type: "polygon",
-
-      object: "picnic-basket",
-
-      points: "244,636 405,634 405,698 382,712 307,718 255,704 241,687",
-    },
-
-    /* =========================================================
-       BALL
-    ========================================================= */
-
-    {
-      type: "circle",
-
-      object: "ball",
-
-      cx: 568,
-
-      cy: 596,
-
-      r: 39,
-    },
-
-    /* =========================================================
-       DRUM
-    ========================================================= */
-
-    {
-      type: "polygon",
-
-      object: "drum",
-
-      points:
-        "684,423 739,423 749,438 744,496 736,504 738,530 730,536 688,536 680,528 681,503 675,494 676,438",
-    },
-
-    /* =========================================================
-       LANTERN
-    ========================================================= */
-
-    {
-      type: "polygon",
-
-      object: "lantern",
-
-      points:
-        "955,176 969,176 975,193 988,201 982,251 975,260 967,261 966,270 959,270 958,262 944,260 937,252 936,204 947,195",
-    },
-
-    /* =========================================================
-       FLOWER POT
-
-       Flowers + physical pot kept as separate shapes.
-    ========================================================= */
-
-    {
-      type: "polygon",
-
-      object: "flower-pot",
-
-      points:
-        "1017,448 1024,430 1038,421 1052,414 1062,419 1071,416 1081,425 1090,433 1088,456 1078,468 1058,470 1045,468 1031,472 1019,461",
-    },
-
-    {
-      type: "polygon",
-
-      object: "flower-pot",
-
-      points: "1033,466 1084,466 1078,504 1069,510 1043,509 1036,502",
-    },
-
-    /* =========================================================
-       WATERING CAN
-
-       Main body + spout + rose + upper handle.
-    ========================================================= */
-
-    {
-      type: "polygon",
-
-      object: "watering-can",
-
-      points: "1218,521 1284,521 1287,574 1278,590 1227,590 1214,577 1214,539",
-    },
-
-    {
-      type: "polygon",
-
-      object: "watering-can",
-
-      points:
-        "1281,546 1300,531 1316,513 1328,493 1342,499 1331,520 1311,539 1290,562",
-    },
-
-    {
-      type: "circle",
-
-      object: "watering-can",
-
-      cx: 1335,
-
-      cy: 501,
-
-      r: 15,
-    },
-
-    {
-      type: "polygon",
-
-      object: "watering-can",
-
-      points:
-        "1234,522 1236,491 1243,474 1252,468 1263,472 1271,489 1272,522 1263,522 1262,493 1257,480 1250,480 1245,493 1244,522",
-    },
-
-    /* =========================================================
-       WHEELBARROW
-
-       Tray + wheel + visible wooden handles/frame.
-    ========================================================= */
-
-    {
-      type: "polygon",
-
-      object: "wheelbarrow",
-
-      points:
-        "1382,434 1434,421 1505,413 1577,431 1568,468 1548,488 1502,504 1442,501 1399,481",
-    },
-
-    {
-      type: "circle",
-
-      object: "wheelbarrow",
-
-      cx: 1433,
-
-      cy: 526,
-
-      r: 43,
-    },
-
-    {
-      type: "polygon",
-
-      object: "wheelbarrow",
-
-      points: "1492,500 1571,468 1644,413 1655,411 1659,420 1581,483 1510,516",
-    },
-
-    {
-      type: "polygon",
-
-      object: "wheelbarrow",
-
-      points: "1535,489 1606,430 1638,406 1654,405 1657,413 1615,444 1550,505",
-    },
-
-    /* =========================================================
-       BINOCULARS
-    ========================================================= */
-
-    {
-      type: "polygon",
-
-      object: "binoculars",
-
-      points:
-        "916,721 929,708 949,701 972,697 994,701 1008,711 1014,730 1009,748 995,759 975,764 949,759 927,755 916,744",
-    },
-
-    /* =========================================================
-       TOY BOAT / SAILBOAT
-
-       Hull + left sail + right sail + flag.
-    ========================================================= */
-
-    {
-      type: "polygon",
-
-      object: "toy-boat",
-
-      points: "1458,720 1560,719 1558,732 1545,744 1527,749 1483,749 1467,741",
-    },
-
-    {
-      type: "polygon",
-
-      object: "toy-boat",
-
-      points: "1489,716 1515,675 1515,718",
-    },
-
-    {
-      type: "polygon",
-
-      object: "toy-boat",
-
-      points: "1519,680 1541,716 1519,716",
-    },
-
-    {
-      type: "polygon",
-
-      object: "toy-boat",
-
-      points: "1517,662 1534,667 1517,672",
-    },
+    {type: "polygon", object: "laptop", points: "604,413 612,416 620,427 621,443 619,464 540,609 521,621 509,612 514,594 556,499"},
+    {type: "polygon", object: "laptop", points: "378,602 394,596 485,594 513,599 525,607 520,624 401,635 379,631 375,616"},
+    {type: "polygon", object: "notebook", points: "307,700 472,644 503,645 560,671 637,704 644,721 629,732 472,773 325,739 304,720"},
+    {type: "polygon", object: "student-id", points: "638,740 737,745 752,754 749,774 742,789 653,786 629,777"},
+    {type: "polygon", object: "water-bottle", points: "640,389 668,386 680,392 686,408 687,431 687,584 681,599 629,599 623,586 623,434 625,412 630,397"},
+    {type: "polygon", object: "tablet", points: "803,452 921,451 938,459 944,474 940,490 887,617 879,633 862,638 737,619 721,613 721,592 790,458"},
+    {type: "polygon", object: "textbook", points: "1015,500 1153,481 1251,497 1271,505 1271,521 1266,544 1257,550 1250,576 1235,576 992,580 986,567 986,533"},
+    {type: "polygon", object: "headphones", points: "1189,586 1206,579 1232,581 1250,595 1261,616 1263,647 1258,673 1238,688 1210,687 1185,676 1173,661 1169,626 1174,605"},
+    {type: "polygon", object: "headphones", points: "1253,594 1281,585 1305,590 1336,607 1359,626 1370,643 1352,660 1321,655 1297,638 1280,625 1265,622"},
+    {type: "polygon", object: "backpack", points: "1419,465 1440,445 1475,439 1518,449 1557,474 1580,499 1593,533 1600,586 1600,658 1597,711 1588,765 1570,780 1490,781 1480,774 1481,727 1481,675 1462,643 1440,617 1417,592 1391,575 1369,555 1383,522 1401,487"},
+    {type: "polygon", object: "campus-map", points: "905,648 969,650 1026,663 1099,678 1163,691 1301,696 1310,809 1293,815 1214,813 1154,799 1103,785 1045,795 990,791 930,773 870,763 877,716"},
+    {type: "polygon", object: "power-adapter", points: "777,669 793,660 817,654 832,659 839,668 848,675 851,687 849,694 838,705 796,708 777,694"},
+    {type: "polygon", object: "potted-plant", points: "843,278 850,266 858,267 863,257 871,267 886,265 891,278 904,282 900,299 892,304 890,325 845,324 839,312 840,298"},
+    {type: "polygon", object: "reading-book", points: "1317,242 1327,236 1346,237 1363,246 1385,254 1406,271 1405,281 1389,280 1369,269 1356,268 1341,255 1321,256"},
   ],
 };
-
 export default level3;

@@ -81,7 +81,7 @@ export default class GameController {
 
     this.inputLocked = false;
 
-    this.DEBUG_HOTSPOTS = false;
+    this.DEBUG_HOTSPOTS = true;
 
     this.autoPlayedAudioSteps = new Set();
 

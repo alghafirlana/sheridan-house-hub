@@ -41,19 +41,32 @@ const levels = [
 
   {
     id: 3,
+    title: "Library Mystery",
+    description: "Search a vibrant library study area, decode six practical clues and find the right objects before time runs out.",
+    difficulty: "Medium",
+    implemented: true,
+    image: new URL("../assets/images/levels/level-3/background.png", import.meta.url).href,
+    href: "game/game.html?level=3",
+  },
 
-    title: "Coming Soon",
+  {
+    id: 4,
+    title: "Creative Studio",
+    description: "Explore a photographic and animation studio, interpret six creative-workflow clues and find the correct equipment.",
+    difficulty: "Medium–Hard",
+    implemented: true,
+    image: new URL("../assets/images/levels/level-4/background.png", import.meta.url).href,
+    href: "game/game.html?level=4",
+  },
 
-    description:
-      "A new Sheridan Campus Quest challenge is currently being developed.",
-
-    difficulty: "",
-
-    implemented: false,
-
-    image: "",
-
-    href: "",
+  {
+    id: 5,
+    title: "Student Life Adventure",
+    description: "Explore the student commons, decode six clues about campus life and find the right places or belongings.",
+    difficulty: "Medium",
+    implemented: true,
+    image: new URL("../assets/images/levels/level-5/background.png", import.meta.url).href,
+    href: "game/game.html?level=5",
   },
 ];
 
