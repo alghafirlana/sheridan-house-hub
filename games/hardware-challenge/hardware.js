@@ -64,44 +64,63 @@ const roundStorageKey = (playerId = store?.player?.id) =>
   `hardware:unfinished-round:v1:${CONFIG.eventId}:${playerId ?? "guest"}`;
 function clearSavedRound() {
   try {
-    if (round?.playerId) sessionStorage.removeItem(roundStorageKey(round.playerId));
-  } catch { /* storage can be disabled */ }
+    if (round?.playerId)
+      sessionStorage.removeItem(roundStorageKey(round.playerId));
+  } catch {
+    /* storage can be disabled */
+  }
 }
 function persistRound() {
   if (!round || round.finished) return;
   try {
-    sessionStorage.setItem(roundStorageKey(round.playerId), JSON.stringify({
-      version: 1,
-      playerId: round.playerId,
-      levelId: round.level.id,
-      mode: round.mode,
-      questionIds: round.questions.map(q => q.id),
-      questionPrompts: round.questions.map(q => q.question),
-      step: round.step,
-      tries: round.tries,
-      earned: round.earned,
-      feedback: round.feedback,
-      saveError: round.saveError,
-      zoom, panX, panY, rotationOverride,
-      expanded: Boolean(app.querySelector("#photoCard")?.classList.contains("is-expanded")),
-    }));
-  } catch { /* storage can be disabled */ }
+    sessionStorage.setItem(
+      roundStorageKey(round.playerId),
+      JSON.stringify({
+        version: 1,
+        playerId: round.playerId,
+        levelId: round.level.id,
+        mode: round.mode,
+        questionIds: round.questions.map((q) => q.id),
+        questionPrompts: round.questions.map((q) => q.question),
+        step: round.step,
+        tries: round.tries,
+        earned: round.earned,
+        feedback: round.feedback,
+        saveError: round.saveError,
+        zoom,
+        panX,
+        panY,
+        rotationOverride,
+        expanded: Boolean(
+          app.querySelector("#photoCard")?.classList.contains("is-expanded"),
+        ),
+      }),
+    );
+  } catch {
+    /* storage can be disabled */
+  }
 }
 function restoreRound() {
   if (!store.player?.id) return false;
   let saved;
-  try { saved = JSON.parse(sessionStorage.getItem(roundStorageKey())); }
-  catch { return false; }
+  try {
+    saved = JSON.parse(sessionStorage.getItem(roundStorageKey()));
+  } catch {
+    return false;
+  }
   const level = getHardwareLevel(saved?.levelId);
-  if (!level?.enabled || !scored().has(level.id) || !validHotspots(level)) return false;
+  if (!level?.enabled || !validHotspots(level)) return false;
   const recovered = recoverHardwareRound(saved, level, store.player.id);
   if (!recovered) return false;
   round = recovered;
-  zoom = Number.isFinite(saved.zoom) ? Math.min(3, Math.max(1, saved.zoom)) : (level.defaultZoom ?? 1);
+  zoom = Number.isFinite(saved.zoom)
+    ? Math.min(3, Math.max(1, saved.zoom))
+    : (level.defaultZoom ?? 1);
   panX = Number.isFinite(saved.panX) ? saved.panX : 0;
   panY = Number.isFinite(saved.panY) ? saved.panY : 0;
   rotationOverride = [0, 90, 180, 270].includes(saved.rotationOverride)
-    ? saved.rotationOverride : null;
+    ? saved.rotationOverride
+    : null;
   setGameplayActive(true);
   showQuestion();
   if (saved.expanded) app.querySelector("#expandImage")?.click();
@@ -185,7 +204,7 @@ function showLibrary() {
   round = null;
   setGameplayActive(false);
   const active = activeHardware();
-  app.innerHTML = `${header("Explore the hardware", "Choose a hardware photo. The first four levels earn leaderboard points; the new server level is digital practice until the next scoring event.", "home")}
+  app.innerHTML = `${header("Explore the hardware", "Choose a hardware photo. Explore all five hardware levels. Each level contributes to your Sheridan Points and helps improve your leaderboard score.", "home")}
     <section class="hc-library-head"><h2>Choose a hardware level</h2><span>${active.length} photo missions</span></section>
     <section class="hc-level-grid">${active
       .map((level) => {
@@ -502,7 +521,13 @@ async function nextQuestion() {
     if (!scored().has(level.id)) {
       const recentKey = savedKey(`recent-${level.id}`);
       const recent = readLocal(recentKey, []);
-      writeLocal(recentKey, [...new Set([...questions.map(q => q.id), ...recent])].slice(0, level.targets.length));
+      writeLocal(
+        recentKey,
+        [...new Set([...questions.map((q) => q.id), ...recent])].slice(
+          0,
+          level.targets.length,
+        ),
+      );
       round.finished = true;
       clearSavedRound();
       setGameplayActive(false);
@@ -559,7 +584,9 @@ function showPracticeResult(level, mode, score) {
     </section>`;
   wireBack("library");
   app.querySelector("#anotherLevel").addEventListener("click", showLibrary);
-  app.querySelector("#replay").addEventListener("click", () => startLevel(level, mode));
+  app
+    .querySelector("#replay")
+    .addEventListener("click", () => startLevel(level, mode));
   app.querySelector("#returnChallenge").addEventListener("click", showHome);
 }
 function showResult(level, mode, result) {
@@ -602,14 +629,19 @@ async function main() {
           `${allScoresCount()} of ${scoredLevelIds(GAME_ID).length} levels played`;
       }
     });
+    // Restore the unfinished round before registering the listener.
+    // Otherwise, the initial player callback clears the saved round.
+    if (!restoreRound()) showHome();
+
     store.listenPlayer(() => {
       if (round && round.playerId !== store.player?.id) {
         clearSavedRound();
         round = null;
         showHome();
-      } else if (!round) showHome();
+      } else if (!round) {
+        showHome();
+      }
     });
-    if (!restoreRound()) showHome();
   } catch (e) {
     app.innerHTML = `<section class="hc-error"><h1>Could not load Hardware Challenge</h1><p>Please check the connection and try again. Your previous scores are safe.</p><a class="hc-btn hc-btn-dark" href="../../index.html">Back to Game Hub</a></section>`;
     console.error(e);
