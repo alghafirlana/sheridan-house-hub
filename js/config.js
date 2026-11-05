@@ -1,14 +1,30 @@
-/** Edit this file to configure the Open House. Browser-side Firebase config is public by design. */
+/** Actaul Open House Database */
+
+// export const CONFIG = Object.freeze({
+//   eventId: "fall-2026-open-house",
+//   eventName: "Fall Open House 2026",
+//   inactivityMinutes: 10,
+//   maxPointsPerGame: 100,
+//   firebase: {
+//     apiKey: "AIzaSyBNwRnMZRqY2SM442AC18fFRJmIOnkV-nU",
+//     authDomain: "sheridangamehub.firebaseapp.com",
+//     projectId: "sheridangamehub",
+//     appId: "1:200090252133:web:e8bf7ddaccde3ace09e78c",
+//   },
+// });
+
+/* Demo database for test - Myaccount */
+
 export const CONFIG = Object.freeze({
   eventId: "fall-2026-open-house",
   eventName: "Fall Open House 2026",
   inactivityMinutes: 10,
   maxPointsPerGame: 100,
   firebase: {
-    apiKey: "AIzaSyBNwRnMZRqY2SM442AC18fFRJmIOnkV-nU",
-    authDomain: "sheridangamehub.firebaseapp.com",
-    projectId: "sheridangamehub",
-    appId: "1:200090252133:web:e8bf7ddaccde3ace09e78c",
+    apiKey: "AIzaSyAgCo5O9KNE6PjtNweTDBM2jf3ehkzYsUY",
+    authDomain: "sheridangamehubdemo.firebaseapp.com",
+    projectId: "sheridangamehubdemo",
+    appId: "1:682303525657:web:bb9181d9bd4ed364fb2b88",
   },
 });
 
@@ -23,7 +39,7 @@ export const CONFIG = Object.freeze({
  * but becomes competitive only once included in a future scoring roster.
  */
 export const SCORED_LEVEL_COUNTS = Object.freeze({
-  "campus-quest": 2,
+  "campus-quest": 5,
   "hardware-challenge": 7,
 });
 

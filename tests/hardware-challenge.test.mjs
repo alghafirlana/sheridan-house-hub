@@ -11,12 +11,12 @@ class Storage { constructor(){this.map=new Map()} getItem(k){return this.map.get
 globalThis.localStorage=new Storage(); globalThis.sessionStorage=new Storage(); globalThis.window={addEventListener(){}};
 
 test('one configured count per game; every scored level contributes equally',()=>{
-  assert.deepEqual(scoredLevelIds('campus-quest'),[1,2]);
+  assert.deepEqual(scoredLevelIds('campus-quest'),[1,2,3,4,5]);
   assert.deepEqual(scoredLevelIds('hardware-challenge'),[1,2,3,4,5,6,7]);
   assert.equal(scoredGamePoints('hardware-challenge',{1:80,2:100,3:60}),34);
   assert.equal(scoredGamePoints('hardware-challenge',{1:100}),14);
-  assert.equal(scoredGamePoints('campus-quest',{1:100}),50);
-  assert.equal(scoredGamePoints('campus-quest',{1:100,2:80}),90);
+  assert.equal(scoredGamePoints('campus-quest',{1:100}),20);
+  assert.equal(scoredGamePoints('campus-quest',{1:100,2:80}),36);
   assert.equal(levelGameInfo('hardware-challenge-level-5').valid,true);
   assert.equal(levelGameInfo('hardware-challenge-level-6').valid,true);
   assert.equal(levelGameInfo('hardware-challenge-level-7').valid,true);
@@ -28,13 +28,13 @@ test('both multi-level games count as one each on the global leaderboard',()=>{
   const profiles=[{id:'p',displayName:'Player'}];
   const scores=[{playerId:'p',gameId:'campus-quest-level-1',points:90},{playerId:'p',gameId:'hardware-challenge-level-1',points:100},{playerId:'p',gameId:'hardware-challenge-level-2',points:70},{playerId:'p',gameId:'tech-sprint',points:60}];
   const [p]=scoreSummary(profiles,scores);
-  assert.equal(p.best['campus-quest'],45);
+  assert.equal(p.best['campus-quest'],18);
   assert.equal(p.best['hardware-challenge'],24);
   assert.equal(p.best['tech-sprint'],60);
-  assert.equal(p.total,129);
+  assert.equal(p.total,102);
   assert.equal(p.games,3);
   const invalid=scoreSummary(profiles,[...scores,{playerId:'p',gameId:'hardware-challenge-level-99',points:100}]);
-  assert.equal(invalid[0].total,129,'future levels must not affect the current event');
+  assert.equal(invalid[0].total,102,'future levels must not affect the current event');
 });
 
 test('both modes share each level best attempt and never lower a leaderboard total',async()=>{

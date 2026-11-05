@@ -48,7 +48,7 @@ function render() {
   } else {
     el("progressTitle").textContent = "All available levels unlocked!";
     el("progressMessage").textContent =
-      "All available levels are yours to explore! Replay either level to improve your personal best and earn more Sheridan Points.";
+      "All available levels are yours to explore! Replay any level to improve your personal best and earn more Sheridan Points.";
     el("progressStatusLabel").textContent = "YOUR QUEST SCORE";
     el("progressStatusValue").textContent = `${getQuestPoints()} / 100`;
     el("progressStatusNote").textContent =

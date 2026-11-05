@@ -15,7 +15,7 @@ async function main() {
   document.querySelector("#gameCount").textContent =
     `${count} playable · ${GAMES.length} experiences`;
   try {
-    const store = await initStore();
+    const store = await initStore({ fullProfiles: true });
     initChrome(store);
     resumeJoinAfterSwitch();
     grid.addEventListener("click", (e) => {

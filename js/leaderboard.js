@@ -51,7 +51,7 @@ async function main() {
     else document.documentElement.requestFullscreen?.();
   });
   try {
-    const store = await initStore();
+    const store = await initStore({ fullBoard: true });
     if (store.mode === "demo") {
       const notice = document.querySelector("#modeNotice");
       notice.hidden = false;
