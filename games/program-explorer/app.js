@@ -21,6 +21,7 @@ const welcomeMessage = messages.querySelector('.message.bot').cloneNode(true);
 let programs = [];
 let knowledgeMarkdown = '';
 let backgroundTargetLevels = Object.create(null);
+let offlineQuizQuestions = [];
 let chatHistory = [];
 let isSending = false;
 let chatSessionId = 0;
@@ -43,6 +44,7 @@ async function loadKnowledge() {
         throw new Error('The offline question bank is empty or invalid.');
       }
       const backgroundQuestion = offlineQuiz.questions[0];
+      offlineQuizQuestions = offlineQuiz.questions;
       if (typeof backgroundQuestion.question === 'string' && Array.isArray(backgroundQuestion.options)) {
         const backgroundOptions = backgroundQuestion.options.filter(option =>
           typeof option.text === 'string' && Array.isArray(option.target_level)
@@ -390,6 +392,7 @@ const firstQuizQuestion = {
   ]
 };
 const QUIZ_RESPONSE_TIMEOUT_MS = 2500;
+const QUIZ_RECOMMENDATION_TIMEOUT_MS = 5000;
 const ENABLE_LOCAL_QUIZ_FALLBACK = true;
 const localQuizQuestionBank = [];
 let localQuizMode = false;
@@ -407,7 +410,7 @@ function nextLocalQuizQuestion() {
 
 function showLocalQuizFallback(controller) {
   if (!ENABLE_LOCAL_QUIZ_FALLBACK) return false;
-  const fallbackQuestion = quizAnswers.length < 7 ? nextLocalQuizQuestion() : null;
+  const fallbackQuestion = quizAnswers.length < offlineQuizQuestions.length ? nextLocalQuizQuestion() : null;
   if (!fallbackQuestion) return false;
   localQuizMode = true;
   controller.abort();
@@ -416,13 +419,67 @@ function showLocalQuizFallback(controller) {
   return true;
 }
 
+function createLocalQuizRecommendations() {
+  const levelAnswer = quizAnswers[0];
+  const targetLevels = new Set(backgroundTargetLevels[levelAnswer] || []);
+  const answerForQuestion = questionId => quizAnswers[questionId - 1];
+  const selectedPrograms = questionId => {
+    const answer = answerForQuestion(questionId);
+    const question = offlineQuizQuestions.find(item => item.id === questionId);
+    return question?.options?.find(option => option.text === answer)?.matched_programs || [];
+  };
+  const q2Programs = selectedPrograms(2);
+  const q3Programs = selectedPrograms(3);
+  const q4Programs = selectedPrograms(4);
+  const programByName = name => programs.find(program => program.name.toLowerCase() === name.toLowerCase());
+  const matchesTargetLevel = program => {
+    if (!targetLevels.size) return true;
+    const credential = program.credential.toLowerCase();
+    return (targetLevels.has('grad_certificate') && credential.includes('graduate certificate'))
+      || (targetLevels.has('diploma') && credential.includes('college diploma'))
+      || (targetLevels.has('degree') && credential.includes('bachelor'))
+      || (targetLevels.has('degree_completion') && credential.includes('bachelor'));
+  };
+  const eligiblePrograms = names => names.map(programByName).filter(program => program && matchesTargetLevel(program));
+  const q2Eligible = eligiblePrograms(q2Programs);
+  const q3Eligible = eligiblePrograms(q3Programs);
+  const q4Eligible = eligiblePrograms(q4Programs);
+  const q3Names = new Set(q3Eligible.map(program => program.name.toLowerCase()));
+  const q4Names = new Set(q4Eligible.map(program => program.name.toLowerCase()));
+  const q2AndQ3 = q2Eligible.filter(program => q3Names.has(program.name.toLowerCase()));
+  const allThree = q2AndQ3.filter(program => q4Names.has(program.name.toLowerCase()));
+  let candidates;
+  let reasonQuestionIds;
+  if (allThree.length) {
+    candidates = allThree;
+    reasonQuestionIds = [2, 4];
+  } else if (q2AndQ3.length) {
+    candidates = [q2AndQ3[0], q4Eligible[0]].filter(Boolean);
+    reasonQuestionIds = [2, 4];
+  } else {
+    candidates = [q3Eligible[0], q4Eligible[0]].filter(Boolean);
+    reasonQuestionIds = [3, 4];
+  }
+  candidates = candidates.filter((program, index, all) =>
+    all.findIndex(candidate => candidate.name === program.name) === index
+  );
+  const reasonAnswers = reasonQuestionIds
+    .map(questionId => answerForQuestion(questionId))
+    .filter(Boolean)
+    .join('; ');
+  return candidates.slice(0, 2).map(program => ({
+    name: program.name,
+    reason: `Based on your interests and educational background: ${levelAnswer}; ${reasonAnswers}, this program may be a good fit.`
+  }));
+}
+
 async function requestQuizStep() {
   quizLoading = true;
   quizError = '';
   renderQuiz();
   try {
     if (localQuizMode) {
-      const fallbackQuestion = quizAnswers.length < 7 ? nextLocalQuizQuestion() : null;
+      const fallbackQuestion = quizAnswers.length < offlineQuizQuestions.length ? nextLocalQuizQuestion() : null;
       if (fallbackQuestion) {
         await new Promise(resolve => setTimeout(resolve, 300));
         quizQuestions.push(fallbackQuestion);
@@ -431,7 +488,7 @@ async function requestQuizStep() {
       }
     }
 
-    const recommendNow = localQuizMode && !nextLocalQuizQuestion();
+    const recommendNow = !nextLocalQuizQuestion();
     const quizUrl = new URL(window.CHAT_API_URL);
     quizUrl.pathname = quizUrl.pathname.replace(/\/api\/chat\/?$/, '/api/quiz');
     const controller = new AbortController();
@@ -460,12 +517,18 @@ async function requestQuizStep() {
     let outcome = await Promise.race([
       requestPromise.then(result => ({ type: 'response', result }), error => ({ type: 'error', error })),
       new Promise(resolve => {
-        timeoutId = setTimeout(() => resolve({ type: 'timeout' }), QUIZ_RESPONSE_TIMEOUT_MS);
+        timeoutId = setTimeout(() => resolve({ type: 'timeout' }), recommendNow ? QUIZ_RECOMMENDATION_TIMEOUT_MS : QUIZ_RESPONSE_TIMEOUT_MS);
       })
     ]);
     clearTimeout(timeoutId);
 
     if (outcome.type === 'timeout') {
+      if (recommendNow) {
+        controller.abort();
+        quizRecommendations = createLocalQuizRecommendations();
+        currentQuestion = quizQuestions.length;
+        return;
+      }
       if (!recommendNow && showLocalQuizFallback(controller)) return;
       outcome = await requestPromise.then(result => ({ type: 'response', result }), error => ({ type: 'error', error }));
     }
@@ -567,7 +630,7 @@ function renderQuiz() {
 
   const question = quizQuestions[currentQuestion];
   count.textContent = `Question ${currentQuestion + 1}`;
-  progress.style.width = `${Math.min(95, ((currentQuestion + 1) / 7) * 100)}%`;
+  progress.style.width = `${Math.min(95, ((currentQuestion + 1) / Math.max(1, offlineQuizQuestions.length)) * 100)}%`;
   progress.classList.toggle('is-loading', quizLoading);
   back.hidden = currentQuestion === 0 || quizLoading;
   restart.hidden = true;

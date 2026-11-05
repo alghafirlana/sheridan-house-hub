@@ -580,6 +580,67 @@ button:disabled {
   letter-spacing: 0.06em;
 }
 
+.round-result-dialog .final-result-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 22px 0;
+}
+
+.round-result-dialog .final-result-stats > div {
+  display: grid;
+  gap: 8px;
+  padding: 16px 12px;
+  border-radius: 13px;
+  background: #f0f6fa;
+}
+
+.round-result-dialog .final-result-stats span {
+  color: #647d92;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .055em;
+}
+
+.round-result-dialog .final-result-stats strong {
+  color: #0a345d;
+  font: 800 clamp(25px, 6vw, 33px)/1 Outfit, sans-serif;
+}
+
+.round-result-dialog .final-result-stats .points-added {
+  color: #0a9c8a;
+}
+
+.round-result-dialog .score-save-message {
+  margin: 0 0 18px;
+  padding: 13px 15px;
+  border-radius: 13px;
+  color: #705a1a;
+  background: #f6f2df;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+.round-result-dialog .score-save-message.is-live {
+  color: #087e65;
+  background: #e7f9f3;
+}
+
+.round-result-dialog .score-saving-spinner {
+  width: 28px;
+  height: 28px;
+  margin: 18px auto 4px;
+  border: 3px solid #dbe6fb;
+  border-top-color: #1686b8;
+  border-radius: 50%;
+  animation: undercover-score-spin .8s linear infinite;
+}
+
+@keyframes undercover-score-spin {
+  to { transform: rotate(360deg); }
+}
+
 .round-result-dialog .mini-eyebrow {
   margin-bottom: 12px;
 }
@@ -619,6 +680,7 @@ button:disabled {
 
 .round-result-dialog .score-actions {
   margin-top: 20px;
+  flex-wrap: wrap;
 }
 
 .round-result-dialog .score-actions button {
@@ -641,6 +703,18 @@ button:disabled {
   .game-intro-dialog {
     padding: 25px 22px;
     border-radius: 20px;
+  }
+
+  .round-result-dialog .final-result-stats {
+    gap: 7px;
+  }
+
+  .round-result-dialog .final-result-stats > div {
+    padding: 13px 8px;
+  }
+
+  .round-result-dialog .final-result-stats span {
+    font-size: 8px;
   }
 
   .undercover-page .header-inner {
