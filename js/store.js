@@ -175,10 +175,17 @@ class DemoStore extends BaseStore {
   }
 }
 
-class FirestoreStore extends BaseStore {
-  constructor() {
+export class FirestoreStore extends BaseStore {
+  constructor({ fullBoard = false, fullProfiles = false } = {}) {
     super();
 
+    // Only the public leaderboard loads all scores. Complete nickname data
+    // is needed on the homepage and on the public leaderboard, not every game.
+    this.fullBoard = fullBoard;
+    this.fullProfiles = fullProfiles || fullBoard;
+    this.stopProfiles = null;
+    this.snapshotsStarted = false;
+    this.stopScores = null;
     this.mode = "live";
     this.live = {};
     this.profiles = [];
@@ -201,14 +208,107 @@ class FirestoreStore extends BaseStore {
     if (this.scoresError) throw new Error("Could not load game progress.");
   }
 
-  async hasExistingName(rawName) {
-    await this.profilesReady;
+  setPlayer(player) {
+    const previousPlayerId = this.player?.id;
+    // Games only need the selected player profile to calculate personal
+    // score summaries. Keep full profiles on the homepage/leaderboard.
+    if (!this.fullProfiles) {
+      this.profiles = player
+        ? [{ id: player.id, displayName: player.displayName }]
+        : [];
+    }
+    super.setPlayer(player);
+    if (!this.fullProfiles) this.refresh();
+    // A new registration, returning-player PIN, or player switch changes
+    // which personal scores need to be watched.
+    if (
+      this.snapshotsStarted &&
+      !this.fullBoard &&
+      previousPlayerId !== this.player?.id
+    ) {
+      this.watchScores();
+    }
+  }
 
+  watchScores() {
+    // Prevent old listeners and their callbacks from mixing players' scores.
+    this.stopScores?.();
+    this.stopScores = null;
+    this.scores = [];
+    this.scoresError = null;
+    this.refresh();
+
+    const playerId = this.player?.id;
+    if (!this.fullBoard && !playerId) {
+      // Direct visits to game pages must not wait forever when no player
+      // has joined yet. The game can redirect to the join screen normally.
+      this.resolveScoresReady();
+      return;
+    }
+
+    const source = this.fullBoard
+      ? this.collection("scores")
+      : this.live.query(
+          this.collection("scores"),
+          this.live.where("playerId", "==", playerId),
+        );
+
+    this.stopScores = this.live.onSnapshot(
+      source,
+      (snapshot) => {
+        if (!this.fullBoard && this.player?.id !== playerId) return;
+        this.scores = snapshot.docs.map((s) => s.data());
+        this.refresh();
+        this.resolveScoresReady();
+      },
+      (error) => {
+        if (!this.fullBoard && this.player?.id !== playerId) return;
+        this.scoresError = error;
+        this.resolveScoresReady();
+        this.reportConnectionError(error);
+      },
+    );
+  }
+
+  async hasExistingName(rawName) {
+    if (!this.fullProfiles) {
+      // The join dialog is also available on game pages. Read profiles
+      // only when it is actually used, instead of watching them all day.
+      const name = cleanName(rawName).toLocaleLowerCase("en");
+      try {
+        const snapshot = await this.live.getDocs(this.collection("profiles"));
+        return snapshot.docs.some(
+          (doc) => String(doc.data().displayName || "")
+            .toLocaleLowerCase("en") === name,
+        );
+      } catch {
+        throw new Error("Could not check player names. Please try again.");
+      }
+    }
+    await this.profilesReady;
     if (this.profilesError) {
       throw new Error("Could not check player names. Please try again.");
     }
-
     return super.hasExistingName(rawName);
+  }
+  watchProfiles() {
+    if (!this.fullProfiles) {
+      this.resolveProfilesReady();
+      return;
+    }
+    this.stopProfiles = this.live.onSnapshot(
+      this.collection("profiles"),
+      (snapshot) => {
+        this.profiles = snapshot.docs.map((s) => ({ id: s.id, ...s.data() }));
+        this.refresh();
+        this.resolveProfilesReady();
+      },
+      (error) => {
+        this.profilesError = error;
+        this.resolveProfilesReady();
+        this.reportConnectionError(error);
+      },
+    );
   }
 
   path(...segments) {
@@ -252,41 +352,12 @@ class FirestoreStore extends BaseStore {
     });
     await this.restorePlayer();
 
-    this.live.onSnapshot(
-      this.collection("profiles"),
+    this.watchProfiles();
 
-      (snapshot) => {
-        this.profiles = snapshot.docs.map((s) => ({
-          id: s.id,
-          ...s.data(),
-        }));
-
-        this.refresh();
-
-        // Existing names are now available for checking.
-        this.resolveProfilesReady();
-      },
-
-      (error) => {
-        this.profilesError = error;
-        this.resolveProfilesReady();
-        this.reportConnectionError(error);
-      },
-    );
-
-    this.live.onSnapshot(
-      this.collection("scores"),
-      (snapshot) => {
-        this.scores = snapshot.docs.map((s) => s.data());
-        this.refresh();
-        this.resolveScoresReady();
-      },
-      (error) => {
-        this.scoresError = error;
-        this.resolveScoresReady();
-        this.reportConnectionError(error);
-      },
-    );
+    // Game pages subscribe only to their own scores; the public leaderboard
+    // subscribes to every player's scores.
+    this.snapshotsStarted = true;
+    this.watchScores();
     return this;
   }
   reportConnectionError(error) {
@@ -423,8 +494,14 @@ class FirestoreStore extends BaseStore {
   }
 }
 
-export async function initStore({ forceDemo = false } = {}) {
-  const store = !forceDemo && firebaseIsConfigured() ? new FirestoreStore() : new DemoStore();
+export async function initStore({
+  forceDemo = false,
+  fullBoard = false,
+  fullProfiles = false,
+} = {}) {
+  const store = !forceDemo && firebaseIsConfigured()
+    ? new FirestoreStore({ fullBoard, fullProfiles })
+    : new DemoStore();
   await store.init();
   return store;
 }

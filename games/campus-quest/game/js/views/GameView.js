@@ -56,10 +56,7 @@ export default class GameView {
       Place the existing English clue inside a row so the
       audio replay icon can sit beside it.
     */
-    this.clueHint.parentNode.insertBefore(
-      this.audioClueLine,
-      this.clueHint,
-    );
+    this.clueHint.parentNode.insertBefore(this.audioClueLine, this.clueHint);
 
     this.audioClueLine.appendChild(this.clueHint);
 
@@ -71,10 +68,7 @@ export default class GameView {
 
     this.audioClueButton.className = "audio-clue-icon hidden";
 
-    this.audioClueButton.setAttribute(
-      "aria-label",
-      "Replay audio clue",
-    );
+    this.audioClueButton.setAttribute("aria-label", "Replay audio clue");
 
     this.audioClueButton.title = "Replay audio clue";
 
@@ -180,8 +174,7 @@ export default class GameView {
 
     this.leaderboardButton.id = "leaderboardButton";
 
-    this.leaderboardButton.className =
-      "completion-leaderboard-button hidden";
+    this.leaderboardButton.className = "completion-leaderboard-button hidden";
 
     this.leaderboardButton.textContent = "View Leaderboard";
 
@@ -910,7 +903,7 @@ export default class GameView {
       this.questPointsAdded.textContent = `+${savedResult.pointsAdded}`;
       this.questTotal.textContent = `${savedResult.questPoints} / 100`;
       this.questReplayMessage.textContent = savedResult.personalBest
-        ? `New level best: ${savedResult.bestScore}/100! ${savedResult.pointsAdded > 0 ? 'Your leaderboard points increased.' : 'Your level score improved; your rounded Quest total stayed the same.'} Replay to improve even more.`
+        ? `New level best: ${savedResult.bestScore}/100! ${savedResult.pointsAdded > 0 ? "Your leaderboard points increased." : "Your level score improved; your rounded Quest total stayed the same."} Replay to improve even more.`
         : `Your best level score is still ${savedResult.bestScore}/100. No points lost! Replay this level or explore another one.`;
       this.questResultSummary.classList.remove("hidden");
     }
