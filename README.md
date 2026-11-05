@@ -2,7 +2,7 @@
 
 **Discover. Play. Explore.** A single-site game experience for prospective students at Sheridan Open House.
 
-> **Project status:** Working portal foundation + a playable Tech Sprint sample quiz. The other game cards are marked **Coming Soon** until their real implementations are added. This is a student-built activity, not an official Sheridan College service.
+> **Project status:** Working portal foundation + a playable Tech Sprint sample quiz. The other game cards are marked **5 to 10 mins** until their real implementations are added. This is a student-built activity, not an official Sheridan College service.
 
 ## What's ready
 

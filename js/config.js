@@ -99,9 +99,10 @@ export const GAMES = [
     description: "A future in-portal quiz experience for curious minds.",
     icon: "layers",
     accent: "indigo",
-    status: "soon",
+    status: "playable",
     competitive: false,
-    duration: "Coming soon",
+    href: "https://wayground.com/join?gc=43572963",
+    duration: "5-10 mins",
   },
 ];
 
