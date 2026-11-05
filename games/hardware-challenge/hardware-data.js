@@ -1,4 +1,6 @@
 import { SERVER_LEVEL } from "./hardware-server-level.js";
+import { LAPTOP_LEVEL } from "./hardware-laptop-level.js";
+import { PORTS_LEVEL } from "./hardware-ports-level.js";
 const p = (id, label, question, fact, geometry) => {
   // One physical hotspot can have several question wordings. A round asks
   // about each physical target at most once, with the prompt randomized.
@@ -1075,8 +1077,9 @@ for (const target of wifiLevel.targets) {
   target.regions = typeof geometry[0][0] === "number" ? [geometry] : geometry;
 }
 
-// The optional digital-only Server Explorer level. Existing hotspots are unchanged.
-HARDWARE_LEVELS.push(SERVER_LEVEL);
+// Keep all five approved levels and their hotspots exactly as provided.
+// The two new illustrated missions are optional practice levels for this event.
+HARDWARE_LEVELS.push(SERVER_LEVEL, LAPTOP_LEVEL, PORTS_LEVEL);
 
 export const activeHardware = () => HARDWARE_LEVELS.filter((h) => h.enabled);
 export const getHardwareLevel = (id) =>
