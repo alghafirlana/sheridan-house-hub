@@ -206,20 +206,20 @@ Open **`js/config.js`** and find:
 ```js
 export const SCORED_LEVEL_COUNTS = Object.freeze({
   "campus-quest": 2,
-  "hardware-challenge": 4,
+  "hardware-challenge": 7,
 });
 ```
 
-**This is the only place you edit the number of scored levels.** Every scored level has equal weight, unplayed levels count as zero, and the single combined score per game is the rounded average of level bests. Thus Hardware Challenge with 4 levels: `round((L1 + L2 + L3 + L4) / 4)`, maximum **100 Sheridan Points** total. Campus Quest with 2 levels: `round((L1 + L2) / 2)`. Scores always reflect the same formula in the game result and in the live leaderboard. Replay scores never replace a higher score.
+**This is the only place you edit the number of scored levels.** Every scored level has equal weight, unplayed levels count as zero, and the single combined score per game is the rounded average of level bests. Thus Hardware Challenge with 7 levels: `round((L1 + L2 + L3 + L4 + L5 + L6 + L7) / 7)`, maximum **100 Sheridan Points** total. Campus Quest with 2 levels: `round((L1 + L2) / 2)`. Scores always reflect the same formula in the game result and in the live leaderboard. Replay scores never replace a higher score.
 
 **Freeze the counts during an Open House.** For a future event that uses more scored levels:
 
 1. Add the next numbered level(s) and their photo/hotspot/question data to `games/hardware-challenge/hardware-data.js`; put the corresponding images in `games/hardware-challenge/assets/`.
-2. In `js/config.js`, set the **new eventId** and change only the corresponding entry in `SCORED_LEVEL_COUNTS` (e.g. Hardware Challenge from `4` to `5`). **Do not change the count mid-event**, since that would alter scores already on the live leaderboard.
+2. In `js/config.js`, set the **new eventId** and change only the corresponding entry in `SCORED_LEVEL_COUNTS` (e.g. Hardware Challenge from `5` to `7`). **Do not change the count mid-event**, since that would alter scores already on the live leaderboard.
 3. Run `node scripts/sync-firestore-rules.mjs` once. This generates the exact level-score IDs allowed by Firestore from the same config. **Publish the updated root `firestore.rules` in Firebase Console → Firestore Database → Rules**. Committing rules to GitHub alone will not publish them.
 4. Run `node --test tests/*.mjs` and test on a phone + two computers before opening the event.
 
-The fifth hardware item, **Inside a Server** (`hc5.png`), is already installed and playable as **digital-only practice**. It contributes no leaderboard points while the current event keeps four scored levels. To make it scored at a future event, update the event ID and the centrally configured count from 4 to 5, regenerate Firestore rules, and publish them. Do not change the denominator during a live event, because that would reduce existing totals.
+All seven hardware missions are now part of the scored roster: Levels 1–5, **Laptop Repair Lab** (Level 6), and **Ports & Connections** (Level 7). Publishing the matching generated Firestore rules is required for live score submissions. Changing the denominator from five to seven recalculates existing standings; use a new event ID to preserve the previous event's rankings.
 
 ### Hardware image fidelity and hotspot review
 

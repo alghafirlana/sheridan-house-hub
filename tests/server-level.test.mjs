@@ -17,5 +17,5 @@ test('Server Explorer uses pixel-accurate source dimensions and 15 valid targets
  const qs=chooseQuestions(SERVER_LEVEL,[],()=>0.7);
  assert.equal(qs.length,6);
  assert.equal(new Set(qs.map(q=>q.id)).size,6);
- assert.equal(SCORED_LEVEL_COUNTS['hardware-challenge'],5);
+ assert.equal(SCORED_LEVEL_COUNTS['hardware-challenge'],7);
 });

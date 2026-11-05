@@ -10,11 +10,11 @@ import { PORTS_LEVEL } from '../games/hardware-challenge/hardware-ports-level.js
 const asset = (filename) => new URL(`../games/hardware-challenge/assets/${filename}`, import.meta.url);
 const map = JSON.parse(readFileSync(new URL('../games/hardware-challenge/new-level-hotspot-map.json',import.meta.url),'utf8'));
 
-test('new hardware learning missions are integrated without changing the five scored levels',()=>{
+test('new hardware missions are included in the seven-level scoring roster',()=>{
   assert.deepEqual(HARDWARE_LEVELS.map(l=>l.id),[1,2,3,4,5,6,7]);
   assert.equal(HARDWARE_LEVELS[5],LAPTOP_LEVEL);
   assert.equal(HARDWARE_LEVELS[6],PORTS_LEVEL);
-  assert.deepEqual(scoredLevelIds('hardware-challenge'),[1,2,3,4,5]);
+  assert.deepEqual(scoredLevelIds('hardware-challenge'),[1,2,3,4,5,6,7]);
   for (const level of [LAPTOP_LEVEL,PORTS_LEVEL]) {
     assert.ok(level.enabled);
     assert.equal(level.availability,'digital');
@@ -48,10 +48,10 @@ test('all laptop and ports hotspots match the polygons generated alongside the i
   }
 });
 
-test('the game labels new unscored missions as practice and uses generic practice results',()=>{
+test('the two new missions use the scored results flow',()=>{
   const src=readFileSync(new URL('../games/hardware-challenge/hardware.js',import.meta.url),'utf8');
-  assert.match(src,/DIGITAL PRACTICE/);
-  assert.match(src,/This optional learning mission|this optional learning mission/i);
-  assert.match(src,/Level[s]? in the current scoring roster earn Sheridan Points/);
-  assert.ok(!src.includes('Server mission complete!'));
+  assert.match(src,/submitLevelResult\(store, GAME_ID, level.id, score\)/);
+  assert.match(src,/const eligible = scored\(\)\.has\(level.id\)/);
+  assert.match(src,/Score saved to the live leaderboard!/);
+  assert.equal(scoredLevelIds('hardware-challenge').length,7);
 });
