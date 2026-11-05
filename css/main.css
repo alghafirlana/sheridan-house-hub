@@ -100,6 +100,16 @@ input:focus-visible {
   font-size: 34px;
   line-height: 1;
 }
+/* The supplied Sheridan emblem replaces the decorative spark on every portal page. */
+.brand-logo {
+  display: block;
+  width: 46px;
+  height: 46px;
+  flex: 0 0 46px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(15, 53, 108, 0.13);
+}
 .brand-text {
   display: flex;
   flex-direction: column;
@@ -156,6 +166,24 @@ input:focus-visible {
   font-size: 13px;
   font-weight: 700;
 }
+/* One visible Switch Player action, in addition to the one in Your player card. */
+.header-switch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px solid #c7d8e8;
+  border-radius: 12px;
+  background: #fff;
+  color: #0b3973;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.header-switch:hover { background: #eff7fd; border-color: #87b3d5; }
+.header-switch:disabled { opacity: .6; }
 .header-join {
   border: 1px solid #bbd0e5;
   background: #edf6fe;
@@ -1420,4 +1448,16 @@ p {
     animation: none !important;
     transition: none !important;
   }
+}
+
+@media (max-width: 750px) {
+  .brand-logo { width: 37px; height: 37px; flex-basis: 37px; border-radius: 10px; }
+  .player-widget { gap: 6px; }
+  .header-switch { padding: 0 9px; }
+  .header-switch svg { display: none; }
+}
+@media (max-width: 600px) {
+  .header-inner { flex-wrap: wrap; padding-block: 12px; row-gap: 9px; }
+  .header-actions { width: 100%; justify-content: flex-end; }
+  .player-widget { justify-content: flex-end; flex-wrap: wrap; }
 }

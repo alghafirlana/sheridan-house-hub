@@ -27,7 +27,7 @@ export const SCORED_LEVEL_COUNTS = Object.freeze({
   "hardware-challenge": 4,
 });
 
-/** Add new games here. A new competitive game must ALSO be added to firestore.rules. */
+/** Add new games here. After enabling a competitive game, run scripts/sync-firestore-rules.mjs, then publish the rules in Firebase. */
 export const GAMES = [
   {
     id: "tech-sprint",

@@ -1,7 +1,7 @@
 import { CONFIG, GAMES } from "./config.js";
 import { icon } from "./icons.js";
 import { initStore } from "./store.js";
-import { initChrome, openJoin, navigateToGame, toast } from "./ui.js";
+import { initChrome, openJoin, navigateToGame, toast, resumeJoinAfterSwitch } from "./ui.js";
 import { initPhoneQr } from "./qr.js";
 function card(game, index) {
   const playable = game.status === "playable";
@@ -17,6 +17,7 @@ async function main() {
   try {
     const store = await initStore();
     initChrome(store);
+    resumeJoinAfterSwitch();
     grid.addEventListener("click", (e) => {
       const btn = e.target.closest("[data-game]");
       if (!btn) return;

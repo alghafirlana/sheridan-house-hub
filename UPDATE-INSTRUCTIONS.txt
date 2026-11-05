@@ -1,0 +1,37 @@
+SHERIDAN GAME HUB — SHARED NAVBAR, LOGO & FIRESTORE FIX
+
+UPDATE-ONLY ZIP
+1. Back up your current repository.
+2. Extract these files into the ROOT of your existing sheridan-game-hub folder.
+3. Do not replace or delete your .git directory. This update ZIP contains no .git files.
+4. Check the portal home, Campus Quest home/game, Hardware Challenge, Find the Undercover, Tech Sprint and Program Explorer.
+5. Run: node --test tests/*.test.mjs
+6. Copy the ENTIRE firestore.rules file into Firebase Console > Firestore Database > Rules; verify with Rules Playground; click Publish. Copying to GitHub does NOT publish Firestore rules.
+7. Then commit/push after checking: git add -A && git commit -m "Unify Game Hub branding, player switching and Firestore rules" && git push origin HEAD
+
+NOTE: The Firebase rules were NOT published by this update. Live testing against Firebase still required.
+The global TV leaderboard remains read-only and is intentionally not a player-switching station.
+
+FILES UPDATED:
+assets/favicon.png
+assets/sheridan-logo.webp
+css/main.css
+firestore.rules
+games/campus-quest/css/hub-integration.css
+games/campus-quest/game/game.html
+games/campus-quest/home.html
+games/campus-quest/js/hub-integration.js
+games/find-the-undercover/index.html
+games/hardware-challenge/index.html
+games/program-explorer/index.html
+games/tech-sprint/index.html
+index.html
+js/chrome.js
+js/config.js
+js/portal.js
+js/ui.js
+leaderboard.html
+scripts/sync-firestore-rules.mjs
+tests/hardware-challenge.test.mjs
+tests/navbar-switch.test.mjs
+tests/shared-navbar.test.mjs

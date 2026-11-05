@@ -3,6 +3,8 @@ import { icon } from "./icons.js";
 import { cleanName } from "./scoring-core.js";
 import { markSessionActivity, clearSessionActivity } from "./store.js";
 const $ = (sel) => document.querySelector(sel);
+const hubHomeUrl = new URL("../index.html", import.meta.url).href;
+const joinAfterSwitchKey = "sheridan-hub:join-after-switch";
 let uiStore;
 let idleTimer;
 let gameplayActive = false;
@@ -34,11 +36,41 @@ function renderWidget() {
     widget.querySelector("button").addEventListener("click", () => openJoin());
   } else {
     const score = uiStore.currentTotal();
-    widget.innerHTML = `<span class="header-score">${icon("trophy", 16)} <b>${score}</b> <span>PTS</span></span><button type="button" class="header-profile" id="profileButton" aria-label="Player menu">${icon("user", 16)} <b>${escapeHtml(player.displayName)}</b> <span class="profile-caret">⌄</span></button>`;
-    widget
-      .querySelector("#profileButton")
-      .addEventListener("click", openProfile);
+    widget.innerHTML = `<span class="header-score">${icon("trophy", 16)} <b>${score}</b> <span>PTS</span></span><button type="button" class="header-profile" id="profileButton" aria-label="Player menu">${icon("user", 16)} <b>${escapeHtml(player.displayName)}</b> <span class="profile-caret">⌄</span></button><button type="button" class="header-switch" id="switchPlayerButton" aria-label="Switch player">${icon("users", 16)} <span>Switch player</span></button>`;
+    widget.querySelector("#profileButton").addEventListener("click", openProfile);
+    widget.querySelector("#switchPlayerButton").addEventListener("click", () => switchCurrentPlayer());
   }
+}
+/** Safely switch identities without interrupting active games without confirmation. */
+export async function switchCurrentPlayer() {
+  if (!uiStore?.player) return false;
+  if (gameplayActive && !window.confirm("Leave this unfinished challenge and switch players? Your saved scores will stay safe, but this attempt will not be saved.")) return false;
+  const buttons = document.querySelectorAll("#switchPlayerButton, #switchUser");
+  buttons.forEach((button) => { button.disabled = true; });
+  try {
+    await uiStore.switchPlayer();
+    clearSessionActivity();
+    gameplayActive = false;
+    closeModal();
+    if (document.body.classList.contains("game-page")) {
+      sessionStorage.setItem(joinAfterSwitchKey, "1");
+      window.location.assign(`${hubHomeUrl}#games`);
+    } else {
+      toast("Player switched. Previous scores are saved.", "success");
+      openJoin();
+    }
+    return true;
+  } catch (error) {
+    toast(error?.message || "Could not switch players. Please try again.", "error");
+    buttons.forEach((button) => { button.disabled = false; });
+    return false;
+  }
+}
+/** Show the join screen when a switch occurred inside a game. */
+export function resumeJoinAfterSwitch() {
+  if (sessionStorage.getItem(joinAfterSwitchKey) !== "1") return;
+  sessionStorage.removeItem(joinAfterSwitchKey);
+  openJoin();
 }
 export function setGameplayActive(value) {
   gameplayActive = Boolean(value);
@@ -77,7 +109,7 @@ export function initChrome(store) {
       clearSessionActivity();
       toast("Session ended after inactivity. Your scores are saved.");
       if (document.body.classList.contains("game-page"))
-        window.location.href = "../../index.html";
+        window.location.assign(`${hubHomeUrl}#games`);
     }
   }, 15_000);
 }
@@ -424,15 +456,7 @@ export function openProfile() {
   root
     .querySelector("#viewCode")
     .addEventListener("click", () => showCode(player));
-  root.querySelector("#switchUser").addEventListener("click", async () => {
-    const button = root.querySelector("#switchUser");
-    button.disabled = true;
-    await uiStore.switchPlayer();
-    closeModal();
-    toast("Player switched. Your points are saved.");
-    if (document.body.classList.contains("game-page"))
-      window.location.href = "../../index.html";
-  });
+  root.querySelector("#switchUser").addEventListener("click", () => switchCurrentPlayer());
 }
 export function navigateToGame(game) {
   if (uiStore.player) {
