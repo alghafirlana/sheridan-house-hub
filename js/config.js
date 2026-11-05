@@ -24,7 +24,7 @@ export const CONFIG = Object.freeze({
  */
 export const SCORED_LEVEL_COUNTS = Object.freeze({
   "campus-quest": 2,
-  "hardware-challenge": 4,
+  "hardware-challenge": 5,
 });
 
 /** Add new games here. After enabling a competitive game, run scripts/sync-firestore-rules.mjs, then publish the rules in Firebase. */

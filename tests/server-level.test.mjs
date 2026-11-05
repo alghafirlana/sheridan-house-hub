@@ -1,0 +1,21 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { SERVER_LEVEL } from '../games/hardware-challenge/hardware-server-level.js';
+import { HARDWARE_LEVELS } from '../games/hardware-challenge/hardware-data.js';
+import { validHotspots, chooseQuestions } from '../games/hardware-challenge/hardware-logic.js';
+import { SCORED_LEVEL_COUNTS } from '../js/config.js';
+test('Server Explorer uses pixel-accurate source dimensions and 15 valid targets',()=>{
+ const file=readFileSync(new URL('../games/hardware-challenge/assets/hc5.png',import.meta.url));
+ assert.equal(file.readUInt32BE(16),SERVER_LEVEL.width);
+ assert.equal(file.readUInt32BE(20),SERVER_LEVEL.height);
+ assert.equal(SERVER_LEVEL.width,1448);
+ assert.equal(SERVER_LEVEL.height,1086);
+ assert.ok(validHotspots(SERVER_LEVEL));
+ assert.equal(SERVER_LEVEL.targets.length,15);
+ assert.equal(HARDWARE_LEVELS.filter(x=>x.id===5).length,1);
+ const qs=chooseQuestions(SERVER_LEVEL,[],()=>0.7);
+ assert.equal(qs.length,6);
+ assert.equal(new Set(qs.map(q=>q.id)).size,6);
+ assert.equal(SCORED_LEVEL_COUNTS['hardware-challenge'],4);
+});

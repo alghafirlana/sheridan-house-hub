@@ -80,8 +80,16 @@ a {
   align-items: center;
   gap: clamp(46px, 6vw, 95px);
   background:
-    radial-gradient(circle at 91% 10%, rgba(49, 168, 213, 0.22), transparent 20%),
-    radial-gradient(circle at 48% 110%, rgba(0, 111, 158, 0.09), transparent 28%),
+    radial-gradient(
+      circle at 91% 10%,
+      rgba(49, 168, 213, 0.22),
+      transparent 20%
+    ),
+    radial-gradient(
+      circle at 48% 110%,
+      rgba(0, 111, 158, 0.09),
+      transparent 28%
+    ),
     linear-gradient(120deg, #f8fcfe 0%, #ffffff 47%, #e9f7fc 100%);
 }
 
@@ -330,7 +338,10 @@ a {
     linear-gradient(rgba(0, 111, 158, 0.05) 1px, transparent 1px),
     linear-gradient(90deg, rgba(0, 111, 158, 0.05) 1px, transparent 1px),
     linear-gradient(140deg, #f8fcfe, #eef8fc);
-  background-size: 32px 32px, 32px 32px, auto;
+  background-size:
+    32px 32px,
+    32px 32px,
+    auto;
 }
 
 .quest-node {

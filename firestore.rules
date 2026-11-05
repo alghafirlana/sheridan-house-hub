@@ -2,19 +2,26 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     function signedIn() { return request.auth != null; }
+
     function validName(name) {
       return name is string && name.size() >= 2 && name.size() <= 24
              && name.matches('^[^<>\\n\\r]{2,24}$');
     }
-    function validPin(pin) { return pin is string && pin.matches('^[0-9]{4}$'); }
+
+    function validPin(pin) {
+      return pin is string && pin.matches('^[0-9]{4}$');
+    }
+
     function validPlayerMembership(eventId, playerId) {
       return signedIn()
         && exists(/databases/$(database)/documents/events/$(eventId)/memberships/$(request.auth.uid))
         && get(/databases/$(database)/documents/events/$(eventId)/memberships/$(request.auth.uid)).data.playerId == playerId;
     }
+
     // Register new events with a new ID; existing event scores remain separate.
     match /events/{eventId} {
       allow read, write: if false;
+
       match /profiles/{playerId} {
         allow get, list: if signedIn();
         allow create: if signedIn()
@@ -25,6 +32,7 @@ service cloud.firestore {
           && request.resource.data.createdAt == request.time;
         allow update, delete: if false;
       }
+
       // Player code index must not be listable. A code can still be guessed.
       match /codes/{pin} {
         allow get: if signedIn() && validPin(pin);
@@ -37,6 +45,7 @@ service cloud.firestore {
           && getAfter(/databases/$(database)/documents/events/$(eventId)/profiles/$(request.resource.data.playerId)).data.createdBy == request.auth.uid;
         allow update, delete: if false;
       }
+
       // Private assignment of an anonymous Firebase browser identity to a PIN.
       // No email/password shown to the visitor. This is NOT strong authentication.
       match /memberships/{uid} {
@@ -51,6 +60,7 @@ service cloud.firestore {
           && getAfter(/databases/$(database)/documents/events/$(eventId)/codes/$(request.resource.data.pin)).data.playerId == request.resource.data.playerId;
         allow delete: if signedIn() && request.auth.uid == uid;
       }
+
       // Public ranking data contains NO player PINs or personal email addresses.
       // A separate document for each player's BEST game score avoids total-score tampering.
       match /scores/{scoreId} {
@@ -60,14 +70,25 @@ service cloud.firestore {
           && request.resource.data.keys().hasAll(['playerId','gameId','points','updatedAt'])
           && request.resource.data.playerId is string
           && request.resource.data.gameId is string
-// BEGIN GENERATED SCORE GAME IDS (edit js/config.js, not this block)
-          && request.resource.data.gameId in ['tech-sprint', 'find-undercover', 'campus-quest-level-1', 'campus-quest-level-2', 'hardware-challenge-level-1', 'hardware-challenge-level-2', 'hardware-challenge-level-3', 'hardware-challenge-level-4']
+          // BEGIN GENERATED SCORE GAME IDS (edit js/config.js, not this block)
+          && request.resource.data.gameId in [
+            'tech-sprint',
+            'find-undercover',
+            'campus-quest-level-1',
+            'campus-quest-level-2',
+            'hardware-challenge-level-1',
+            'hardware-challenge-level-2',
+            'hardware-challenge-level-3',
+            'hardware-challenge-level-4',
+            'hardware-challenge-level-5'
+          ]
           // END GENERATED SCORE GAME IDS
           && scoreId == request.resource.data.playerId + '_' + request.resource.data.gameId
           && validPlayerMembership(eventId, request.resource.data.playerId)
           && request.resource.data.points is int
           && request.resource.data.points >= 0 && request.resource.data.points <= 100
           && request.resource.data.updatedAt == request.time;
+
         allow update: if signedIn()
           && validPlayerMembership(eventId, resource.data.playerId)
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['points','updatedAt'])

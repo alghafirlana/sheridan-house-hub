@@ -18,6 +18,7 @@ import {
   roundScore,
   validHotspots,
   fittedPhotoGeometry,
+  recoverHardwareRound,
 } from "./hardware-logic.js";
 
 const GAME_ID = "hardware-challenge";
@@ -56,6 +57,76 @@ let panY = 0;
 let cleanupViewer = () => {};
 let rotationOverride = null; // null uses the level's preferred desktop orientation
 
+// VS Code Live Server reloads the page whenever hardware-data.js changes.
+// Preserve an unfinished round in this tab so development edits don't
+// unexpectedly return the player to the Hardware Challenge homepage.
+const roundStorageKey = (playerId = store?.player?.id) =>
+  `hardware:unfinished-round:v1:${CONFIG.eventId}:${playerId ?? "guest"}`;
+function clearSavedRound() {
+  try {
+    if (round?.playerId)
+      sessionStorage.removeItem(roundStorageKey(round.playerId));
+  } catch {
+    /* storage can be disabled */
+  }
+}
+function persistRound() {
+  if (!round || round.finished) return;
+  try {
+    sessionStorage.setItem(
+      roundStorageKey(round.playerId),
+      JSON.stringify({
+        version: 1,
+        playerId: round.playerId,
+        levelId: round.level.id,
+        mode: round.mode,
+        questionIds: round.questions.map((q) => q.id),
+        questionPrompts: round.questions.map((q) => q.question),
+        step: round.step,
+        tries: round.tries,
+        earned: round.earned,
+        feedback: round.feedback,
+        saveError: round.saveError,
+        zoom,
+        panX,
+        panY,
+        rotationOverride,
+        expanded: Boolean(
+          app.querySelector("#photoCard")?.classList.contains("is-expanded"),
+        ),
+      }),
+    );
+  } catch {
+    /* storage can be disabled */
+  }
+}
+function restoreRound() {
+  if (!store.player?.id) return false;
+  let saved;
+  try {
+    saved = JSON.parse(sessionStorage.getItem(roundStorageKey()));
+  } catch {
+    return false;
+  }
+  const level = getHardwareLevel(saved?.levelId);
+  if (!level?.enabled || !validHotspots(level)) return false;
+  const recovered = recoverHardwareRound(saved, level, store.player.id);
+  if (!recovered) return false;
+  round = recovered;
+  zoom = Number.isFinite(saved.zoom)
+    ? Math.min(3, Math.max(1, saved.zoom))
+    : (level.defaultZoom ?? 1);
+  panX = Number.isFinite(saved.panX) ? saved.panX : 0;
+  panY = Number.isFinite(saved.panY) ? saved.panY : 0;
+  rotationOverride = [0, 90, 180, 270].includes(saved.rotationOverride)
+    ? saved.rotationOverride
+    : null;
+  setGameplayActive(true);
+  showQuestion();
+  if (saved.expanded) app.querySelector("#expandImage")?.click();
+  return true;
+}
+
 const scored = () => new Set(scoredLevelIds(GAME_ID));
 const playable = () =>
   activeHardware().filter((h) => scored().has(h.id) && h.targets.length);
@@ -91,6 +162,7 @@ function wireBack(nav) {
   }
   const goHome = () => {
     if (!allowLeave()) return;
+    clearSavedRound();
     round = null;
     setGameplayActive(false);
     showHome();
@@ -99,6 +171,7 @@ function wireBack(nav) {
   app.querySelector("#hardwareHomeBtn")?.addEventListener("click", goHome);
 }
 function showHome() {
+  clearSavedRound();
   leaveQuestionView();
   app.dataset.view = "home";
   round = null;
@@ -125,18 +198,19 @@ function showHome() {
   });
 }
 function showLibrary() {
+  clearSavedRound();
   leaveQuestionView();
   app.dataset.view = "library";
   round = null;
   setGameplayActive(false);
   const active = activeHardware();
-  app.innerHTML = `${header("Explore the hardware", "Pick any available photo mission. Play and replay levels to build your leaderboard score.", "home")}
+  app.innerHTML = `${header("Explore the hardware", "Choose a hardware photo. Explore all five hardware levels. Each level contributes to your Sheridan Points and helps improve your leaderboard score.", "home")}
     <section class="hc-library-head"><h2>Choose a hardware level</h2><span>${active.length} photo missions</span></section>
     <section class="hc-level-grid">${active
       .map((level) => {
         const eligible = scored().has(level.id);
         const best = scores()[level.id];
-        return `<article class="hc-level-card"><div class="hc-level-image"><img src="${escape(level.thumbnail || level.image)}" alt="${escape(level.subtitle)}" loading="lazy"/><span class="hc-level-number">LEVEL ${level.id}</span></div><div class="hc-level-body"><div class="hc-level-tags"><span>${eligible ? "SCORED LEVEL" : "PREVIEW ONLY"}</span><span>${typeof best === "number" ? "✓ COMPLETED" : "NOT PLAYED"}</span></div><h3>${escape(level.title)}</h3><p>${escape(level.description)}</p><div class="hc-level-foot"><div><small>BEST SCORE</small><strong>${typeof best === "number" ? `${best} / 100` : "—"}</strong></div><button data-level="${level.id}" class="hc-btn hc-btn-dark" type="button" ${eligible ? "" : 'disabled title="This level joins scoring at a future event"'}>${!eligible ? "Next event" : typeof best === "number" ? "Play again" : "Play level"} →</button></div></div></article>`;
+        return `<article class="hc-level-card"><div class="hc-level-image"><img src="${escape(level.thumbnail || level.image)}" alt="${escape(level.subtitle)}" loading="lazy"/><span class="hc-level-number">LEVEL ${level.id}</span></div><div class="hc-level-body"><div class="hc-level-tags"><span>${eligible ? "SCORED LEVEL" : "DIGITAL PRACTICE"}</span><span>${typeof best === "number" ? "✓ COMPLETED" : "NOT PLAYED"}</span></div><h3>${escape(level.title)}</h3><p>${escape(level.description)}</p><div class="hc-level-foot"><div><small>BEST SCORE</small><strong>${typeof best === "number" ? `${best} / 100` : "—"}</strong></div><button data-level="${level.id}" class="hc-btn hc-btn-dark" type="button" >${!eligible ? "Practice level" : typeof best === "number" ? "Play again" : "Play level"} →</button></div></div></article>`;
       })
       .join(
         "",
@@ -156,16 +230,12 @@ function showLibrary() {
 function startLevel(level, mode) {
   if (!level?.enabled || !validHotspots(level))
     return toast("This level needs its image or hotspots checked.", "error");
-  if (!scored().has(level.id))
-    return toast(
-      "This is a preview level; activate it for a future event first.",
-      "error",
-    );
   const recent = readLocal(savedKey(`recent-${level.id}`), []);
   const questions = chooseQuestions(level, recent);
   if (!questions.length)
     return toast("No questions are available for this hardware yet.", "error");
   round = {
+    playerId: store.player?.id,
     level,
     mode,
     questions,
@@ -275,6 +345,7 @@ function showQuestion() {
       panY = 0;
     }
     refreshView();
+    persistRound();
   }
   app
     .querySelector("#zoomIn")
@@ -289,6 +360,7 @@ function showQuestion() {
     panX = 0;
     panY = 0;
     refreshView();
+    persistRound();
   });
   const expand = app.querySelector("#expandImage");
   function toggleExpand() {
@@ -305,6 +377,7 @@ function showQuestion() {
     expand.textContent = isExpanded ? "✕" : "⛶";
     // The contain scaling is recomputed using the new viewport dimensions.
     requestAnimationFrame(refreshView);
+    persistRound();
   }
   expand.addEventListener("click", toggleExpand);
   const onEsc = (e) => {
@@ -357,6 +430,7 @@ function showQuestion() {
     const { target, moved } = pointer;
     pointer = null;
     if (!moved && target && !resolved) answer(target);
+    else if (moved) persistRound();
   });
   viewport.addEventListener("pointercancel", () => {
     pointer = null;
@@ -400,6 +474,7 @@ function showQuestion() {
   } else {
     refreshView();
   }
+  persistRound();
 }
 function answer(clicked) {
   if (!round || round.feedback?.finished || busy) return;
@@ -443,6 +518,22 @@ async function nextQuestion() {
   const { level, questions, earned, mode } = round;
   const score = roundScore(earned, 10 * questions.length);
   try {
+    if (!scored().has(level.id)) {
+      const recentKey = savedKey(`recent-${level.id}`);
+      const recent = readLocal(recentKey, []);
+      writeLocal(
+        recentKey,
+        [...new Set([...questions.map((q) => q.id), ...recent])].slice(
+          0,
+          level.targets.length,
+        ),
+      );
+      round.finished = true;
+      clearSavedRound();
+      setGameplayActive(false);
+      showPracticeResult(level, mode, score);
+      return;
+    }
     const result = await submitLevelResult(store, GAME_ID, level.id, score);
     const recentKey = savedKey(`recent-${level.id}`);
     const recent = readLocal(recentKey, []);
@@ -452,6 +543,7 @@ async function nextQuestion() {
       [...new Set([...latest, ...recent])].slice(0, level.targets.length),
     );
     round.finished = true;
+    clearSavedRound();
     setGameplayActive(false);
     showResult(level, mode, result);
   } catch (e) {
@@ -471,7 +563,34 @@ async function nextQuestion() {
     busy = false;
   }
 }
+function showPracticeResult(level, mode, score) {
+  clearSavedRound();
+  leaveQuestionView();
+  round = null;
+  app.dataset.view = "result";
+  app.innerHTML = `${header("Server mission complete!", "Digital practice — your existing leaderboard score is unchanged.", "library")}
+    <section class="hc-results">
+      <div class="hc-results-icon" aria-hidden="true">🖥️</div>
+      <span class="hc-label">DIGITAL PRACTICE • ${escape(level.title.toUpperCase())}</span>
+      <h2>Great exploring!</h2>
+      <p>You answered questions about the inside of a server. This optional level is for learning and does not change your Sheridan Points for the current event.</p>
+      <div class="hc-result-stats"><div><span>YOUR PRACTICE SCORE</span><strong>${score}<small>/100</small></strong></div><div><span>LEADERBOARD POINTS ADDED</span><strong class="mint">+0</strong></div><div><span>HARDWARE CHALLENGE TOTAL</span><strong>${hubPoints()}<small>/100</small></strong></div></div>
+      <div class="hc-save">Practice complete — no Firebase score was submitted. <small>This server mission can become scored at a future event by updating the central scoring-level count and publishing new Firestore rules.</small></div>
+      <div class="hc-result-actions">
+        <button class="hc-btn hc-btn-mint" id="anotherLevel" type="button">Explore another level →</button>
+        <button class="hc-btn hc-btn-outline" id="replay" type="button">Replay this level</button>
+        <button class="hc-btn hc-btn-dark" id="returnChallenge" type="button">← Back to Hardware Challenge</button>
+      </div>
+    </section>`;
+  wireBack("library");
+  app.querySelector("#anotherLevel").addEventListener("click", showLibrary);
+  app
+    .querySelector("#replay")
+    .addEventListener("click", () => startLevel(level, mode));
+  app.querySelector("#returnChallenge").addEventListener("click", showHome);
+}
 function showResult(level, mode, result) {
+  clearSavedRound();
   leaveQuestionView();
   app.dataset.view = "result";
   const finished = result.levelsCompleted;
@@ -510,10 +629,19 @@ async function main() {
           `${allScoresCount()} of ${scoredLevelIds(GAME_ID).length} levels played`;
       }
     });
+    // Restore the unfinished round before registering the listener.
+    // Otherwise, the initial player callback clears the saved round.
+    if (!restoreRound()) showHome();
+
     store.listenPlayer(() => {
-      if (!round) showHome();
+      if (round && round.playerId !== store.player?.id) {
+        clearSavedRound();
+        round = null;
+        showHome();
+      } else if (!round) {
+        showHome();
+      }
     });
-    showHome();
   } catch (e) {
     app.innerHTML = `<section class="hc-error"><h1>Could not load Hardware Challenge</h1><p>Please check the connection and try again. Your previous scores are safe.</p><a class="hc-btn hc-btn-dark" href="../../index.html">Back to Game Hub</a></section>`;
     console.error(e);
