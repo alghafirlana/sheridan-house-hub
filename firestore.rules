@@ -71,17 +71,7 @@ service cloud.firestore {
           && request.resource.data.playerId is string
           && request.resource.data.gameId is string
           // BEGIN GENERATED SCORE GAME IDS (edit js/config.js, not this block)
-          && request.resource.data.gameId in [
-            'tech-sprint',
-            'find-undercover',
-            'campus-quest-level-1',
-            'campus-quest-level-2',
-            'hardware-challenge-level-1',
-            'hardware-challenge-level-2',
-            'hardware-challenge-level-3',
-            'hardware-challenge-level-4',
-            'hardware-challenge-level-5'
-          ]
+          && request.resource.data.gameId in ['tech-sprint', 'find-undercover', 'campus-quest-level-1', 'campus-quest-level-2', 'hardware-challenge-level-1', 'hardware-challenge-level-2', 'hardware-challenge-level-3', 'hardware-challenge-level-4', 'hardware-challenge-level-5', 'hardware-challenge-level-6', 'hardware-challenge-level-7']
           // END GENERATED SCORE GAME IDS
           && scoreId == request.resource.data.playerId + '_' + request.resource.data.gameId
           && validPlayerMembership(eventId, request.resource.data.playerId)

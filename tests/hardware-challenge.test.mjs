@@ -12,12 +12,15 @@ globalThis.localStorage=new Storage(); globalThis.sessionStorage=new Storage(); 
 
 test('one configured count per game; every scored level contributes equally',()=>{
   assert.deepEqual(scoredLevelIds('campus-quest'),[1,2]);
-  assert.deepEqual(scoredLevelIds('hardware-challenge'),[1,2,3,4]);
-  assert.equal(scoredGamePoints('hardware-challenge',{1:80,2:100,3:60}),60);
-  assert.equal(scoredGamePoints('hardware-challenge',{1:100}),25);
+  assert.deepEqual(scoredLevelIds('hardware-challenge'),[1,2,3,4,5,6,7]);
+  assert.equal(scoredGamePoints('hardware-challenge',{1:80,2:100,3:60}),34);
+  assert.equal(scoredGamePoints('hardware-challenge',{1:100}),14);
   assert.equal(scoredGamePoints('campus-quest',{1:100}),50);
   assert.equal(scoredGamePoints('campus-quest',{1:100,2:80}),90);
-  assert.equal(levelGameInfo('hardware-challenge-level-5').valid,false);
+  assert.equal(levelGameInfo('hardware-challenge-level-5').valid,true);
+  assert.equal(levelGameInfo('hardware-challenge-level-6').valid,true);
+  assert.equal(levelGameInfo('hardware-challenge-level-7').valid,true);
+  assert.equal(levelGameInfo('hardware-challenge-level-8').valid,false);
   assert.equal(levelGameInfo('hardware-challenge-level-1').valid,true);
 });
 
@@ -26,12 +29,12 @@ test('both multi-level games count as one each on the global leaderboard',()=>{
   const scores=[{playerId:'p',gameId:'campus-quest-level-1',points:90},{playerId:'p',gameId:'hardware-challenge-level-1',points:100},{playerId:'p',gameId:'hardware-challenge-level-2',points:70},{playerId:'p',gameId:'tech-sprint',points:60}];
   const [p]=scoreSummary(profiles,scores);
   assert.equal(p.best['campus-quest'],45);
-  assert.equal(p.best['hardware-challenge'],43);
+  assert.equal(p.best['hardware-challenge'],24);
   assert.equal(p.best['tech-sprint'],60);
-  assert.equal(p.total,148);
+  assert.equal(p.total,129);
   assert.equal(p.games,3);
   const invalid=scoreSummary(profiles,[...scores,{playerId:'p',gameId:'hardware-challenge-level-99',points:100}]);
-  assert.equal(invalid[0].total,148,'future levels must not affect the current event');
+  assert.equal(invalid[0].total,129,'future levels must not affect the current event');
 });
 
 test('both modes share each level best attempt and never lower a leaderboard total',async()=>{
@@ -40,16 +43,24 @@ test('both modes share each level best attempt and never lower a leaderboard tot
   await store.createPlayer('HardwareTester');
   assert.rejects(()=>store.submitScore('hardware-challenge',100),/Submit a scored level/);
   const first=await submitLevelResult(store,'hardware-challenge',1,90);
-  assert.deepEqual([first.levelScore,first.pointsAdded,first.gamePoints],[90,23,23]);
+  assert.deepEqual([first.levelScore,first.pointsAdded,first.gamePoints],[90,13,13]);
   const level2=await submitLevelResult(store,'hardware-challenge',2,80);
-  assert.deepEqual([level2.pointsAdded,level2.gamePoints],[20,43]);
+  assert.deepEqual([level2.pointsAdded,level2.gamePoints],[11,24]);
   const replay=await submitLevelResult(store,'hardware-challenge',1,50);
-  assert.deepEqual([replay.bestScore,replay.pointsAdded,replay.gamePoints],[90,0,43]);
+  assert.deepEqual([replay.bestScore,replay.pointsAdded,replay.gamePoints],[90,0,24]);
   const improve=await submitLevelResult(store,'hardware-challenge',1,100);
-  assert.deepEqual([improve.bestScore,improve.pointsAdded,improve.gamePoints],[100,2,45]);
-  assert.equal(store.currentTotal(),45);
+  assert.deepEqual([improve.bestScore,improve.pointsAdded,improve.gamePoints],[100,2,26]);
+  assert.equal(store.currentTotal(),26);
+  // Both new levels are eligible and preserve best attempts in shared scoring.
+  const laptop=await submitLevelResult(store,'hardware-challenge',6,100);
+  assert.deepEqual([laptop.levelScore,laptop.pointsAdded,laptop.gamePoints],[100,14,40]);
+  const ports=await submitLevelResult(store,'hardware-challenge',7,70);
+  assert.deepEqual([ports.levelScore,ports.pointsAdded,ports.gamePoints],[70,10,50]);
+  const worseReplay=await submitLevelResult(store,'hardware-challenge',6,60);
+  assert.deepEqual([worseReplay.bestScore,worseReplay.pointsAdded,worseReplay.gamePoints],[100,0,50]);
+  assert.equal(store.currentTotal(),50);
   await store.switchPlayer();
-  await assert.rejects(()=>store.submitScore('hardware-challenge-level-5',20),/not available/);
+  await assert.rejects(()=>store.submitScore('hardware-challenge-level-8',20),/not available/);
 });
 
 test('randomization is unique within round and prioritizes unseen questions',()=>{
@@ -72,9 +83,9 @@ test('randomization is unique within round and prioritizes unseen questions',()=
 
 test('Firestore generated score IDs match the single configured counts',()=>{
   const rules=readFileSync(new URL('../firestore.rules',import.meta.url),'utf8');
-  const line=rules.split('\n').find(s=>s.includes('&& request.resource.data.gameId in ['));
-  assert.ok(line);
-  const ids=[...line.matchAll(/'([^']+)'/g)].map(m=>m[1]);
+  const block=rules.match(/&& request\.resource\.data\.gameId in \[([\s\S]*?)\]/)?.[1];
+  assert.ok(block);
+  const ids=[...block.matchAll(/'([^']+)'/g)].map(m=>m[1]);
   const expected=[...GAMES.filter(g=>g.status==='playable' && g.competitive && !Object.hasOwn(SCORED_LEVEL_COUNTS,g.id)).map(g=>g.id),...Object.entries(SCORED_LEVEL_COUNTS).flatMap(([game,n])=>Array.from({length:n},(_,i)=>`${game}-level-${i+1}`))];
   assert.deepEqual(ids,expected);
   assert.equal((rules.match(/request\.resource\.data\.gameId\s+in\s+\[/g)||[]).length,1,"a second ANDed allowlist would silently reject scores");
@@ -83,7 +94,7 @@ test('Firestore generated score IDs match the single configured counts',()=>{
 
 test('launch levels reference the exact approved HC images and image geometry',()=>{
   const expected=['hc2.png','hc4.png','hc3.png','hc1.png','hc5.png'];
-  for(const [i,level] of HARDWARE_LEVELS.entries()){
+  for(const [i,level] of HARDWARE_LEVELS.slice(0,5).entries()){
     assert.equal(level.image,`assets/${expected[i]}`);
     const data=readFileSync(new URL(`../games/hardware-challenge/${level.image}`,import.meta.url));
     assert.equal(data.toString('ascii',1,4),'PNG');
@@ -127,8 +138,8 @@ test('horizontal photo display uses the correct contain geometry and does not al
 
 
 test('expanded hardware question bank has unique targets and randomized prompt variants',()=>{
-  assert.deepEqual(HARDWARE_LEVELS.map(level=>level.targets.length),[12,12,10,8,15]);
-  assert.deepEqual(HARDWARE_LEVELS.map(level=>level.questionsPerRound),[5,5,5,4,6]);
+  assert.deepEqual(HARDWARE_LEVELS.map(level=>level.targets.length),[12,12,10,8,15,11,8]);
+  assert.deepEqual(HARDWARE_LEVELS.map(level=>level.questionsPerRound),[5,5,5,4,6,6,6]);
   for(const level of HARDWARE_LEVELS){
     assert.ok(validHotspots(level));
     assert.equal(new Set(level.targets.map(t=>t.id)).size,level.targets.length);
@@ -148,7 +159,7 @@ test('unfinished round survives a development-server reload without affecting Fi
   const source=readFileSync(new URL('../games/hardware-challenge/hardware.js',import.meta.url),'utf8');
   assert.match(source,/function persistRound\(\)/);
   assert.match(source,/function restoreRound\(\)/);
-  assert.match(source,/sessionStorage\.setItem\(roundStorageKey/);
+  assert.match(source,/sessionStorage\.setItem\(\s*roundStorageKey/);
   assert.match(source,/sessionStorage\.removeItem\(roundStorageKey/);
   assert.match(source,/if \(!restoreRound\(\)\) showHome\(\)/);
   assert.match(source,/if \(saved\.expanded\) app\.querySelector\(\"#expandImage\"\)\?\.click\(\)/);
