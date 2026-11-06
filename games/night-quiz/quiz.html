@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b315e">
+
+  <title>Sheridan Quiz Night</title>
+
+  <link rel="icon" href="../../assets/favicon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  >
+
+  <!-- Shared Sheridan styling -->
+  <link rel="stylesheet" href="../../css/main.css">
+  <link rel="stylesheet" href="../../css/game.css">
+
+  <style>
+    body.game-page {
+      margin: 0;
+      min-height: 100vh;
+      background: white;
+    }
+
+    /* Compact navbar */
+    .quiz-navbar .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 80px;
+      padding-top: 8px;
+      padding-bottom: 8px;
+      gap: 20px;
+    }
+
+    .quiz-navbar .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .quiz-navbar .header-link {
+      color: #123b70;
+      font-weight: 700;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    /* Join to Play button */
+    .quiz-join {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      min-height: 42px;
+      padding: 0 16px;
+      background: #eaf5fd;
+      color: #0b3978;
+      border: 1px solid #b9d2ee;
+      border-radius: 12px;
+      font: 700 14px "DM Sans", sans-serif;
+      cursor: pointer;
+    }
+
+    .quiz-join:hover {
+      background: #d8edfb;
+    }
+
+    .quiz-join:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+    .quiz-join svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* Wayground */
+    .quiz-frame {
+      display: block;
+      width: 100%;
+      height: calc(100vh - 80px);
+      min-height: 500px;
+      border: none;
+    }
+
+    @media (max-width: 700px) {
+      .quiz-navbar .header-inner {
+        flex-wrap: wrap;
+      }
+
+      .quiz-navbar .header-actions {
+        width: 100%;
+        justify-content: space-between;
+      }
+    }
+  </style>
+</head>
+
+<body class="game-page">
+
+  <!-- SHERIDAN NAVBAR -->
+  <header class="site-header quiz-navbar">
+    <div class="shell header-inner">
+
+      <a class="brand" href="../../index.html">
+        <img
+          class="brand-logo"
+          src="../../assets/sheridan-logo.webp"
+          alt=""
+          width="46"
+          height="46"
+        >
+
+        <span class="brand-text">
+          <strong>SHERIDAN</strong>
+          <span>
+            GAME HUB
+            <span class="brand-dot">•</span>
+            OPEN HOUSE
+          </span>
+        </span>
+      </a>
+
+      <div class="header-actions">
+
+        <a class="header-link" href="../../index.html">
+          ← All games
+        </a>
+
+        <!-- Opens the real Sheridan registration popup -->
+        <button
+          id="joinQuizButton"
+          class="quiz-join"
+          type="button"
+          disabled
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="8" r="4"/>
+            <path d="M5 21v-2a7 7 0 0 1 14 0v2"/>
+          </svg>
+
+          Join to Play
+        </button>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- WAYGROUND QUIZ -->
+  <main>
+    <iframe
+      class="quiz-frame"
+      src="https://wayground.com/join?gc=00727059"
+      title="Sheridan Quiz Night"
+      allowfullscreen>
+    </iframe>
+  </main>
+
+  <!-- Shared popup container -->
+  <div id="modalRoot"></div>
+
+  <!-- Shared notifications -->
+  <div
+    id="toastRoot"
+    class="toast-root"
+    role="status"
+    aria-live="polite">
+  </div>
+
+  <!-- DEMO MODE: NO FIREBASE REGISTRATION -->
+  <script type="module">
+    import { initStore } from "../../js/store.js";
+    import { initChrome, openJoin } from "../../js/ui.js";
+
+    const joinButton =
+      document.getElementById("joinQuizButton");
+
+    try {
+      // Use local demo storage, NOT Firebase
+      const store = await initStore({
+        forceDemo: true
+      });
+
+      // Initialize Sheridan's shared popup system
+      initChrome(store);
+
+      joinButton.disabled = false;
+
+      // Display the exact Sheridan registration modal
+      joinButton.addEventListener("click", () => {
+        openJoin({
+          context: "Sheridan Quiz Night"
+        });
+      });
+
+      console.log(
+        "Sheridan Quiz Night: local demo mode active"
+      );
+
+    } catch (error) {
+      console.error(
+        "Could not initialize registration popup:",
+        error
+      );
+    }
+  </script>
+
+</body>
+</html>
